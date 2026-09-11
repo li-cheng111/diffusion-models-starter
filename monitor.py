@@ -281,8 +281,13 @@ class Monitor:
         current_step = int(max(persisted_steps, default=0))
         final_exists = (ckpt_dir / "final.pt").exists()
         active = _pid_alive(self.train_pid)
-        status = "completed" if final_exists and loss else ("running" if active else "unknown")
-        status_label = {"completed": "已完成", "running": "训练中", "unknown": "未能确认"}[status]
+        status = "completed" if final_exists and loss else ("running" if active else ("stopped" if current_step else "unknown"))
+        status_label = {
+            "completed": "已完成",
+            "running": "训练中",
+            "stopped": "已停止",
+            "unknown": "未能确认",
+        }[status]
         files = [*samples, *[{"step": _step_from_name(path)} for path in ckpt_dir.glob("step_*.pt")]]
         latest_file = "—"
         if files:
