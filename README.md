@@ -1,10 +1,23 @@
 # Project 1：从零实现 DDPM
 
-本仓库提交 Project 1 的完整源码、配置、静态测试和实验文档模板。实现目标是用 PyTorch 手写一个不依赖 `diffusers` 或 `lucidrains` 的 unconditional DDPM。
+本仓库提交 Project 1 基础档的完整源码、配置、静态测试和实验文档模板。实现目标是用 PyTorch 手写一个不依赖 `diffusers` 或 `lucidrains` 的 unconditional DDPM。
 
 ## 当前提交状态
 
 本次提交只包含程序和文档内容，尚未执行 Python、测试、数据下载、训练或采样。因此仓库暂不包含 loss 曲线、生成样本、FID 和 checkpoint 等运行产物。
+
+## 基础档完成清单
+
+- [x] linear beta schedule 和 DDPM 系数预计算
+- [x] 闭合形式前向加噪 `q_sample`
+- [x] simplified noise-prediction loss `p_losses`
+- [x] 单步反向采样 `p_sample`
+- [x] 完整反向采样循环 `p_sample_loop`
+- [x] sinusoidal timestep embedding
+- [x] ResBlock 的时间 embedding 广播注入
+- [x] MNIST 50 epoch 配置和训练入口
+- [x] 64 张样本生成与最终产物的后续命令
+- [ ] 实际运行 MNIST 训练并补充 loss 曲线、样本网格和 checkpoint
 
 ## 目录
 
