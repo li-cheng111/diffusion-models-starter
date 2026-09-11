@@ -4,7 +4,7 @@
 
 ## 当前提交状态
 
-本次提交只包含程序和文档内容，尚未执行 Python、测试、数据下载、训练或采样。因此仓库暂不包含 loss 曲线、生成样本、FID 和 checkpoint 等运行产物。
+基础档源码已经提交；MNIST 实验正在本地运行，运行产物将在训练真正完成后整理提交。当前阶段不虚构 loss、FID 或最终 checkpoint 结果。
 
 ## 基础档完成清单
 
@@ -17,7 +17,7 @@
 - [x] ResBlock 的时间 embedding 广播注入
 - [x] MNIST 50 epoch 配置和训练入口
 - [x] 64 张样本生成与最终产物的后续命令
-- [ ] 实际运行 MNIST 训练并补充 loss 曲线、样本网格和 checkpoint
+- [ ] 实际运行 MNIST 训练并补充最终 loss 曲线、样本网格和 checkpoint
 
 ## 目录
 
@@ -31,6 +31,7 @@ evaluate.py       # FID 评估
 model/            # sinusoidal embedding、ResBlock、U-Net
 configs/          # MNIST 和 CIFAR-10 配置
 tests/            # 尚未执行的单元测试源码
+monitor.py        # 本地只读实时训练进度监控
 report.md         # 理论和实现说明，实验结果待补充
 debug_log.md      # 实际运行后填写的调试记录模板
 logs/             # 实验日志模板
@@ -55,6 +56,15 @@ x_t = sqrt(alpha_bar_t) * x_0
 python train.py --config configs/mnist.yaml
 python sample.py --ckpt runs/exp_mnist_baseline/ckpt/final.pt --num_samples 64 --save_grid
 ```
+
+训练进行中时，可以启动本地只读监控页面。页面每 2 秒读取一次样本、checkpoint 和 loss 文件：
+
+```bash
+python monitor.py --run-dir runs/exp_mnist_baseline \
+    --total-steps 23400 --train-pid <训练进程 PID> --port 8765
+```
+
+然后打开 <http://127.0.0.1:8765/>。步数会随着最新持久化产物更新；`loss_history.csv` 出现后会自动绘制 loss 曲线。
 
 CIFAR-10 的长训练使用：
 
