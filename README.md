@@ -67,6 +67,7 @@ configs/          # MNIST 和 CIFAR-10 配置
 tests/            # 尚未执行的单元测试源码
 challenge.py      # 挑战档多 schedule、多 seed 实验编排与汇总
 challenge_report.md # 挑战档八页技术报告结构稿
+challenge_monitor.py # 挑战矩阵只读实时监控页面
 monitor.py        # 本地只读实时训练进度监控
 report.md         # 理论和实现说明，实验结果待补充
 debug_log.md      # 实际运行后填写的调试记录模板
