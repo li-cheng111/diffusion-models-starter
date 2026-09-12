@@ -21,7 +21,7 @@ PAGE = r'''<!doctype html>
 <title>DDPM Challenge Monitor</title>
 <style>
 :root{color-scheme:light dark;--bg:light-dark(#f6f8fb,#15171b);--card:light-dark(#fff,#20242c);--text:light-dark(#202633,#eef2f7);--muted:light-dark(#667085,#a7afbd);--line:light-dark(#dfe4ec,#363d49);--blue:light-dark(#356ae6,#8eafff);--amber:light-dark(#c87517,#f1b56e);}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",sans-serif}main{max-width:1180px;margin:auto;padding:26px 20px 42px}h1{margin:0;font-size:25px}.sub{color:var(--muted);font-size:13px;margin:7px 0 22px}.bar{height:18px;background:color-mix(in srgb,var(--blue) 16%,transparent);border-radius:99px;overflow:hidden}.fill{height:100%;width:0;background:var(--blue);transition:width .5s}.meta{display:flex;justify-content:space-between;margin:7px 0;font-size:14px}.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:20px 0}.card,.panel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:15px}.label{color:var(--muted);font-size:12px}.value{font-size:20px;font-weight:650;margin-top:5px}.panel{margin-top:16px;overflow:auto}h2{font-size:16px;margin:0 0 12px}table{width:100%;border-collapse:collapse;font-size:13px}th,td{text-align:left;padding:9px 8px;border-bottom:1px solid var(--line);white-space:nowrap}th{color:var(--muted);font-weight:600}.running{color:var(--amber);font-weight:650}.completed{color:var(--blue);font-weight:650}.pending{color:var(--muted)}pre{white-space:pre-wrap;word-break:break-word;max-height:230px;overflow:auto;color:var(--muted);font-size:12px;line-height:1.5;margin:0}.foot{color:var(--muted);font-size:12px;margin-top:16px}@media(max-width:760px){main{padding:20px 12px}.cards{grid-template-columns:repeat(2,1fr)}.value{font-size:17px}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",sans-serif}main{max-width:1180px;margin:auto;padding:26px 20px 42px}h1{margin:0;font-size:25px}.sub{color:var(--muted);font-size:13px;margin:7px 0 22px}.bar{height:18px;background:color-mix(in srgb,var(--blue) 16%,transparent);border-radius:99px;overflow:hidden}.fill{height:100%;width:0;background:var(--blue);transition:width .5s}.meta{display:flex;justify-content:space-between;margin:7px 0;font-size:14px}.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:20px 0}.card,.panel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:15px}.label{color:var(--muted);font-size:12px}.value{font-size:20px;font-weight:650;margin-top:5px}.panel{margin-top:16px;overflow:auto}h2{font-size:16px;margin:0 0 12px}table{width:100%;border-collapse:collapse;font-size:13px}th,td{text-align:left;padding:9px 8px;border-bottom:1px solid var(--line);white-space:nowrap}th{color:var(--muted);font-weight:600}.running,.evaluating,.sampling{color:var(--amber);font-weight:650}.completed{color:var(--blue);font-weight:650}.pending{color:var(--muted)}pre{white-space:pre-wrap;word-break:break-word;max-height:230px;overflow:auto;color:var(--muted);font-size:12px;line-height:1.5;margin:0}.foot{color:var(--muted);font-size:12px;margin-top:16px}@media(max-width:760px){main{padding:20px 12px}.cards{grid-template-columns:repeat(2,1fr)}.value{font-size:17px}}
 </style></head><body><main><h1>DDPM 挑战档实时监控</h1><div class="sub">只读监控：linear/cosine × seed 42/43/44；每 2 秒刷新，不会干扰训练。</div>
 <div class="meta"><span id="overall">等待数据</span><span id="percent">—</span></div><div class="bar"><div id="fill" class="fill"></div></div>
 <div class="cards"><div class="card"><div class="label">状态</div><div id="status" class="value">—</div></div><div class="card"><div class="label">当前实验</div><div id="current" class="value">—</div></div><div class="card"><div class="label">已完成组数</div><div id="done" class="value">—</div></div><div class="card"><div class="label">最新 loss</div><div id="loss" class="value">—</div></div></div>
@@ -68,8 +68,23 @@ class ChallengeMonitor:
             )
         except OSError:
             log = ""
-        output_dirs = re.findall(r"--output_dir\s+(\S+)", log)
-        active_dir = Path(output_dirs[-1]).resolve() if output_dirs else None
+        command_lines = [line for line in log.splitlines() if line.startswith("$ ")]
+        last_command = command_lines[-1] if command_lines else ""
+        phase = None
+        if "train.py" in last_command:
+            phase = "running"
+        elif "sample.py" in last_command:
+            phase = "sampling"
+        elif "evaluate.py" in last_command:
+            phase = "evaluating"
+        output_dirs = re.findall(r"--output_dir\s+(\S+)", last_command)
+        checkpoint_paths = re.findall(r"--ckpt\s+(\S+)", last_command)
+        if output_dirs:
+            active_dir = Path(output_dirs[-1]).resolve()
+        elif checkpoint_paths:
+            active_dir = Path(checkpoint_paths[-1]).resolve().parent.parent
+        else:
+            active_dir = None
 
         runs: list[dict[str, Any]] = []
         for schedule in self.schedules:
@@ -83,6 +98,8 @@ class ChallengeMonitor:
                 status = "completed" if final.exists() else (
                     "running" if step > 0 or is_active else "pending"
                 )
+                if final.exists() and is_active and phase in {"sampling", "evaluating"}:
+                    status = phase
                 loss = _latest_loss(run_dir / "loss_history.csv")
                 runs.append({
                     "schedule": schedule,
@@ -92,22 +109,41 @@ class ChallengeMonitor:
                     "total_steps": self.total_steps,
                     "percent": min(100.0, step / max(self.total_steps, 1) * 100.0),
                     "status": status,
-                    "status_label": {"completed": "已完成", "running": "运行中", "pending": "等待中"}[status],
+                    "status_label": {
+                        "completed": "已完成",
+                        "running": "训练中",
+                        "sampling": "采样中",
+                        "evaluating": "FID 评估中",
+                        "pending": "等待中",
+                    }[status],
                     "loss": loss,
                 })
         completed = sum(row["status"] == "completed" for row in runs)
-        current = next((row for row in runs if row["status"] == "running"), None)
+        current = next(
+            (
+                row
+                for row in runs
+                if row["status"] in {"running", "sampling", "evaluating"}
+            ),
+            None,
+        )
         if current is None:
             current = next((row for row in runs if row["status"] == "pending"), None)
         total_steps = len(runs) * self.total_steps
         completed_steps = sum(int(row["step"]) for row in runs)
         all_completed = completed == len(runs) and bool(runs)
-        status = "completed" if all_completed else ("running" if any(row["status"] == "running" for row in runs) else "pending")
+        status = current["status"] if current else ("completed" if all_completed else "pending")
         log = "\n".join(log.splitlines()[-18:])
         latest_losses = [row["loss"] for row in runs if row["loss"] is not None]
         return {
             "status": status,
-            "status_label": "全部完成" if all_completed else ("运行中" if status == "running" else "等待启动"),
+            "status_label": {
+                "completed": "全部完成",
+                "running": "训练中",
+                "sampling": "采样中",
+                "evaluating": "FID 评估中",
+                "pending": "等待启动",
+            }[status],
             "current": f"{current['schedule']} / {current['epochs']}ep / seed {current['seed']}" if current else None,
             "completed_runs": completed,
             "total_runs": len(runs),
