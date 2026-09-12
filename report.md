@@ -2,7 +2,7 @@
 
 ## 当前状态
 
-本仓库已完成 Project 1 基础档要求对应的源码、MNIST 配置、静态测试和实验文档模板。按照“先提交内容、暂不运行”的要求，当前版本尚未下载数据、训练模型或生成任何实验结果，因此本报告不填写虚构的 loss、FID 或样本质量结论。
+本仓库已完成 Project 1 基础档要求对应的源码、MNIST 配置、静态测试和实验文档。MNIST 基线已在 AutoDL 的 NVIDIA GeForce RTX 5090 上完成真实训练、采样和 EMA FID 评估。本报告只记录实际得到的结果，不对单个 FID 数值作超出实验范围的结论。
 
 ## 方法概述
 
@@ -41,9 +41,27 @@ x_t=\sqrt{\bar\alpha_t}x_0+
 
 ## 待完成实验
 
-- MNIST 50 epoch：待实际运行后补充 loss 曲线和 64 张样本网格。
+- MNIST 50 epoch：已完成训练和推理；结果见下方“MNIST 实验结果”。
 - CIFAR-10 200 epoch：待实际运行后补充 EMA/非 EMA 采样对比和 FID。
+
+## MNIST 实验结果
+
+| 项目 | 实际值 |
+|---|---|
+| 硬件 | NVIDIA GeForce RTX 5090 |
+| 训练配置 | MNIST，50 epochs，23,400 steps |
+| 训练时间 | 24.8 minutes |
+| 最后一次日志 loss | 0.01151 |
+| FID | 32.8913（EMA，5,000 samples） |
+
+结果文件：
+
+- `runs/exp_mnist_baseline/loss_history.csv`
+- `runs/exp_mnist_baseline/loss_curve.png`
+- `runs/exp_mnist_baseline/samples_inference_ema/grid.png`
+- `runs/exp_mnist_baseline/ckpt/final.pt`
+- `runs/exp_mnist_baseline/ckpt/fid_5000_EMA.txt`
 
 ## 基础档验收状态
 
-基础档的 8 个代码实现点已经写入仓库；MNIST 50 epoch 属于运行阶段，当前按要求暂不执行。训练完成后需要补充真实的 `loss_curve.png`、`samples_final.png`、`checkpoint_final.pt`、实验日志和调试记录。
+基础档的 8 个代码实现点已经写入仓库；MNIST 50 epoch 已完成真实训练、推理和 EMA FID 评估。CIFAR-10 训练及 EMA/非 EMA 对比仍待后续实验。

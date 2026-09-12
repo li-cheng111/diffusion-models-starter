@@ -4,7 +4,7 @@
 
 ## 当前提交状态
 
-基础档源码已经提交；MNIST 实验正在本地运行，运行产物将在训练真正完成后整理提交。当前阶段不虚构 loss、FID 或最终 checkpoint 结果。
+基础档源码已经提交；MNIST 实验已在 AutoDL RTX 5090 上完成训练、采样和 EMA FID 评估。运行产物和真实指标已整理到 `runs/exp_mnist_baseline/`。
 
 ## 基础档完成清单
 
@@ -17,7 +17,7 @@
 - [x] ResBlock 的时间 embedding 广播注入
 - [x] MNIST 50 epoch 配置和训练入口
 - [x] 64 张样本生成与最终产物的后续命令
-- [ ] 实际运行 MNIST 训练并补充最终 loss 曲线、样本网格和 checkpoint
+- [x] 实际运行 MNIST 训练并补充最终 loss 曲线、样本网格和 checkpoint
 
 ## 目录
 
@@ -50,7 +50,7 @@ x_t = sqrt(alpha_bar_t) * x_0
 
 ## 后续运行方式
 
-安装依赖后，可在未来运行：
+安装依赖后，可运行：
 
 ```bash
 python train.py --config configs/mnist.yaml

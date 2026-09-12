@@ -1,0 +1,5 @@
+FID: 32.8913
+num_samples: 5000
+weights: EMA
+checkpoint: runs/exp_mnist_baseline/ckpt/final.pt
+seed: 42
