@@ -28,6 +28,31 @@
 - [x] CIFAR-10 实际训练、EMA/raw 样本和 FID 对比报告
 - [ ] FID ≤ 15（本次 EMA FID 为 19.2879，仍需调参或重训）
 
+## 挑战档实现状态
+
+- [x] `cosine_beta_schedule` 已实现并接入 `DDPMSchedule`
+- [x] linear/cosine 两套 CIFAR-10 200 epoch 配置已建立
+- [x] `challenge.py` 已提供 2 个 schedule × 3 个 seed 的可复现实验编排
+- [x] `challenge.py` 支持 `--epoch_budgets 50 200`，可回答 50/200 epoch 自查问题
+- [x] `challenge.py summarize` 已提供 mean ± std 汇总
+- [x] `challenge_report.md` 已建立八页技术报告结构和失败案例记录规范
+- [ ] 尚未运行挑战档实验，因此暂无真实 mean ± std、schedule 胜负结论或挑战档失败案例
+
+挑战档只在明确执行下面命令后才会创建实验目录和运行产物：
+
+```bash
+python challenge.py run \
+  --schedules linear cosine \
+  --seeds 42 43 44 \
+  --output_root runs/challenge
+```
+
+如需先检查将要执行的命令而不运行任何程序，可使用 `--dry_run`。实验完成后使用
+`python challenge.py summarize --output_root runs/challenge` 生成统计结果。
+
+默认挑战矩阵为 200 epoch、2 个 schedule × 3 个 seed，共 6 组。若还要回答报告中的
+50 epoch 自查问题，可显式运行 `--epoch_budgets 50 200`，共 12 组。
+
 ## 目录
 
 ```text
@@ -40,6 +65,8 @@ evaluate.py       # FID 评估
 model/            # sinusoidal embedding、ResBlock、U-Net
 configs/          # MNIST 和 CIFAR-10 配置
 tests/            # 尚未执行的单元测试源码
+challenge.py      # 挑战档多 schedule、多 seed 实验编排与汇总
+challenge_report.md # 挑战档八页技术报告结构稿
 monitor.py        # 本地只读实时训练进度监控
 report.md         # 理论和实现说明，实验结果待补充
 debug_log.md      # 实际运行后填写的调试记录模板
@@ -85,4 +112,4 @@ python evaluate.py --ckpt runs/exp_cifar10_advanced/ckpt/final.pt \
     --num_samples 5000 --batch_size 64 --real_split train --compare_ema
 ```
 
-运行结果应在真实实验完成后再提交，并同步更新 `report.md`、`debug_log.md` 和 `logs/`。
+运行结果应在真实实验完成后再提交，并同步更新 `report.md`、`debug_log.md`、`challenge_report.md` 和 `logs/`。

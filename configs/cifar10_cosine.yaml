@@ -1,0 +1,46 @@
+# Challenge track: cosine schedule comparison.
+# The challenge runner overrides output_dir and seed for each replicate.
+output_dir: runs/challenge/cifar10_cosine_200ep_seed42
+seed: 42
+
+dataset:
+  name: cifar10
+  batch_size: 128
+  image_size: 32
+  num_workers: 8
+  root: ./data
+
+model:
+  in_channels: 3
+  out_channels: 3
+  base_channels: 128
+  channel_mult: [1, 2, 2, 2]
+  num_res_blocks: 2
+  attn_resolutions: [16]
+  dropout: 0.1
+  image_size: 32
+
+diffusion:
+  T: 1000
+  beta_schedule: cosine
+  s: 0.008
+
+optimizer:
+  lr: 2.0e-4
+  weight_decay: 0.0
+  warmup_steps: 5000
+
+ema_decay: 0.9999
+mixed_precision: fp16
+
+training:
+  num_epochs: 200
+  log_every: 100
+  sample_every: 2500
+  ckpt_every: 10000
+  grad_clip: 1.0
+
+wandb:
+  enabled: false
+  project: ddpm-course
+  run_name: challenge_cifar10_cosine

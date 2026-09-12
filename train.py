@@ -283,6 +283,12 @@ def main() -> None:
     parser.add_argument("--config", required=True)
     parser.add_argument("--output_dir", default=None)
     parser.add_argument("--seed", type=int, default=None)
+    parser.add_argument(
+        "--num_epochs",
+        type=int,
+        default=None,
+        help="Override training.num_epochs without editing the YAML config.",
+    )
     parser.add_argument("--resume", default=None)
     args = parser.parse_args()
 
@@ -292,9 +298,12 @@ def main() -> None:
         cfg["output_dir"] = args.output_dir
     if args.seed is not None:
         cfg["seed"] = args.seed
+    if args.num_epochs is not None:
+        if args.num_epochs <= 0:
+            parser.error("--num_epochs must be positive")
+        cfg["training"]["num_epochs"] = args.num_epochs
     train(cfg, resume=args.resume)
 
 
 if __name__ == "__main__":
     main()
-

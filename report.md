@@ -108,3 +108,25 @@ EMA 的 FID 比 raw 低 9.4586，说明本次训练中 EMA 权重的分布质量
 - `runs/exp_cifar10_advanced/ckpt/fid_comparison.md`
 
 本次未达到 FID ≤ 15；后续若继续冲击目标，应在保留当前 checkpoint 的基础上调整模型、schedule 或训练策略后重新实验。
+
+## 挑战档实现与待运行实验
+
+挑战档要求实现 cosine schedule，并在相同模型和训练协议下对比 linear/cosine，分别使用随机种子 `42、43、44` 报告 mean ± std，同时提交包含失败案例分析的八页技术报告。本仓库已完成以下可执行准备工作：
+
+- `schedule.py` 中的 `cosine_beta_schedule` 已接入 `DDPMSchedule`；
+- `configs/cifar10_linear.yaml` 和 `configs/cifar10_cosine.yaml` 固定了对比实验的控制变量；
+- `challenge.py` 默认负责六组 200 epoch 训练、64 张 EMA 样本网格、5,000 对 5,000 FID 评估和结果汇总，并支持加入 50 epoch 控制组；
+- `challenge_report.md` 提供八页报告结构，`logs/challenge_experiment_log_template.md` 提供六组实验记录表。
+
+本轮按要求没有运行挑战档训练或评估，因此下面内容必须保持待填，不能根据进阶档的单次 linear 结果推断：
+
+| 项目 | 状态 |
+|---|---|
+| Linear 200 epoch，seed 42/43/44 | 待运行 |
+| Cosine 200 epoch，seed 42/43/44 | 待运行 |
+| Linear mean ± std | 待运行 |
+| Cosine mean ± std | 待运行 |
+| 50 epoch schedule 对比 | 未纳入当前矩阵，不能外推 |
+| 挑战档真实失败案例 | 待运行后按证据填写 |
+
+预计在 AutoDL RTX 5090 上，六组 200 epoch 训练约需 9–12 小时，六组 FID 评估约需 1–2 小时；若加入 50 epoch 控制组，完整 12 组矩阵约需 12–16 小时（含 FID）。数据准备、磁盘校验和偶发重试建议额外预留 30–60 分钟。实际时间会随数据缓存、GPU 利用率和评估吞吐变化。

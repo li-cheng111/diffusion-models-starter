@@ -1,0 +1,186 @@
+# Project 1 挑战档技术报告（八页结构稿）
+
+> 本文按八页技术报告组织，可在实验完成后导出为 PDF。当前版本只完成方法、实验协议和结果表结构；由于本轮明确不运行训练，所有经验结果、均值、标准差和失败案例均保持待填，不虚构数值。
+
+## 第 1 页：摘要与研究问题
+
+### 研究问题
+
+在 U-Net、优化器、数据增强、训练轮数和随机种子集合保持一致的前提下，比较 linear 与 cosine beta schedule 对 CIFAR-10 无条件 DDPM 的影响。主要指标是使用 EMA 权重生成的 FID，辅助指标是 raw 权重 FID、训练 loss 曲线和 64 张样本网格。
+
+### 可复现性声明
+
+挑战实验矩阵默认是两个 schedule 和三个 seed：`42、43、44`，每个组合训练 200 epochs；`challenge.py` 也支持显式加入 50 epoch 控制组。每个组合评估 5,000 张生成图像与 5,000 张无增强 CIFAR-10 训练图像，并写入 `results.csv` 和 `summary.md`。
+
+### 当前状态
+
+实现已准备好，但实验尚未执行。因此不能回答“哪个 schedule 更好”、不能填写 mean ± std，也不能把预期现象写成失败案例。
+
+## 第 2 页：DDPM 数学背景
+
+前向过程使用固定的高斯转移：
+
+\[
+q(x_t\mid x_{t-1})=\mathcal N(\sqrt{1-\beta_t}x_{t-1},\beta_t I).
+\]
+
+令 \(\alpha_t=1-\beta_t\)，\(\bar\alpha_t=\prod_{s=1}^{t}\alpha_s\)，则可以用闭合形式直接采样：
+
+\[
+x_t=\sqrt{\bar\alpha_t}x_0+\sqrt{1-\bar\alpha_t}\epsilon,\quad\epsilon\sim\mathcal N(0,I).
+\]
+
+模型 \(\epsilon_\theta(x_t,t)\) 预测噪声，训练目标为：
+
+\[
+\mathcal L_{simple}=\mathbb E_{x_0,t,\epsilon}
+\left[\lVert\epsilon-\epsilon_\theta(x_t,t)\rVert^2\right].
+\]
+
+schedule 不改变模型结构，而是改变每个时间步的噪声强度以及训练样本在不同信噪比区域的分布。
+
+## 第 3 页：Linear 与 cosine schedule 实现
+
+### Linear schedule
+
+`linear_beta_schedule` 在 `[beta_start, beta_end]` 之间等间隔生成 `T` 个 beta。它直接对应原始 DDPM 常用基线，优点是简单、易解释；缺点是时间步上的信噪比变化不一定均衡。
+
+### Cosine schedule
+
+`cosine_beta_schedule` 先构造：
+
+\[
+\bar\alpha(t)=\cos^2\left(\frac{t/T+s}{1+s}\frac{\pi}{2}\right),
+\]
+
+再通过相邻累积量之比得到：
+
+\[
+\beta_t=1-\frac{\bar\alpha_t}{\bar\alpha_{t-1}}.
+\]
+
+实现对 beta 做有限性和 `(0,1)` 范围检查，并使用数值截断避免极端时间步造成不稳定。两种 schedule 都进入同一个 `DDPMSchedule`，因此训练和采样逻辑无需分叉。
+
+### 实现自查
+
+- `betas`、`alphas_cumprod` 和 posterior 系数注册为 buffer。
+- `t` 从 0 开始索引。
+- batch 时间系数 reshape 为 `(B, 1, 1, 1)` 后再广播到图像张量。
+- `t=0` 的 posterior variance 显式设为 0，最后一步不添加随机扰动。
+
+## 第 4 页：实验设计
+
+### 控制变量
+
+| 项目 | 固定值 |
+|---|---|
+| Dataset | CIFAR-10 train split |
+| Resolution | 32 × 32 |
+| Batch size | 128 |
+| Epochs | 200 |
+| Model | base 128, channel mult 1/2/2/2 |
+| Optimizer | AdamW |
+| Learning rate | 2e-4 |
+| Warmup | 5,000 steps |
+| EMA | decay 0.9999 |
+| Precision | fp16 |
+| Augmentation | training-only random horizontal flip |
+| FID real images | 5,000 unaugmented train images |
+| FID generated images | 5,000 per run |
+
+唯一实验变量是 `beta_schedule`。两个 schedule 各运行 seed `42、43、44`，并用同一评估 seed 规则生成可比较的随机样本。
+
+### 运行方式
+
+```bash
+python challenge.py run \
+  --schedules linear cosine \
+  --seeds 42 43 44 \
+  --output_root runs/challenge
+```
+
+若要同时完成 50 epoch/200 epoch 的 schedule 自查：
+
+```bash
+python challenge.py run \
+  --schedules linear cosine \
+  --epoch_budgets 50 200 \
+  --seeds 42 43 44 \
+  --output_root runs/challenge
+```
+
+每个实验独立保存 checkpoint、loss history、loss curve、EMA 样本网格和 raw/EMA FID。若训练中断，可保留已完成目录，修复后使用单独的 `train.py --resume` 命令恢复；恢复前应在日志中记录原因。
+
+## 第 5 页：结果表与统计方法
+
+本页必须由真实实验产物生成，不能手工估计。
+
+### 每个 seed 的结果
+
+| Schedule | Seed | Final loss | EMA FID | Raw FID | Train time | Status |
+|---|---:|---:|---:|---:|---:|---|
+| linear | 42 | pending | pending | pending | pending | pending |
+| linear | 43 | pending | pending | pending | pending | pending |
+| linear | 44 | pending | pending | pending | pending | pending |
+| cosine | 42 | pending | pending | pending | pending | pending |
+| cosine | 43 | pending | pending | pending | pending | pending |
+| cosine | 44 | pending | pending | pending | pending | pending |
+
+### Mean ± std
+
+`challenge.py summarize` 使用三个 seed 的算术平均值和样本标准差：
+
+\[
+\bar x=\frac{1}{n}\sum_i x_i,\qquad
+s=\sqrt{\frac{1}{n-1}\sum_i(x_i-\bar x)^2}.
+\]
+
+最终应报告 linear EMA、cosine EMA、linear raw、cosine raw 四组统计，并明确 FID 的真实数据 split、生成样本数和评估 seed。
+
+## 第 6 页：训练曲线与样本质量分析
+
+本页待实验后插入：
+
+- `runs/challenge/cifar10_linear_*ep_seed*/loss_curve.png`
+- `runs/challenge/cifar10_cosine_*ep_seed*/loss_curve.png`
+- 每个 schedule 至少一个 EMA 样本网格
+- 可选：同 seed 下 linear/cosine 的并排样本网格
+
+分析应区分训练 loss 和生成质量：loss 更低不必然意味着 FID 更低；样本网格应观察颜色、轮廓、多样性、重复样本和明显伪影。EMA/raw 的差异也应结合 FID 和图像，而不是只凭单张样本下结论。
+
+对于“50 epoch 与 200 epoch 哪个 schedule 更好”的自查问题，本仓库只提供 200 epoch 挑战矩阵。若要回答 50 epoch，必须新增同样的 50 epoch 控制实验，不能从 200 epoch 结果外推。
+
+## 第 7 页：失败案例与威胁有效性
+
+### 真实失败案例
+
+本页只允许写入实际发生且有日志证据的问题，例如：数据下载中断、显存不足、NaN、checkpoint 恢复错位、FID 输入范围错误或某个 schedule 的训练失败。每条记录都应包含命令、日志片段或文件证据、根因和修复验证，格式见 `logs/challenge_experiment_log_template.md` 和 `debug_log.md`。
+
+当前不能预填失败案例，因为本轮尚未运行挑战实验。已有的 AutoDL 数据下载慢等问题属于前序 CIFAR-10 进阶实验，不能冒充挑战档中的 schedule 失败。
+
+### 威胁有效性
+
+- 三个 seed 仍然是小样本，mean ± std 不能等同于统计显著性检验。
+- FID 对 Inception 实现、输入范围和 real split 敏感。
+- 同一训练时长不代表两个 schedule 达到相同优化程度。
+- 仅比较一个 U-Net 容量和一个学习率，结论只适用于本实验设置。
+- 评估样本数为 5,000，结果可能比大规模评估有更高方差。
+
+## 第 8 页：结论与复现清单
+
+### 结论模板
+
+实验完成后应将下面的 pending 替换为真实结论：
+
+> 在 CIFAR-10、200 epoch、相同 U-Net/优化器和 seed `42/43/44` 的条件下，`[linear/cosine]` 的 EMA FID 为 `[mean ± std]`，`[优于/不优于]` 另一 schedule 的 `[mean ± std]`。该结论仅适用于本实验协议。EMA 相对 raw 的变化为 `[填写]`。
+
+### 复现清单
+
+- [ ] `configs/cifar10_linear.yaml` 与 `configs/cifar10_cosine.yaml` 已固定控制变量
+- [ ] 两个 schedule 均完成 seed 42、43、44（200 epoch；若回答 50 epoch 自查则再完成 50 epoch）
+- [ ] 六个 checkpoint 的 MD5 或文件信息已记录（完整 50+200 矩阵为十二个）
+- [ ] 六份 loss history 和 loss curve 已保存（完整 50+200 矩阵为十二份）
+- [ ] 六个 FID 结果均为 5,000 对 5,000（完整 50+200 矩阵为十二个）
+- [ ] `python challenge.py summarize` 生成 `results.csv` 和 `summary.md`
+- [ ] 失败案例全部有证据，未将推测写成事实
+- [ ] 报告中的图、表和结论与产物路径一致
