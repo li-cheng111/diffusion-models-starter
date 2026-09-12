@@ -60,6 +60,17 @@ class ChallengeMonitor:
         self.log_path = args.log_path.resolve()
 
     def snapshot(self) -> dict[str, Any]:
+        try:
+            log = "\n".join(
+                self.log_path.read_text(
+                    encoding="utf-8", errors="replace"
+                ).splitlines()[-80:]
+            )
+        except OSError:
+            log = ""
+        output_dirs = re.findall(r"--output_dir\s+(\S+)", log)
+        active_dir = Path(output_dirs[-1]).resolve() if output_dirs else None
+
         runs: list[dict[str, Any]] = []
         for schedule in self.schedules:
             for seed in self.seeds:
@@ -68,7 +79,10 @@ class ChallengeMonitor:
                 final = ckpt_dir / "final.pt"
                 step_paths = list(ckpt_dir.glob("step_*.pt")) + list((run_dir / "samples").glob("step_*.png"))
                 step = self.total_steps if final.exists() else max((_step(path) for path in step_paths), default=0)
-                status = "completed" if final.exists() else ("running" if step > 0 else "pending")
+                is_active = active_dir == run_dir.resolve()
+                status = "completed" if final.exists() else (
+                    "running" if step > 0 or is_active else "pending"
+                )
                 loss = _latest_loss(run_dir / "loss_history.csv")
                 runs.append({
                     "schedule": schedule,
@@ -89,11 +103,7 @@ class ChallengeMonitor:
         completed_steps = sum(int(row["step"]) for row in runs)
         all_completed = completed == len(runs) and bool(runs)
         status = "completed" if all_completed else ("running" if any(row["status"] == "running" for row in runs) else "pending")
-        log = ""
-        try:
-            log = "\n".join(self.log_path.read_text(encoding="utf-8", errors="replace").splitlines()[-18:])
-        except OSError:
-            pass
+        log = "\n".join(log.splitlines()[-18:])
         latest_losses = [row["loss"] for row in runs if row["loss"] is not None]
         return {
             "status": status,
