@@ -2,7 +2,7 @@
 
 ## 当前状态
 
-本仓库已完成 Project 1 基础档要求对应的源码、MNIST 配置、静态测试和实验文档。MNIST 基线已在 AutoDL 的 NVIDIA GeForce RTX 5090 上完成真实训练、采样和 EMA FID 评估。进阶档的 CIFAR-10 训练、EMA/raw 对比和 FID 评估入口已经实现，但本报告暂不填写尚未运行的结果。
+本仓库已完成 Project 1 基础档要求对应的源码、MNIST 配置、静态测试和实验文档。MNIST 基线与 CIFAR-10 进阶档均已在 AutoDL 的 NVIDIA GeForce RTX 5090 上完成真实训练、采样和 FID 评估。本报告只记录实际得到的结果；本次 CIFAR-10 EMA FID 为 19.2879，尚未达到作业目标 FID ≤ 15。
 
 ## 方法概述
 
@@ -43,7 +43,7 @@ x_t=\sqrt{\bar\alpha_t}x_0+
 ## 待完成实验
 
 - MNIST 50 epoch：已完成训练和推理；结果见下方“MNIST 实验结果”。
-- CIFAR-10 200 epoch：代码和配置已准备，待实际运行后补充 EMA/raw 采样对比和 FID。
+- CIFAR-10 200 epoch：已完成训练、EMA/raw 采样和 FID 对比，结果见下方“进阶档实验结果”。
 
 ## MNIST 实验结果
 
@@ -65,9 +65,9 @@ x_t=\sqrt{\bar\alpha_t}x_0+
 
 ## 基础档验收状态
 
-基础档的 8 个代码实现点已经写入仓库；MNIST 50 epoch 已完成真实训练、推理和 EMA FID 评估。CIFAR-10 训练及 EMA/非 EMA 对比仍待后续实验。
+基础档的 8 个代码实现点已经写入仓库；MNIST 50 epoch 和 CIFAR-10 200 epoch 均已完成真实训练与推理。进阶档的 EMA/raw 对比已完成，但本次 EMA FID 尚未达到 15 的目标。
 
-## 进阶档运行计划（结果待填写）
+## 进阶档实验结果
 
 配置文件：`configs/cifar10.yaml`。
 
@@ -79,20 +79,32 @@ python evaluate.py --ckpt runs/exp_cifar10_advanced/ckpt/final.pt \
     --num_samples 5000 --batch_size 64 --real_split train --compare_ema
 ```
 
-评估会生成：
+评估实际生成：
 
 - `fid_5000_EMA.txt`
 - `fid_5000_raw.txt`
 - `fid_comparison.md`
 
-### 进阶档待记录指标
+### 进阶档实际指标
 
 | 指标 | 实际值 |
 |---|---|
-| CIFAR-10 训练时间 | 待运行 |
+| 硬件 | NVIDIA GeForce RTX 5090 |
+| CIFAR-10 训练时间 | 98.2 minutes |
 | 总训练 steps | 78,000（50,000 张训练图，batch size 128，drop_last） |
-| EMA FID（5,000 train images） | 待运行 |
-| Raw FID（5,000 train images） | 待运行 |
-| Raw - EMA | 待运行 |
+| 最后一次日志 loss | 0.01938（step 78,000） |
+| EMA FID（5,000 train images） | 19.2879 |
+| Raw FID（5,000 train images） | 28.7464 |
+| Raw - EMA | +9.4586 |
+| FID ≤ 15 | 未达到 |
 
-在没有实际训练和评估之前，不对 FID ≤ 15 作保证，也不填写虚构的对比结论。
+EMA 的 FID 比 raw 低 9.4586，说明本次训练中 EMA 权重的分布质量更好；该结论仅针对本次 seed、配置和 5,000 样本评估。结果文件：
+
+- `runs/exp_cifar10_advanced/loss_history.csv`
+- `runs/exp_cifar10_advanced/loss_curve.png`
+- `runs/exp_cifar10_advanced/samples_inference_ema/grid.png`
+- `runs/exp_cifar10_advanced/samples_inference_raw/grid.png`
+- `runs/exp_cifar10_advanced/ckpt/final.pt`
+- `runs/exp_cifar10_advanced/ckpt/fid_comparison.md`
+
+本次未达到 FID ≤ 15；后续若继续冲击目标，应在保留当前 checkpoint 的基础上调整模型、schedule 或训练策略后重新实验。

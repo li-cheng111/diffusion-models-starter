@@ -26,3 +26,20 @@
 - Verification: Training reached step 23,400, produced the final checkpoint and loss curve, and FID evaluation completed with 5,000 samples.
 - Fix: None required.
 - Lesson: The baseline is reproducible in the recorded AutoDL environment; preserve the configuration and seed with the artifacts.
+
+## Entry 4 — CIFAR-10 data preparation
+
+- Status: Resolved
+- Symptom: The original CIFAR-10 download endpoint was limited to roughly 10–55 KB/s on AutoDL.
+- Hypothesis: The external Toronto endpoint was the bottleneck rather than the GPU or project code.
+- Verification: A public Hugging Face mirror completed the same 170,498,071-byte archive, and its MD5 matched `c58f30108f718f92721af3b95e74349a`.
+- Fix: Resumed the archive download from the mirror and kept the validated file at `data/cifar-10-python.tar.gz`.
+- Lesson: Validate dataset bytes before training and keep data files on the AutoDL data disk.
+
+## Entry 5 — CIFAR-10 advanced experiment
+
+- Status: Completed
+- Symptom: No runtime failure occurred during the 200-epoch run or post-training evaluation.
+- Verification: Training reached step 78,000 in 98.2 minutes; EMA FID was 19.2879 and raw FID was 28.7464 on 5,000 training images.
+- Fix: None required for stability. The FID target of 15 was not reached, so the result is recorded as-is.
+- Lesson: EMA materially improved this run's FID, but a stable run and a target metric are separate acceptance criteria.

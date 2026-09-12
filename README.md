@@ -4,7 +4,7 @@
 
 ## 当前提交状态
 
-基础档源码已经提交；MNIST 实验已在 AutoDL RTX 5090 上完成训练、采样和 EMA FID 评估。进阶档的 CIFAR-10 代码和运行配置已准备好，但尚未启动 200 epoch 训练。MNIST 运行产物和真实指标已整理到 `runs/exp_mnist_baseline/`。
+基础档源码已经提交；MNIST 实验已在 AutoDL RTX 5090 上完成训练、采样和 EMA FID 评估。进阶档 CIFAR-10 200 epoch 训练和 EMA/raw 对比也已完成，真实结果已整理到 `runs/exp_cifar10_advanced/`。本次 EMA FID 为 19.2879，尚未达到作业目标 15。
 
 ## 基础档完成清单
 
@@ -25,7 +25,8 @@
 - [x] 训练过程维护 raw 与 EMA 两套权重
 - [x] FID 默认使用 5,000 张无增强训练图作为 real split
 - [x] `evaluate.py --compare_ema` 一键生成 EMA/raw 对比记录
-- [ ] CIFAR-10 实际训练、FID ≤ 15 和对比报告结果（尚未运行）
+- [x] CIFAR-10 实际训练、EMA/raw 样本和 FID 对比报告
+- [ ] FID ≤ 15（本次 EMA FID 为 19.2879，仍需调参或重训）
 
 ## 目录
 
