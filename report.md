@@ -2,7 +2,7 @@
 
 ## 当前状态
 
-本仓库已完成 Project 1 基础档要求对应的源码、MNIST 配置、静态测试和实验文档。MNIST 基线已在 AutoDL 的 NVIDIA GeForce RTX 5090 上完成真实训练、采样和 EMA FID 评估。本报告只记录实际得到的结果，不对单个 FID 数值作超出实验范围的结论。
+本仓库已完成 Project 1 基础档要求对应的源码、MNIST 配置、静态测试和实验文档。MNIST 基线已在 AutoDL 的 NVIDIA GeForce RTX 5090 上完成真实训练、采样和 EMA FID 评估。进阶档的 CIFAR-10 训练、EMA/raw 对比和 FID 评估入口已经实现，但本报告暂不填写尚未运行的结果。
 
 ## 方法概述
 
@@ -30,6 +30,7 @@ x_t=\sqrt{\bar\alpha_t}x_0+
 - `model/unet.py` 实现带时间条件的残差 U-Net。
 - `dataset.py` 支持 MNIST 和 CIFAR-10，并将输入归一化到 `[-1,1]`。
 - `train.py` 支持 AdamW、warmup、EMA、AMP、梯度裁剪、checkpoint 和 loss history。
+- `evaluate.py` 支持从训练集或测试集读取 real images；进阶档默认固定使用无增强的 5,000 张训练图，并可用 `--compare_ema` 同时评估 EMA 与 raw 权重。
 
 ## 自查问题
 
@@ -42,7 +43,7 @@ x_t=\sqrt{\bar\alpha_t}x_0+
 ## 待完成实验
 
 - MNIST 50 epoch：已完成训练和推理；结果见下方“MNIST 实验结果”。
-- CIFAR-10 200 epoch：待实际运行后补充 EMA/非 EMA 采样对比和 FID。
+- CIFAR-10 200 epoch：代码和配置已准备，待实际运行后补充 EMA/raw 采样对比和 FID。
 
 ## MNIST 实验结果
 
@@ -65,3 +66,33 @@ x_t=\sqrt{\bar\alpha_t}x_0+
 ## 基础档验收状态
 
 基础档的 8 个代码实现点已经写入仓库；MNIST 50 epoch 已完成真实训练、推理和 EMA FID 评估。CIFAR-10 训练及 EMA/非 EMA 对比仍待后续实验。
+
+## 进阶档运行计划（结果待填写）
+
+配置文件：`configs/cifar10.yaml`。
+
+```bash
+python train.py --config configs/cifar10.yaml
+python sample.py --ckpt runs/exp_cifar10_advanced/ckpt/final.pt \
+    --num_samples 64 --save_grid
+python evaluate.py --ckpt runs/exp_cifar10_advanced/ckpt/final.pt \
+    --num_samples 5000 --batch_size 64 --real_split train --compare_ema
+```
+
+评估会生成：
+
+- `fid_5000_EMA.txt`
+- `fid_5000_raw.txt`
+- `fid_comparison.md`
+
+### 进阶档待记录指标
+
+| 指标 | 实际值 |
+|---|---|
+| CIFAR-10 训练时间 | 待运行 |
+| 总训练 steps | 78,000（50,000 张训练图，batch size 128，drop_last） |
+| EMA FID（5,000 train images） | 待运行 |
+| Raw FID（5,000 train images） | 待运行 |
+| Raw - EMA | 待运行 |
+
+在没有实际训练和评估之前，不对 FID ≤ 15 作保证，也不填写虚构的对比结论。

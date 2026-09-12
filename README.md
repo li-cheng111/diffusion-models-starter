@@ -1,10 +1,10 @@
 # Project 1：从零实现 DDPM
 
-本仓库提交 Project 1 基础档的完整源码、配置、静态测试和实验文档模板。实现目标是用 PyTorch 手写一个不依赖 `diffusers` 或 `lucidrains` 的 unconditional DDPM。
+本仓库提交 Project 1 基础档和进阶档的源码、配置、静态测试与实验文档模板。实现目标是用 PyTorch 手写一个不依赖 `diffusers` 或 `lucidrains` 的 unconditional DDPM。
 
 ## 当前提交状态
 
-基础档源码已经提交；MNIST 实验已在 AutoDL RTX 5090 上完成训练、采样和 EMA FID 评估。运行产物和真实指标已整理到 `runs/exp_mnist_baseline/`。
+基础档源码已经提交；MNIST 实验已在 AutoDL RTX 5090 上完成训练、采样和 EMA FID 评估。进阶档的 CIFAR-10 代码和运行配置已准备好，但尚未启动 200 epoch 训练。MNIST 运行产物和真实指标已整理到 `runs/exp_mnist_baseline/`。
 
 ## 基础档完成清单
 
@@ -18,6 +18,14 @@
 - [x] MNIST 50 epoch 配置和训练入口
 - [x] 64 张样本生成与最终产物的后续命令
 - [x] 实际运行 MNIST 训练并补充最终 loss 曲线、样本网格和 checkpoint
+
+## 进阶档实现状态
+
+- [x] CIFAR-10 200 epoch 配置（`configs/cifar10.yaml`）
+- [x] 训练过程维护 raw 与 EMA 两套权重
+- [x] FID 默认使用 5,000 张无增强训练图作为 real split
+- [x] `evaluate.py --compare_ema` 一键生成 EMA/raw 对比记录
+- [ ] CIFAR-10 实际训练、FID ≤ 15 和对比报告结果（尚未运行）
 
 ## 目录
 
@@ -70,7 +78,10 @@ CIFAR-10 的长训练使用：
 
 ```bash
 python train.py --config configs/cifar10.yaml
-python evaluate.py --ckpt runs/exp_cifar10_baseline/ckpt/final.pt --num_samples 5000
+python sample.py --ckpt runs/exp_cifar10_advanced/ckpt/final.pt \
+    --num_samples 64 --save_grid
+python evaluate.py --ckpt runs/exp_cifar10_advanced/ckpt/final.pt \
+    --num_samples 5000 --batch_size 64 --real_split train --compare_ema
 ```
 
 运行结果应在真实实验完成后再提交，并同步更新 `report.md`、`debug_log.md` 和 `logs/`。

@@ -1,12 +1,12 @@
 # Project 1 advanced track: unconditional DDPM on CIFAR-10.
-output_dir: runs/exp_cifar10_baseline
+output_dir: runs/exp_cifar10_advanced
 seed: 42
 
 dataset:
   name: cifar10
   batch_size: 128
   image_size: 32
-  num_workers: 4
+  num_workers: 8
   root: ./data
 
 model:
@@ -43,5 +43,4 @@ training:
 wandb:
   enabled: false
   project: ddpm-course
-  run_name: cifar10_linear
-
+  run_name: cifar10_advanced_linear_ema

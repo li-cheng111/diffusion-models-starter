@@ -13,15 +13,23 @@ def get_transform(
     image_size: int,
     dataset_name: str = "cifar10",
     train: bool = True,
+    augment: Optional[bool] = None,
 ) -> Callable:
-    """Build a transform that maps images from [0, 1] to [-1, 1]."""
+    """Build a transform that maps images from [0, 1] to [-1, 1].
+
+    ``train`` selects the official dataset split. ``augment`` controls data
+    augmentation separately so FID can use the 5,000 training images without
+    applying a new random flip every time an image is read.
+    """
 
     name = dataset_name.lower()
+    if augment is None:
+        augment = train
     transform_list = [transforms.ToTensor()]
     native_size = 28 if name == "mnist" else 32
     if image_size != native_size:
         transform_list.append(transforms.Resize(image_size))
-    if name == "cifar10" and train:
+    if name == "cifar10" and augment:
         transform_list.append(transforms.RandomHorizontalFlip(p=0.5))
 
     channels = 1 if name == "mnist" else 3
@@ -50,6 +58,7 @@ def get_dataset(
     root: str = "./data",
     image_size: Optional[int] = None,
     train: bool = True,
+    augment: Optional[bool] = None,
 ) -> Dataset:
     name = name.lower()
     if name not in {"mnist", "cifar10"}:
@@ -57,7 +66,7 @@ def get_dataset(
     if image_size is None:
         image_size = 28 if name == "mnist" else 32
 
-    transform = get_transform(image_size, name, train=train)
+    transform = get_transform(image_size, name, train=train, augment=augment)
     if name == "mnist":
         base = datasets.MNIST(root=root, train=train, download=True, transform=transform)
     else:
@@ -91,4 +100,3 @@ def denormalize(x: torch.Tensor) -> torch.Tensor:
     """Map a tensor from [-1, 1] to [0, 1] for visualization or metrics."""
 
     return (x.clamp(-1.0, 1.0) + 1.0) / 2.0
-
