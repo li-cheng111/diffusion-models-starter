@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import argparse
 import math
+import re
 import time
 from collections import defaultdict
 from pathlib import Path
@@ -71,7 +72,7 @@ class CaptureAttnProcessor:
             batch_size = hidden_states.shape[0]
         if encoder_hidden_states is None:
             encoder_hidden_states = hidden_states
-        elif getattr(attn, "norm_encoder_hidden_states", None) is not None:
+        elif getattr(attn, "norm_cross", False) and getattr(attn, "norm_encoder_hidden_states", None) is not None:
             encoder_hidden_states = attn.norm_encoder_hidden_states(encoder_hidden_states)
         if getattr(attn, "group_norm", None) is not None:
             hidden_states = attn.group_norm(hidden_states.transpose(1, 2)).transpose(1, 2)
@@ -216,7 +217,8 @@ def main() -> int:
         token_heatmaps[index] = torch.stack([torch.nn.functional.interpolate(m[None, None], size=(32, 32), mode="bilinear", align_corners=False)[0, 0] for m in maps]).mean(dim=0).numpy()
     overlay_files = []
     for index, heat in token_heatmaps.items():
-        label = token_strings[index].replace("/", "_").replace("Ġ", "") or f"token{index}"
+        label = re.sub(r"[^A-Za-z0-9_.-]+", "_", token_strings[index].replace("Ġ", "")).strip("._")
+        label = label or f"token{index}"
         output = output_dir / f"attention_{index:02d}_{label}.png"
         _overlay(image, heat, f"token {index}: {token_strings[index]}", output)
         overlay_files.append(output)
