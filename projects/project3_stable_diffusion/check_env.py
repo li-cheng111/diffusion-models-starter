@@ -19,6 +19,10 @@ import json
 import os
 import sys
 
+if hasattr(sys.stdout, "reconfigure"):
+    # AutoDL is UTF-8; Windows local consoles may still default to GBK.
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+
 # (import 名, pip 名, 是哪个任务需要的)
 PACKAGES = [
     ('torch', 'torch', '全部'),
@@ -132,13 +136,16 @@ def main():
         print("环境就绪 ✅ 可以开始任务 A 了")
         if args.json_output:
             from pathlib import Path
-            Path(args.json_output).parent.mkdir(parents=True, exist_ok=True)
-            Path(args.json_output).write_text(json.dumps({
-                "packages_ok": True,
-                "model_reachable": True,
-                "model_id": args.model_id,
-                "model_revision": args.model_revision,
-            }, indent=2) + "\n", encoding='utf-8')
+            try:
+                Path(args.json_output).parent.mkdir(parents=True, exist_ok=True)
+                Path(args.json_output).write_text(json.dumps({
+                    "packages_ok": True,
+                    "model_reachable": True,
+                    "model_id": args.model_id,
+                    "model_revision": args.model_revision,
+                }, indent=2) + "\n", encoding='utf-8')
+            except OSError as exc:
+                print(f"   ⚠️  无法写入 JSON 检查结果：{exc}")
         return 0
     print("有检查未通过 ❌ 按上面的提示处理后重跑")
     return 1
