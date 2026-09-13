@@ -1,0 +1,11 @@
+sampler:
+  name: dpm-solver
+  order: 2
+  timestep_strategy: lambda
+  clip_denoised: true
+evaluation:
+  num_samples: 5000
+  batch_size: 64
+  outer_steps: [5, 10, 25, 50]
+  actual_nfe: [9, 19, 49, 99]
+  seed: 42

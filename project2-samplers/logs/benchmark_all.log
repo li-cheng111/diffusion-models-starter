@@ -1,0 +1,167 @@
+
+[benchmark] sampler=ddpm, steps=1000, NFE=1000
+    generated 640/5000
+    generated 1280/5000
+    generated 1920/5000
+    generated 2560/5000
+    generated 3200/5000
+    generated 3840/5000
+    generated 4480/5000
+    generated 5000/5000
+    FID=19.2901, sampling=1010.7s
+
+[benchmark] sampler=ddim, steps=10, NFE=10
+    generated 640/5000
+    generated 1280/5000
+    generated 1920/5000
+    generated 2560/5000
+    generated 3200/5000
+    generated 3840/5000
+    generated 4480/5000
+    generated 5000/5000
+    FID=34.5554, sampling=10.1s
+
+[benchmark] sampler=ddim, steps=20, NFE=20
+    generated 640/5000
+    generated 1280/5000
+    generated 1920/5000
+    generated 2560/5000
+    generated 3200/5000
+    generated 3840/5000
+    generated 4480/5000
+    generated 5000/5000
+    FID=28.1595, sampling=20.1s
+
+[benchmark] sampler=ddim, steps=50, NFE=50
+    generated 640/5000
+    generated 1280/5000
+    generated 1920/5000
+    generated 2560/5000
+    generated 3200/5000
+    generated 3840/5000
+    generated 4480/5000
+    generated 5000/5000
+    FID=24.5736, sampling=50.9s
+
+[benchmark] sampler=ddim, steps=100, NFE=100
+    generated 640/5000
+    generated 1280/5000
+    generated 1920/5000
+    generated 2560/5000
+    generated 3200/5000
+    generated 3840/5000
+    generated 4480/5000
+    generated 5000/5000
+    FID=22.8754, sampling=100.6s
+
+[benchmark] sampler=ddim, steps=250, NFE=250
+    generated 640/5000
+    generated 1280/5000
+    generated 1920/5000
+    generated 2560/5000
+    generated 3200/5000
+    generated 3840/5000
+    generated 4480/5000
+    generated 5000/5000
+    FID=21.2412, sampling=251.9s
+
+[benchmark] sampler=euler, steps=10, NFE=10
+    generated 640/5000
+    generated 1280/5000
+    generated 1920/5000
+    generated 2560/5000
+    generated 3200/5000
+    generated 3840/5000
+    generated 4480/5000
+    generated 5000/5000
+    FID=34.5554, sampling=10.1s
+
+[benchmark] sampler=euler, steps=20, NFE=20
+    generated 640/5000
+    generated 1280/5000
+    generated 1920/5000
+    generated 2560/5000
+    generated 3200/5000
+    generated 3840/5000
+    generated 4480/5000
+    generated 5000/5000
+    FID=28.1595, sampling=20.3s
+
+[benchmark] sampler=euler, steps=50, NFE=50
+    generated 640/5000
+    generated 1280/5000
+    generated 1920/5000
+    generated 2560/5000
+    generated 3200/5000
+    generated 3840/5000
+    generated 4480/5000
+    generated 5000/5000
+    FID=24.5736, sampling=50.4s
+
+[benchmark] sampler=euler, steps=100, NFE=100
+    generated 640/5000
+    generated 1280/5000
+    generated 1920/5000
+    generated 2560/5000
+    generated 3200/5000
+    generated 3840/5000
+    generated 4480/5000
+    generated 5000/5000
+    FID=22.8754, sampling=100.9s
+
+[benchmark] sampler=euler, steps=250, NFE=250
+    generated 640/5000
+    generated 1280/5000
+    generated 1920/5000
+    generated 2560/5000
+    generated 3200/5000
+    generated 3840/5000
+    generated 4480/5000
+    generated 5000/5000
+    FID=21.2412, sampling=251.4s
+
+[benchmark] sampler=dpm-solver, steps=5, NFE=9
+    generated 640/5000
+    generated 1280/5000
+    generated 1920/5000
+    generated 2560/5000
+    generated 3200/5000
+    generated 3840/5000
+    generated 4480/5000
+    generated 5000/5000
+    FID=29.2945, sampling=9.3s
+
+[benchmark] sampler=dpm-solver, steps=10, NFE=19
+    generated 640/5000
+    generated 1280/5000
+    generated 1920/5000
+    generated 2560/5000
+    generated 3200/5000
+    generated 3840/5000
+    generated 4480/5000
+    generated 5000/5000
+    FID=21.0744, sampling=19.3s
+
+[benchmark] sampler=dpm-solver, steps=25, NFE=49
+    generated 640/5000
+    generated 1280/5000
+    generated 1920/5000
+    generated 2560/5000
+    generated 3200/5000
+    generated 3840/5000
+    generated 4480/5000
+    generated 5000/5000
+    FID=21.3608, sampling=49.4s
+
+[benchmark] sampler=dpm-solver, steps=50, NFE=99
+    generated 640/5000
+    generated 1280/5000
+    generated 1920/5000
+    generated 2560/5000
+    generated 3200/5000
+    generated 3840/5000
+    generated 4480/5000
+    generated 5000/5000
+    FID=21.1919, sampling=100.5s
+
+Saved runs/benchmark_all.json and runs/pareto_fid_nfe.png

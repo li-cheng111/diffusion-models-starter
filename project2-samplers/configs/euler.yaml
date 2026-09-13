@@ -1,0 +1,8 @@
+sampler:
+  name: euler
+  ancestral: false
+evaluation:
+  num_samples: 5000
+  batch_size: 64
+  steps: [10, 20, 50, 100, 250]
+  seed: 42

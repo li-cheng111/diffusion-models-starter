@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ipynb_checkpoints/
+.venv/
+venv/
+
+# Data, downloaded metric weights, and model checkpoints
+data/
+local_checkpoints/
+*.pt
+*.pth
+*.ckpt
+
+# Local scratch output; curated files in runs/, samples/, and logs/ are tracked.
+tmp/
+scratch/
+
+# Smoke-test outputs are local diagnostics, not submitted artifacts.
+samples/smoke/*.png
+runs/smoke_*

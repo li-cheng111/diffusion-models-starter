@@ -1,0 +1,9 @@
+sampler:
+  name: ddim-inversion
+  timestep_strategy: linear
+  clip_denoised: false
+evaluation:
+  split: test
+  num_images: 64
+  batch_size: 16
+  steps: [10, 20, 50, 100, 250]

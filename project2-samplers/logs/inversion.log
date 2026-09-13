@@ -1,0 +1,6 @@
+steps=10: MAE=0.269548, PSNR=15.891 dB
+steps=20: MAE=0.183687, PSNR=19.175 dB
+steps=50: MAE=0.073142, PSNR=27.057 dB
+steps=100: MAE=0.034190, PSNR=33.644 dB
+steps=250: MAE=0.013321, PSNR=41.836 dB
+Saved runs/inversion_results.json and runs/inversion_errors.png
