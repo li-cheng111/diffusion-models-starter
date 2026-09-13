@@ -23,7 +23,7 @@
 2. `01_inference_walkthrough.ipynb`：nbconvert 执行无 error；50-step 手写循环、latent 统计和图片输出已嵌入 notebook。
 3. `02_parameter_sweep.py --preset smoke --height 256 --width 256`：输出 cfg/steps/sampler/grid 共 9 张 PNG 和 metadata；运行约 34.345 s。
 4. `05_vae_anatomy.ipynb`：无 error；latent `(1,4,64,64)`，MSE `1.6900175e-4`，PSNR `37.7211 dB`。
-5. `03_lora_finetune.py --num_train_steps 2 --checkpointing_steps 1 --num_workers 0`：loss `0.2498 → 0.2942`，无 NaN/Inf；adapter 约 6.4 MB。
+5. `03_lora_finetune.py --num_train_steps 2 --checkpointing_steps 1 --num_workers 0 --validation_prompts ...`：loss `0.2498 → 0.2942`，无 NaN/Inf；adapter 约 6.4 MB；`validation/step-0001_prompt-00.png` 和 `step-0002_prompt-00.png` 均生成。
 6. `evaluate_lora.py --steps 2`：全新 pipeline 载入 base/checkpoint-0001/checkpoint-0002 成功；修复 loader 后三张图 SHA256 不同。
 7. `06_cross_attention_visualization.py --steps 5 --tokens cat wizard hat forest`：生成图、4 张 token overlay；metadata 报告 16×16/32×32 map 和有效 token index `[3,7,8,12]`。
 

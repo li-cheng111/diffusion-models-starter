@@ -20,7 +20,7 @@ from torch.utils.data import DataLoader, Dataset
 from torchvision import transforms
 from tqdm import tqdm
 
-from diffusers import AutoencoderKL, DDPMScheduler, UNet2DConditionModel
+from diffusers import AutoencoderKL, DDIMScheduler, DDPMScheduler, StableDiffusionPipeline, UNet2DConditionModel
 from transformers import CLIPTextModel, CLIPTokenizer
 
 try:
@@ -180,6 +180,48 @@ def _write_jsonl(path: Path, row: dict) -> None:
         handle.write(json.dumps(row, ensure_ascii=False) + "\n")
 
 
+@torch.no_grad()
+def save_validation_images(
+    prompts: list[str], output_dir: Path, step: int, seed: int,
+    model_id: str, model_revision: str | None, tokenizer, text_encoder,
+    vae, unet, train_scheduler, device: torch.device, dtype: torch.dtype,
+) -> list[Path]:
+    """Generate fixed-seed validation images without reloading base weights."""
+    if not prompts:
+        return []
+    validation_dir = output_dir / "validation"
+    validation_dir.mkdir(parents=True, exist_ok=True)
+    pipe = StableDiffusionPipeline(
+        vae=vae,
+        text_encoder=text_encoder,
+        tokenizer=tokenizer,
+        unet=unet,
+        scheduler=DDIMScheduler.from_config(train_scheduler.config),
+        safety_checker=None,
+        feature_extractor=None,
+        requires_safety_checker=False,
+    ).to(device)
+    pipe.set_progress_bar_config(disable=True)
+    if hasattr(pipe.unet, "set_adapter"):
+        pipe.unet.set_adapter("default")
+    paths: list[Path] = []
+    for index, prompt in enumerate(prompts):
+        generator = torch.Generator(device=device).manual_seed(seed + index)
+        with _autocast(device, dtype if device.type == "cuda" and dtype != torch.float32 else None):
+            image = pipe(
+                prompt, negative_prompt="low quality, blurry",
+                num_inference_steps=20, guidance_scale=7.5,
+                generator=generator,
+            ).images[0]
+        path = validation_dir / f"step-{step:04d}_prompt-{index:02d}.png"
+        image.save(path)
+        paths.append(path)
+    del pipe
+    if device.type == "cuda":
+        torch.cuda.empty_cache()
+    return paths
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--train_data_dir", required=True)
@@ -251,7 +293,12 @@ def main() -> int:
         "num_train_steps": args.num_train_steps,
         "checkpointing_steps": args.checkpointing_steps,
         "lr": args.lr,
+        "batch_size": args.batch_size,
+        "num_workers": args.num_workers,
         "rank": args.rank,
+        "alpha": args.rank,
+        "max_grad_norm": args.max_grad_norm,
+        "random_flip": args.random_flip,
         "mixed_precision": args.mixed_precision,
         "gradient_checkpointing": args.gradient_checkpointing,
         "validation_prompts": args.validation_prompts,
@@ -279,6 +326,16 @@ def main() -> int:
                 checkpoint_dir = output_dir / f"checkpoint-{step:04d}"
                 save_lora_weights(unet, checkpoint_dir)
                 write_json(checkpoint_dir / "step.json", {"step": step, "loss": loss, "seed": args.seed})
+                validation_paths = save_validation_images(
+                    args.validation_prompts, output_dir, step, args.seed,
+                    args.model_id, args.model_revision, tokenizer, text_encoder,
+                    vae, unet, scheduler, device, weight_dtype,
+                )
+                if validation_paths:
+                    _write_jsonl(logs_path, {
+                        "event": "validation", "step": step,
+                        "files": [str(path) for path in validation_paths],
+                    })
             if step >= args.num_train_steps:
                 break
     progress.close()

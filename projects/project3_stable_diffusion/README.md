@@ -191,7 +191,9 @@ python 03_lora_finetune.py \
     --instance_prompt "a painting in sks style" \
     --output_dir outputs/lora --seed 42 --rank 8 \
     --num_train_steps 800 --checkpointing_steps 200 \
-    --gradient_checkpointing --mixed_precision fp16
+    --gradient_checkpointing --mixed_precision fp16 \
+    --validation_prompts "a landscape in the style of van gogh" \
+                       "a vase of sunflowers in the style of van gogh"
 
 python evaluate_lora.py --lora_dir outputs/lora \
     --output_dir outputs/lora/evaluation --seed 42
