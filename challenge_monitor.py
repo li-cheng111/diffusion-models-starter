@@ -91,6 +91,8 @@ class ChallengeMonitor:
         last_command = command_lines[-1] if command_lines else ""
         log_steps = [int(match) for match in LOG_STEP_RE.findall(log)]
         latest_log_step = max(log_steps, default=0)
+        log_losses = LOSS_RE.findall(log)
+        latest_log_loss = f"{float(log_losses[-1]):.5f}" if log_losses else None
         phase = None
         if "train.py" in last_command:
             phase = "running"
@@ -117,7 +119,7 @@ class ChallengeMonitor:
                 step_paths = list(ckpt_dir.glob("step_*.pt")) + list((run_dir / "samples").glob("step_*.png"))
                 step = self.total_steps if final.exists() else max((_step(path) for path in step_paths), default=0)
                 is_active = active_dir == run_dir.resolve()
-                if is_active:
+                if is_active or (step > 0 and latest_log_step > 0):
                     step = max(step, latest_log_step)
                 status = "completed" if final.exists() else (
                     "running" if (step > 0 or is_active) and runner_alive else (
@@ -127,6 +129,8 @@ class ChallengeMonitor:
                 if final.exists() and is_active and phase in {"sampling", "evaluating"} and runner_alive:
                     status = phase
                 loss = _latest_loss(run_dir / "loss_history.csv")
+                if step > 0 and latest_log_loss is not None:
+                    loss = latest_log_loss
                 runs.append({
                     "schedule": schedule,
                     "epochs": self.epochs,
