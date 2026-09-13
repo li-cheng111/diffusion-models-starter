@@ -67,6 +67,9 @@ git clone https://github.com/Qi-StarterTrain/diffusion-models-starter-materials.
 ├── 06_cross_attention_visualization.py ← 任务 E：token 热力图
 ├── evaluate_lora.py                ← LoRA checkpoint 重载与前后对比
 ├── prepare_vangogh_dataset.py      ← 公共领域数据下载与 SHA256 manifest
+├── report.md                        ← 中文总报告、流程图、自查题与验收说明
+├── reading_notes/                   ← LDM §3–4 与 SDXL 前半部分阅读笔记
+├── logs/                            ← 真实 smoke/AutoDL 实验日志（不写虚构结果）
 ├── tests/                          ← CPU 合约测试与训练步测试
 └── outputs/                        ← 生成结果保存（自己建）
 ```
@@ -244,8 +247,9 @@ python 06_cross_attention_visualization.py \
 
 ## 自查问题（在报告中回答）
 
-实现状态：A–E 的代码路径、测试、AutoDL 命令和交付物目录均已准备；执行 notebook
-后必须保留输出，模型权重、缓存和训练原图继续保持被忽略。
+实现状态：A–E 的代码路径、测试、AutoDL 命令和交付物目录均已准备；A/C notebook
+已在本机成功执行并保留输出，模型权重、缓存和训练原图继续保持被忽略。AutoDL
+full 产物应按 `report.md` 与 `logs/` 的 runbook 回填，不能用本机 smoke 数字冒充。
 
 前 5 道来自 `01_inference_walkthrough.ipynb` 末尾的思考题，
 第 6-9 道来自 `04_controlnet_demo.ipynb`（做了 ControlNet 再答）：
