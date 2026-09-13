@@ -41,6 +41,16 @@ def _load_pipeline(model_id: str, revision: str | None, device: torch.device, dt
 def _load_adapter(pipe, adapter_dir: Path) -> None:
     """Load either the native Diffusers or PEFT fallback format."""
     weight = adapter_dir / "pytorch_lora_weights.safetensors"
+    # ``UNet.save_lora_adapter`` writes an UNet-only state dict (without the
+    # pipeline's ``unet.`` prefix). Load it through the matching UNet API;
+    # calling pipeline.load_lora_weights here silently ignores those keys.
+    if weight.exists() and hasattr(pipe.unet, "load_lora_adapter"):
+        pipe.unet.load_lora_adapter(
+            adapter_dir, adapter_name="default", prefix=None, weight_name=weight.name,
+        )
+        if hasattr(pipe.unet, "set_adapter"):
+            pipe.unet.set_adapter("default")
+        return
     if weight.exists() and hasattr(pipe, "load_lora_weights"):
         pipe.load_lora_weights(adapter_dir, weight_name=weight.name)
         return

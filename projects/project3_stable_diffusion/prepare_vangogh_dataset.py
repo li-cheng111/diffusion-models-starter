@@ -14,6 +14,7 @@ import json
 import time
 from pathlib import Path
 from urllib.parse import urlencode
+from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 
 try:
@@ -31,8 +32,21 @@ CATEGORY = "Category:Paintings_by_Vincent_van_Gogh_by_title"
 def _api(params: dict[str, str]) -> dict:
     url = API_URL + "?" + urlencode(params)
     request = Request(url, headers={"User-Agent": "diffusion-project3-coursework/1.0"})
-    with urlopen(request, timeout=30) as response:
-        return json.loads(response.read().decode("utf-8"))
+    for attempt in range(4):
+        try:
+            with urlopen(request, timeout=30) as response:
+                return json.loads(response.read().decode("utf-8"))
+        except HTTPError as exc:
+            if exc.code not in {429, 500, 502, 503, 504} or attempt == 3:
+                raise
+            # Commons may rate-limit a burst of category requests. Honour
+            # Retry-After when present, with a bounded exponential fallback.
+            retry_after = exc.headers.get("Retry-After")
+            try:
+                delay = min(float(retry_after), 30.0) if retry_after else 2.0 ** attempt
+            except (TypeError, ValueError):
+                delay = 2.0 ** attempt
+            time.sleep(delay)
 
 
 def _members(category: str, member_type: str) -> list[dict]:
@@ -59,7 +73,7 @@ def discover(limit: int) -> list[dict]:
     # those categories breadth-first, while retaining a hard cap for safety.
     queue: list[tuple[str, int]] = [(CATEGORY, 0)]
     seen_categories: set[str] = set()
-    while queue and len(results) < limit and len(seen_categories) < 200:
+    while queue and len(results) < limit and len(seen_categories) < 50:
         category, depth = queue.pop(0)
         if not category or category in seen_categories:
             continue
