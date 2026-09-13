@@ -14,6 +14,7 @@ from urllib.parse import urlparse
 
 
 STEP_RE = re.compile(r"step_(\d+)")
+LOG_STEP_RE = re.compile(r"\[epoch\s+\d+\s+step\s+(\d+)\]")
 LOSS_RE = re.compile(r"loss=([0-9.eE+-]+)")
 
 PAGE = r'''<!doctype html>
@@ -88,6 +89,8 @@ class ChallengeMonitor:
             log = ""
         command_lines = [line for line in log.splitlines() if line.startswith("$ ")]
         last_command = command_lines[-1] if command_lines else ""
+        log_steps = [int(match) for match in LOG_STEP_RE.findall(log)]
+        latest_log_step = max(log_steps, default=0)
         phase = None
         if "train.py" in last_command:
             phase = "running"
@@ -114,6 +117,8 @@ class ChallengeMonitor:
                 step_paths = list(ckpt_dir.glob("step_*.pt")) + list((run_dir / "samples").glob("step_*.png"))
                 step = self.total_steps if final.exists() else max((_step(path) for path in step_paths), default=0)
                 is_active = active_dir == run_dir.resolve()
+                if is_active:
+                    step = max(step, latest_log_step)
                 status = "completed" if final.exists() else (
                     "running" if (step > 0 or is_active) and runner_alive else (
                         "stopped" if step > 0 or is_active else "pending"
