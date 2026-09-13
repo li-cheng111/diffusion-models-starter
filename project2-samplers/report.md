@@ -20,32 +20,32 @@
 
 训练好的模型预测前向过程中的噪声：
 
-\[
+$$
 x_t=\sqrt{\bar\alpha_t}x_0+\sqrt{1-\bar\alpha_t}\epsilon.
-\]
+$$
 
 由上式求解干净图像得到：
 
-\[
+$$
 \hat x_0(x_t)=
 \frac{x_t-\sqrt{1-\bar\alpha_t}\epsilon_\theta(x_t,t)}
 {\sqrt{\bar\alpha_t}}.
-\]
+$$
 
 对于跳步时间序列中任意相邻的 `t > t_prev`：
 
-\[
+$$
 \sigma^2=
 \eta^2\frac{1-\bar\alpha_{t_{prev}}}{1-\bar\alpha_t}
 \left(1-\frac{\bar\alpha_t}{\bar\alpha_{t_{prev}}}\right),
-\]
+$$
 
-\[
+$$
 x_{t_{prev}}=
 \sqrt{\bar\alpha_{t_{prev}}}\hat x_0+
 \sqrt{1-\bar\alpha_{t_{prev}}-\sigma^2}\epsilon_\theta+
 \sigma z.
-\]
+$$
 
 实现会将平方根参数截断到不小于零，保护 `alpha_bar` 很小时的除法，并将生成
 的干净图像预测裁剪到 `[-1,1]`。当 `eta=0` 时，不会额外采样随机噪声。
@@ -92,7 +92,7 @@ x_{t_{prev}}=
 
 ## 5. DPM-Solver-2
 
-令 \(\lambda=\log(\alpha/\sigma)\)，扩散 ODE 的线性部分可以解析积分。实现
+令 $\lambda=\log(\alpha/\sigma)$，扩散 ODE 的线性部分可以解析积分。实现
 分别在源点和离散 lambda 中点的最近时间步评估网络，然后应用指数中点更新。
 当运行 `S` 个外层步时，网络实际评估次数为 `2S-1`，因为最后的干净图像投影
 只需要一次评估。
@@ -128,15 +128,15 @@ x_{t_{prev}}=
 
 ### 7.1 为什么 DDIM 是确定性的？
 
-当 `eta=0` 时，\(\sigma=0\)，更新式中不再包含新采样的 `z`。因此，相同的
-模型、调度策略、时间步序列、权重和初始 \(x_T\) 会定义相同的数学输出。在 GPU
+当 `eta=0` 时，$\sigma=0$，更新式中不再包含新采样的 `z`。因此，相同的
+模型、调度策略、时间步序列、权重和初始 $x_T$ 会定义相同的数学输出。在 GPU
 上要实现逐比特完全一致，还需要确定性 kernel 以及固定的软件和硬件环境。
 
 ### 7.2 cosine 训练模型应如何选择 100 个 DDIM 时间步？
 
 均匀的整数索引并不代表噪声水平的等量变化，而且 cosine 调度策略对
-\(\bar\alpha_t\) 的分布不同于 linear 调度策略。更合理的做法是按 log-SNR
-均匀布置推理点（或通过 \(\bar\alpha_t\) 匹配目标噪声水平），再将它们映射回
+$\bar\alpha_t$ 的分布不同于 linear 调度策略。更合理的做法是按 log-SNR
+均匀布置推理点（或通过 $\bar\alpha_t$ 匹配目标噪声水平），再将它们映射回
 不重复的离散训练索引。复用相同整数索引在形式上可行，但无法在去噪路径上提供
 相同的数值分辨率。
 
@@ -151,23 +151,23 @@ x_{t_{prev}}=
 
 对于连续时间步，并令
 
-\[
+$$
 \sigma_t^2=\tilde\beta_t=
 \frac{1-\bar\alpha_{t-1}}{1-\bar\alpha_t}\beta_t,
-\]
+$$
 
 将
-\(\hat x_0=(x_t-\sqrt{1-\bar\alpha_t}\epsilon_\theta)/
-\sqrt{\bar\alpha_t}\) 代入 DDIM 均值，并收集 \(x_t\) 与 \(\epsilon_\theta\)
+将 $\hat x_0=(x_t-\sqrt{1-\bar\alpha_t}\epsilon_\theta)/
+\sqrt{\bar\alpha_t}$ 代入 DDIM 均值，并收集 $x_t$ 与 $\epsilon_\theta$
 的系数，可得
 
-\[
+$$
 \mu_\theta=
 \frac{1}{\sqrt{\alpha_t}}
 \left(x_t-\frac{\beta_t}{\sqrt{1-\bar\alpha_t}}
 \epsilon_\theta\right).
-\]
+$$
 
-剩余的随机项为 \(\sqrt{\tilde\beta_t}z\)，正好是 DDPM ancestral 更新。该
+剩余的随机项为 $\sqrt{\tilde\beta_t}z$，正好是 DDPM ancestral 更新。该
 等价关系要求时间步连续且不额外进行干净图像裁剪；跳步时的 `eta=1` 更新只是
 类似 DDPM，并不是原始 DDPM 的 Markov 链。

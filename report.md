@@ -8,17 +8,17 @@
 
 DDPM 使用固定的前向过程逐步向图像加入高斯噪声：
 
-\[
+$$
 x_t=\sqrt{\bar\alpha_t}x_0+
 \sqrt{1-\bar\alpha_t}\epsilon.
-\]
+$$
 
 训练时随机采样时间步 `t`，使用闭合形式直接得到 `x_t`，再让 U-Net 预测加入的噪声。优化目标是：
 
-\[
+$$
 \mathcal L_{\text{simple}}
 =\|\epsilon-\epsilon_\theta(x_t,t)\|^2.
-\]
+$$
 
 反向采样从标准高斯噪声开始，按 `T-1` 到 `0` 的顺序执行采样步骤。最后一步不再添加随机噪声。
 

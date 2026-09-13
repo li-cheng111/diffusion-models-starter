@@ -20,22 +20,22 @@
 
 前向过程使用固定的高斯转移：
 
-\[
+$$
 q(x_t\mid x_{t-1})=\mathcal N(\sqrt{1-\beta_t}x_{t-1},\beta_t I).
-\]
+$$
 
-令 \(\alpha_t=1-\beta_t\)，\(\bar\alpha_t=\prod_{s=1}^{t}\alpha_s\)，则可以用闭合形式直接采样：
+令 $\alpha_t=1-\beta_t$，$\bar\alpha_t=\prod_{s=1}^{t}\alpha_s$，则可以用闭合形式直接采样：
 
-\[
+$$
 x_t=\sqrt{\bar\alpha_t}x_0+\sqrt{1-\bar\alpha_t}\epsilon,\quad\epsilon\sim\mathcal N(0,I).
-\]
+$$
 
-模型 \(\epsilon_\theta(x_t,t)\) 预测噪声，训练目标为：
+模型 $\epsilon_\theta(x_t,t)$ 预测噪声，训练目标为：
 
-\[
+$$
 \mathcal L_{simple}=\mathbb E_{x_0,t,\epsilon}
 \left[\lVert\epsilon-\epsilon_\theta(x_t,t)\rVert^2\right].
-\]
+$$
 
 调度策略不改变模型结构，而是改变每个时间步的噪声强度以及训练样本在不同信噪比区域的分布。
 
@@ -49,15 +49,15 @@ x_t=\sqrt{\bar\alpha_t}x_0+\sqrt{1-\bar\alpha_t}\epsilon,\quad\epsilon\sim\mathc
 
 `cosine_beta_schedule` 先构造：
 
-\[
+$$
 \bar\alpha(t)=\cos^2\left(\frac{t/T+s}{1+s}\frac{\pi}{2}\right),
-\]
+$$
 
 再通过相邻累积量之比得到：
 
-\[
+$$
 \beta_t=1-\frac{\bar\alpha_t}{\bar\alpha_{t-1}}.
-\]
+$$
 
 实现对 beta 做有限性和 `(0,1)` 范围检查，并使用数值截断避免极端时间步造成不稳定。两种调度策略都进入同一个 `DDPMSchedule`，因此训练和采样逻辑无需分叉。
 
@@ -130,10 +130,10 @@ python challenge.py run \
 
 `challenge.py summarize` 使用三个随机种子的算术平均值和样本标准差：
 
-\[
+$$
 \bar x=\frac{1}{n}\sum_i x_i,\qquad
 s=\sqrt{\frac{1}{n-1}\sum_i(x_i-\bar x)^2}.
-\]
+$$
 
 最终应报告 linear EMA、cosine EMA、linear raw、cosine raw 四组统计，并明确 FID 的真实数据划分、生成样本数和评估随机种子。
 
