@@ -1,0 +1,51 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "diffusion-models-starter"
+version = "0.1.0"
+description = "Five educational diffusion-model projects in one monorepo"
+requires-python = ">=3.10"
+dependencies = ["numpy>=1.24"]
+
+[project.optional-dependencies]
+project1-2 = [
+  "torch>=2.0",
+  "torchvision>=0.15",
+  "pytest>=7.0",
+  "PyYAML>=6.0",
+  "matplotlib>=3.7",
+  "tqdm>=4.65",
+  "torchmetrics[image]>=1.0",
+  "torch-fidelity>=0.3",
+]
+project3 = [
+  "torch>=2.0",
+  "torchvision>=0.15",
+  "diffusers>=0.25",
+  "transformers>=4.35",
+  "accelerate>=0.25",
+  "peft>=0.7",
+  "matplotlib>=3.7",
+  "opencv-python>=4.8",
+  "jupyter>=1.0",
+]
+project4 = [
+  "torch>=2.0",
+  "torchvision>=0.15",
+  "PyYAML>=6.0",
+  "matplotlib>=3.7",
+  "tqdm>=4.65",
+  "torchmetrics[image]>=1.0",
+]
+project5 = [
+  "torch>=2.0",
+  "torchvision>=0.15",
+  "PyYAML>=6.0",
+  "tqdm>=4.65",
+  "matplotlib>=3.7",
+]
+
+[tool.setuptools.packages.find]
+include = ["projects*", "shared*"]

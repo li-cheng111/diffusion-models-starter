@@ -1,0 +1,33 @@
+# 阶段 2：state-only baseline（只需要 TODO 19，不碰 TODO 20）
+#
+# 条件 = concat(agent_pos, target_pos)，4 维。看不到干扰物是**故意的**——
+# 它和阶段 3 视觉版的成功率差值，就是 ablation 表里"视觉带来了什么"那一行。
+#
+#   python train.py --config configs/reach2d_state.yaml
+#   python eval.py  --config configs/reach2d_state.yaml --ckpt ckpts_state/model_final.pt
+
+# Data
+n_demos: 1000
+n_distractors: 2
+chunk_size: 32
+demo_path: ./data/demos.pkl      # 与视觉版共用同一份 demo，不用重采
+seed: 0
+
+# Model
+use_vision: false                # ← 关键：跳过 TODO 20
+vision_out_dim: 128              # use_vision=false 时不生效
+hidden: 256
+
+# Diffusion
+diffusion_steps: 100
+
+# Training
+batch_size: 256
+lr: 1.0e-3
+weight_decay: 0.0
+ema_decay: 0.999
+max_steps: 10000
+log_every: 200
+save_every: 2000
+ckpt_dir: ./ckpts_state
+num_workers: 2

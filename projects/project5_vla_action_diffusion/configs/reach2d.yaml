@@ -1,0 +1,35 @@
+# Project 5 VLA action diffusion config
+# Toy 2D reaching with distractors
+
+# Data
+n_demos: 1000
+n_distractors: 2
+chunk_size: 32
+demo_path: ./data/demos.pkl
+seed: 0
+
+# Model
+use_vision: true
+vision_out_dim: 128
+hidden: 256
+
+# Diffusion
+diffusion_steps: 100
+
+# Training
+batch_size: 256
+lr: 1.0e-3
+weight_decay: 0.0
+ema_decay: 0.999
+max_steps: 10000
+log_every: 200
+save_every: 2000
+ckpt_dir: ./ckpts
+num_workers: 2
+
+# Notes:
+# - 教学规模：10K steps ~ 30 min on RTX 3060
+# - 本配置是**阶段 3**（视觉版），需要先完成 TODO 20，否则构建模型时就会报
+#   NotImplementedError。阶段 2 的 state-only baseline 请用 configs/reach2d_state.yaml
+# - 三个配置：reach2d_debug（冒烟）→ reach2d_state（阶段 2）→ reach2d（阶段 3）
+# - demo 数据约 600 MB（每个样本存一张 64×64 图）。磁盘紧张就把 n_demos 调小到 300

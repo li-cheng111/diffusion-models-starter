@@ -1,13 +1,31 @@
+# Python and notebook caches
 __pycache__/
 *.py[cod]
 .pytest_cache/
 .mypy_cache/
 .ipynb_checkpoints/
+
+# Shared local storage (never commit data, caches or raw runs)
+.local/
 data/
 wandb/
+**/data/
+**/runs/
+**/temporary_runs/
 
-# Local datasets and model weights. Existing tracked/LFS checkpoints remain tracked.
+# Local datasets and model weights. Checkpoints stay local and are never committed.
 local_checkpoints/
 *.pt
 *.pth
 *.ckpt
+*.safetensors
+
+# Explicitly allow small, reviewed course deliverables when requested.
+!projects/project3_stable_diffusion/outputs/lora/
+!projects/project3_stable_diffusion/outputs/lora/**
+!projects/project5_vla_action_diffusion/ckpts/
+!projects/project5_vla_action_diffusion/ckpts/**
+
+# Project-local scratch output
+**/tmp/
+**/scratch/

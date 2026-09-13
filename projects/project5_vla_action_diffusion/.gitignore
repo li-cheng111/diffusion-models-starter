@@ -1,0 +1,16 @@
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.venv/
+venv/
+
+# demo 数据（每个样本存一张 64×64 图，约 600 MB）
+data/
+
+# checkpoint 目录（本模型很小，要提交的话把 ckpts/model_final.pt 用 -f 加进来）
+ckpts_debug/
+ckpts_state/

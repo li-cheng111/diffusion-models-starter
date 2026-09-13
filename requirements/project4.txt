@@ -1,0 +1,4 @@
+-r base.txt
+torch>=2.0
+torchvision>=0.15
+torchmetrics[image]>=1.0

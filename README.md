@@ -1,116 +1,78 @@
-# 项目 1：从零实现 DDPM
+# Diffusion Models 五项目总仓库
 
-本仓库提交项目 1 基础档和进阶档的源码、配置、静态测试与实验文档模板。实现目标是用 PyTorch 手写一个不依赖 `diffusers` 或 `lucidrains` 的无条件 DDPM。
+本仓库把课程的五个 Project 整理为一个 monorepo。每个项目在
+`projects/` 下保持独立的代码、配置、测试、实验日志、结果和报告；只有稳定且
+与具体模型无关的工具放在 `shared/`。
 
-## 当前提交状态
+## 项目状态
 
-基础档源码已经提交；MNIST 实验已在 AutoDL RTX 5090 上完成训练、采样和 EMA FID 评估。进阶档 CIFAR-10 200 轮训练和 EMA/raw 对比也已完成，真实结果已整理到 `runs/exp_cifar10_advanced/`。本次 EMA FID 为 19.2879，尚未达到作业目标 15。
+| 项目 | 本地目录 | 当前状态 | 主要依赖 |
+|---|---|---|---|
+| 项目 1：DDPM | `projects/project1_ddpm/` | 已完成基础档、进阶档和挑战实验，目录迁移已完成，待安装 pytest 做完整回归 | 无 |
+| 项目 2：采样器对比 | `projects/project2_samplers/` | 已完成 DDIM、Euler、DPM-Solver-2、反演和 FID 实验 | 项目 1 |
+| 项目 3：Stable Diffusion 解剖 | `projects/project3_stable_diffusion/` | 已导入 starter，待实现 | `diffusers`、`transformers`、`peft` |
+| 项目 4：Flow Matching | `projects/project4_flow_matching/` | 已导入 starter，待实现 | PyTorch、CIFAR-10、FID |
+| 项目 5：VLA Action Diffusion | `projects/project5_vla_action_diffusion/` | 已导入 starter，待实现 | PyTorch、玩具 2D 环境 |
 
-## 基础档完成清单
+课程要求和上游固定版本见 [`PROJECTS.md`](PROJECTS.md) 与 [`UPSTREAMS.md`](UPSTREAMS.md)。
 
-- [x] linear beta 调度策略和 DDPM 系数预计算
-- [x] 闭合形式前向加噪 `q_sample`
-- [x] 简化的噪声预测损失 `p_losses`
-- [x] 单步反向采样 `p_sample`
-- [x] 完整反向采样循环 `p_sample_loop`
-- [x] sinusoidal timestep embedding
-- [x] ResBlock 的时间 embedding 广播注入
-- [x] MNIST 50 轮配置和训练入口
-- [x] 64 张样本生成与最终产物的后续命令
-- [x] 实际运行 MNIST 训练并补充最终 loss 曲线、样本网格和 checkpoint
+## 目录约定
 
-## 进阶档实现状态
+- `projects/projectN_*/`：项目自己的源码和交付物。
+- `shared/`：路径、随机种子、checkpoint 校验、实验元数据、评估和绘图工具。
+- `results/`：可复核的 JSON/CSV/图表，提交到 Git。
+- `samples/`：精选样本网格，提交到 Git。
+- `logs/`：实验日志，提交到 Git。
+- `runs/`：原始运行目录，原则上不提交。
+- `.local/`：数据集、模型权重、Hugging Face 缓存和临时文件，整个目录不提交。
 
-- [x] CIFAR-10 200 轮配置（`configs/cifar10.yaml`）
-- [x] 训练过程维护 raw 与 EMA 两套权重
-- [x] FID 默认使用 5,000 张无增强训练图作为 real split
-- [x] `evaluate.py --compare_ema` 一键生成 EMA/raw 对比记录
-- [x] CIFAR-10 实际训练、EMA/raw 样本和 FID 对比报告
-- [ ] FID ≤ 15（本次 EMA FID 为 19.2879，仍需调参或重训）
+## 环境安装
 
-## 挑战档实现状态
-
-- [x] `cosine_beta_schedule` 已实现并接入 `DDPMSchedule`
-- [x] linear/cosine 两套 CIFAR-10 200 轮配置已建立
-- [x] `challenge.py` 已提供 2 个调度策略 × 3 个随机种子的可复现实验编排
-- [x] `challenge.py` 支持 `--epoch_budgets 50 200`，可回答 50/200 轮自查问题
-- [x] `challenge.py summarize` 已提供均值 ± 标准差汇总
-- [x] `challenge_report.md` 已建立八页技术报告结构和失败案例记录规范
-- [ ] 尚未运行挑战档实验，因此暂无真实均值 ± 标准差、调度策略胜负结论或挑战档失败案例
-
-挑战档只在明确执行下面命令后才会创建实验目录和运行产物：
+先安装跨项目基础依赖，再按项目安装额外依赖：
 
 ```bash
-python challenge.py run \
-  --schedules linear cosine \
-  --seeds 42 43 44 \
+pip install -r requirements/base.txt
+pip install -r requirements/project1-2.txt  # 项目 1/2
+```
+
+项目 3、4、5 分别使用 `requirements/project3.txt`、
+`requirements/project4.txt`、`requirements/project5.txt`。由于 CUDA 和
+Hugging Face 依赖经常随机器变化，正式实验应在 AutoDL 上记录完整版本信息。
+
+## 从仓库根目录运行
+
+```bash
+python -m pytest projects/project1_ddpm/tests -v
+python -m unittest discover -s projects/project2_samplers/tests -v
+python -m projects.project1_ddpm.challenge summarize \
   --output_root runs/challenge
+python -m projects.project2_samplers.check_compat
+python scripts/check_repo.py
 ```
 
-如需先检查将要执行的命令而不运行任何程序，可使用 `--dry_run`。实验完成后使用
-`python challenge.py summarize --output_root runs/challenge` 生成统计结果。
+项目 3–5 完成 starter 自检后，再分别按其 README 执行训练和评估。长时间训练
+不放入 GitHub Actions；CI 只运行 CPU 冒烟测试、导入检查和仓库结构检查。
 
-默认挑战矩阵为 200 轮、2 个调度策略 × 3 个随机种子，共 6 组。若还要回答报告中的
-50 轮自查问题，可显式运行 `--epoch_budgets 50 200`，共 12 组。
+## 数据与权重
 
-## 目录
+默认路径由 `shared.paths` 解析：
 
 ```text
-schedule.py       # beta 调度策略与 DDPM 系数
-diffusion.py      # q_sample、训练损失和反向采样
-dataset.py        # MNIST / CIFAR-10 加载与 [-1, 1] 归一化
-train.py          # 配置驱动训练、EMA、AMP、checkpoint
-sample.py         # checkpoint 采样
-evaluate.py       # FID 评估
-model/            # sinusoidal embedding、ResBlock、U-Net
-configs/          # MNIST 和 CIFAR-10 配置
-tests/            # 尚未执行的单元测试源码
-challenge.py      # 挑战档多调度策略、多随机种子实验编排与汇总
-challenge_report.md # 挑战档八页技术报告结构稿
-challenge_monitor.py # 挑战矩阵只读实时监控页面
-monitor.py        # 本地只读实时训练进度监控
-report.md         # 理论和实现说明，实验结果待补充
-debug_log.md      # 实际运行后填写的调试记录模板
-logs/             # 实验日志模板
+.local/
+├── datasets/
+├── checkpoints/
+├── hf_cache/
+└── temporary_runs/
 ```
 
-## 核心公式
+报告中必须记录数据划分、随机种子、软件环境和 checkpoint SHA256，但不提交大型
+数据集或模型权重。Project 3 的 LoRA 权重和 Project 5 的小型最终模型只有在符合
+课程提交要求且经过大小检查后才允许单独加入 Git/LFS。
 
-前向过程使用闭合形式：
+## 五项目推进顺序
 
-```text
-x_t = sqrt(alpha_bar_t) * x_0
-    + sqrt(1 - alpha_bar_t) * epsilon
-```
-
-模型预测加入的噪声，训练目标为噪声 MSE。采样时从标准高斯噪声开始，依次执行 `T-1` 到 `0` 的反向步骤；最后一步不加入随机扰动。
-
-## 后续运行方式
-
-安装依赖后，可运行：
-
-```bash
-python train.py --config configs/mnist.yaml
-python sample.py --ckpt runs/exp_mnist_baseline/ckpt/final.pt --num_samples 64 --save_grid
-```
-
-训练进行中时，可以启动本地只读监控页面。页面每 2 秒读取一次样本、checkpoint 和 loss 文件：
-
-```bash
-python monitor.py --run-dir runs/exp_mnist_baseline \
-    --total-steps 23400 --train-pid <训练进程 PID> --port 8765
-```
-
-然后打开 <http://127.0.0.1:8765/>。步数会随着最新持久化产物更新；`loss_history.csv` 出现后会自动绘制 loss 曲线。
-
-CIFAR-10 的长训练使用：
-
-```bash
-python train.py --config configs/cifar10.yaml
-python sample.py --ckpt runs/exp_cifar10_advanced/ckpt/final.pt \
-    --num_samples 64 --save_grid
-python evaluate.py --ckpt runs/exp_cifar10_advanced/ckpt/final.pt \
-    --num_samples 5000 --batch_size 64 --real_split train --compare_ema
-```
-
-运行结果应在真实实验完成后再提交，并同步更新 `report.md`、`debug_log.md`、`challenge_report.md` 和 `logs/`。
+1. 完成项目 1/2 目录迁移和回归测试。
+2. 完成项目 3 的 SD 推理、参数扫描、VAE 和 LoRA。
+3. 完成项目 4 的 FM loss、Euler/Heun、CFG 和 NFE-FID 对比。
+4. 完成项目 5 的 action diffusion、视觉条件和闭环评估。
+5. 统一五个项目的报告、结果格式、实验日志和 GitHub 提交检查。

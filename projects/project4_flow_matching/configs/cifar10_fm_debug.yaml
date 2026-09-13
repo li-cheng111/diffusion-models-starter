@@ -1,0 +1,31 @@
+# 冒烟测试配置：小模型 + 几百步，10 分钟内跑完整条流水线
+#
+# 用途：确认 TODO 16/17/18 写对了、checkpoint 存得下、采样出得来。
+# 出图会很糊——这是正常的，这个配置不是用来出结果的。
+#
+#   python train.py --config configs/cifar10_fm_debug.yaml --output checkpoints/debug
+#   python sample.py --model checkpoints/debug/latest.pt --nfe 8 --cfg 0 3
+
+data:
+  root: ./data
+  num_workers: 2
+
+model:
+  type: unet            # UNet 比 DiT 小步数下更快看到形状
+  num_classes: 10
+  base_channels: 32
+  embed_dim: 192
+  depth: 4
+  num_heads: 3
+  patch_size: 2
+
+train:
+  batch_size: 32
+  lr: 2.0e-4
+  weight_decay: 0.0
+  ema_decay: 0.99       # 步数少，EMA 衰减要调小否则 EMA 权重还是初始值
+  grad_clip: 1.0
+  max_steps: 500
+  cond_drop_prob: 0.1
+  log_every: 50
+  save_every: 250

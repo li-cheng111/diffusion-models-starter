@@ -1,0 +1,127 @@
+"""Core DDPM forward-process, loss, and reverse-sampling functions."""
+
+from __future__ import annotations
+
+from typing import Optional, Sequence
+
+import torch
+import torch.nn.functional as F
+
+try:  # 支持包模式和从项目目录直接运行 starter 脚本。
+    from .schedule import DDPMSchedule
+except ImportError:  # pragma: no cover - direct script compatibility
+    from schedule import DDPMSchedule
+
+
+def _extract(values: torch.Tensor, t: torch.Tensor, x_shape: Sequence[int]) -> torch.Tensor:
+    """Gather one scalar per batch item and broadcast it over image dimensions."""
+
+    if t.ndim != 1:
+        raise ValueError(f"t must have shape (B,), got {tuple(t.shape)}")
+    if len(x_shape) < 2 or t.shape[0] != x_shape[0]:
+        raise ValueError("t batch size must match the first dimension of x")
+    gathered = values.gather(0, t)
+    return gathered.reshape(t.shape[0], *([1] * (len(x_shape) - 1)))
+
+
+def q_sample(
+    x0: torch.Tensor,
+    t: torch.Tensor,
+    sqrt_alpha_bar: torch.Tensor,
+    sqrt_one_minus_alpha_bar: torch.Tensor,
+    noise: Optional[torch.Tensor] = None,
+) -> torch.Tensor:
+    """Sample x_t directly from x_0 using the closed form of q(x_t | x_0)."""
+
+    if noise is None:
+        noise = torch.randn_like(x0)
+    if noise.shape != x0.shape:
+        raise ValueError("noise and x0 must have identical shapes")
+    t = t.to(device=x0.device, dtype=torch.long)
+    sqrt_alpha_bar = sqrt_alpha_bar.to(device=x0.device)
+    sqrt_one_minus_alpha_bar = sqrt_one_minus_alpha_bar.to(device=x0.device)
+    scale_signal = _extract(sqrt_alpha_bar, t, x0.shape)
+    scale_noise = _extract(sqrt_one_minus_alpha_bar, t, x0.shape)
+    return scale_signal * x0 + scale_noise * noise
+
+
+def p_losses(
+    model: torch.nn.Module,
+    x0: torch.Tensor,
+    t: torch.Tensor,
+    schedule: DDPMSchedule,
+) -> torch.Tensor:
+    """Compute the simplified DDPM noise-prediction MSE."""
+
+    noise = torch.randn_like(x0)
+    xt = q_sample(
+        x0,
+        t,
+        schedule.sqrt_alphas_cumprod,
+        schedule.sqrt_one_minus_alphas_cumprod,
+        noise=noise,
+    )
+    predicted_noise = model(xt, t)
+    if predicted_noise.shape != noise.shape:
+        raise ValueError(
+            "model output must have the same shape as the injected noise: "
+            f"{tuple(predicted_noise.shape)} != {tuple(noise.shape)}"
+        )
+    return F.mse_loss(predicted_noise, noise)
+
+
+@torch.no_grad()
+def p_sample(
+    model: torch.nn.Module,
+    xt: torch.Tensor,
+    t: torch.Tensor,
+    schedule: DDPMSchedule,
+) -> torch.Tensor:
+    """Perform one stochastic reverse step x_t -> x_{t-1}."""
+
+    if isinstance(t, int):
+        t = torch.full((xt.shape[0],), t, device=xt.device, dtype=torch.long)
+    else:
+        t = t.to(device=xt.device, dtype=torch.long)
+        if t.ndim == 0:
+            t = t.expand(xt.shape[0])
+        elif t.ndim == 1 and t.numel() == 1 and xt.shape[0] != 1:
+            t = t.expand(xt.shape[0])
+    if t.ndim != 1 or t.shape[0] != xt.shape[0]:
+        raise ValueError("t must contain one timestep per sample")
+
+    predicted_noise = model(xt, t)
+    beta_t = _extract(schedule.betas, t, xt.shape)
+    sqrt_recip_alpha_t = _extract(schedule.sqrt_recip_alphas, t, xt.shape)
+    sqrt_one_minus_alpha_bar_t = _extract(
+        schedule.sqrt_one_minus_alphas_cumprod, t, xt.shape
+    )
+
+    mean = sqrt_recip_alpha_t * (
+        xt - beta_t * predicted_noise / sqrt_one_minus_alpha_bar_t.clamp(min=1e-20)
+    )
+
+    variance_t = _extract(schedule.posterior_variance, t, xt.shape)
+    noise = torch.randn_like(xt)
+    nonzero_mask = (t != 0).to(dtype=xt.dtype).reshape(xt.shape[0], *([1] * (xt.ndim - 1)))
+    return mean + nonzero_mask * torch.sqrt(variance_t.clamp(min=0.0)) * noise
+
+
+@torch.no_grad()
+def p_sample_loop(
+    model: torch.nn.Module,
+    shape: Sequence[int],
+    schedule: DDPMSchedule,
+    device: Optional[torch.device] = None,
+) -> torch.Tensor:
+    """Generate a batch by applying all T reverse steps."""
+
+    if len(shape) != 4:
+        raise ValueError(f"Expected image shape (B,C,H,W), got {tuple(shape)}")
+    if device is None:
+        device = next(model.parameters()).device
+    x = torch.randn(tuple(shape), device=device)
+    for step in reversed(range(schedule.T)):
+        t = torch.full((shape[0],), step, device=device, dtype=torch.long)
+        x = p_sample(model, x, t, schedule)
+    return x
