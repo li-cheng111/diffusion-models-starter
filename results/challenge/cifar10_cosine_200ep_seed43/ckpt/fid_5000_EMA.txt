@@ -1,0 +1,6 @@
+FID: 129.2708
+num_samples: 5000
+real_split: train
+weights: EMA
+checkpoint: /root/autodl-tmp/diffusion-models-starter-challenge/runs/challenge/cifar10_cosine_200ep_seed43/ckpt/final.pt
+seed: 43

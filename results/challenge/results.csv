@@ -1,0 +1,7 @@
+schedule,epochs,seed,fid_ema,fid_raw,checkpoint
+linear,200,42,19.2879,28.7464,/root/autodl-tmp/diffusion-models-starter-challenge/runs/challenge/cifar10_linear_200ep_seed42/ckpt/final.pt
+linear,200,43,19.6306,42.7537,/root/autodl-tmp/diffusion-models-starter-challenge/runs/challenge/cifar10_linear_200ep_seed43/ckpt/final.pt
+linear,200,44,18.9593,34.9399,/root/autodl-tmp/diffusion-models-starter-challenge/runs/challenge/cifar10_linear_200ep_seed44/ckpt/final.pt
+cosine,200,42,137.9856,283.4196,/root/autodl-tmp/diffusion-models-starter-challenge/runs/challenge/cifar10_cosine_200ep_seed42/ckpt/final.pt
+cosine,200,43,129.2708,399.1676,/root/autodl-tmp/diffusion-models-starter-challenge/runs/challenge/cifar10_cosine_200ep_seed43/ckpt/final.pt
+cosine,200,44,145.2832,410.0121,/root/autodl-tmp/diffusion-models-starter-challenge/runs/challenge/cifar10_cosine_200ep_seed44/ckpt/final.pt

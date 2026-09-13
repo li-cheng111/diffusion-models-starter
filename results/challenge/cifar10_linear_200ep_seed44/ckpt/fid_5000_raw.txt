@@ -1,0 +1,6 @@
+FID: 34.9399
+num_samples: 5000
+real_split: train
+weights: raw
+checkpoint: /root/autodl-tmp/diffusion-models-starter-challenge/runs/challenge/cifar10_linear_200ep_seed44/ckpt/final.pt
+seed: 44
