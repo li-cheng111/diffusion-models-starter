@@ -1,4 +1,4 @@
-# Project 4: Flow Matching on CIFAR-10
+# 项目 4：CIFAR-10 上的 Flow Matching
 
 > **难度**：中-高
 > **预期完成时间**：2 周（含训练时间）

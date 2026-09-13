@@ -1,4 +1,4 @@
-# Experiment Log Template
+# 实验日志模板
 
 > **使用原则**：**所有实验**（包括失败的）都必须记录。失败的记录比成功的更有价值。
 > **命名规范**：`exp_YYYYMMDD_NN_short_description.md`（NN 是当天第几个实验）
@@ -7,7 +7,7 @@
 
 ---
 
-## Experiment ID
+## 实验编号
 
 `exp_20250115_03_ddpm_cosine_schedule`
 

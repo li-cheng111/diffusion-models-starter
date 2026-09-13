@@ -1,4 +1,4 @@
-# Project 3: Stable Diffusion 完整解剖与微调
+# 项目 3：Stable Diffusion 完整解剖与微调
 
 > **难度**：中-高
 > **预期完成时间**：1.5-2 周

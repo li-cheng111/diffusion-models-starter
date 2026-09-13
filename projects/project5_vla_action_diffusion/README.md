@@ -1,4 +1,4 @@
-# Project 5: VLA Action Diffusion — 课程综合 capstone
+# 项目 5：VLA Action Diffusion——课程综合项目
 
 > **目标**：在玩具 2D 环境上实现 vision-conditioned diffusion policy，复现 Pi-0 / Diffusion Policy 的核心思想。
 >
