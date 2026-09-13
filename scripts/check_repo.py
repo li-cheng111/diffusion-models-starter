@@ -16,6 +16,10 @@ PROJECTS = (
     "project5_vla_action_diffusion",
 )
 FORBIDDEN_SUFFIXES = {".pt", ".pth", ".ckpt", ".safetensors"}
+ALLOWED_LORA_ADAPTER = Path(
+    "projects/project3_stable_diffusion/outputs/lora/full/pytorch_lora_weights.safetensors"
+)
+MAX_LORA_ADAPTER_BYTES = 25 * 1024 * 1024
 
 
 def tracked_files() -> list[Path]:
@@ -40,14 +44,20 @@ def main() -> int:
 
     for path in tracked_files():
         if path.suffix.lower() in FORBIDDEN_SUFFIXES:
-            errors.append(f"tracked checkpoint-like file: {path.relative_to(REPO_ROOT)}")
+            relative = path.relative_to(REPO_ROOT)
+            if relative != ALLOWED_LORA_ADAPTER:
+                errors.append(f"tracked checkpoint-like file: {relative}")
+            elif path.stat().st_size > MAX_LORA_ADAPTER_BYTES:
+                errors.append(
+                    f"LoRA adapter exceeds 25 MiB: {relative} ({path.stat().st_size} bytes)"
+                )
 
     if errors:
         print("仓库检查失败：")
         for error in errors:
             print(f"- {error}")
         return 1
-    print("仓库结构检查通过：五个项目存在，未发现嵌套 Git 或违规 checkpoint。")
+    print("仓库结构检查通过：五个项目存在，未发现嵌套 Git、违规 checkpoint 或超大 LoRA adapter。")
     return 0
 
 
