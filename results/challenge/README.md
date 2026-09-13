@@ -1,14 +1,13 @@
-# Project 1 Challenge Results
+# 项目 1 挑战档结果
 
-This directory records the completed CIFAR-10 challenge-track measurements.
+本目录记录已完成的 CIFAR-10 挑战档测量结果。
 
-- Schedules: `linear`, `cosine`
-- Seeds: `42`, `43`, `44`
-- Training budget: `200` epochs per run
-- FID sample count: `5,000`
-- Real-data split: CIFAR-10 training split, without random augmentation
+- 调度策略：`linear`、`cosine`
+- 随机种子：`42`、`43`、`44`
+- 训练预算：每次运行 `200` 轮
+- FID 样本数：`5,000`
+- 真实数据划分：CIFAR-10 训练集，不使用随机增强
 
-`summary.md` contains the per-seed values and mean ± standard deviation. The
-small `grid.png` files show qualitative samples for each run. Large training
-checkpoints and intermediate sample images remain on AutoDL and are not stored
-in this Git repository.
+`summary.md` 包含每个随机种子的数值以及均值 ± 标准差。每次运行目录中的小型
+`grid.png` 展示定性样本。大型训练 checkpoint 和中间样图保留在 AutoDL 上，
+不存储在本 Git 仓库中。

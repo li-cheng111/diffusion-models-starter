@@ -1,45 +1,45 @@
-# Debug Log
+# 调试日志
 
-## Entry 1 — AutoDL GitHub clone
+## 条目 1——AutoDL 克隆 GitHub 仓库
 
-- Status: Resolved
-- Symptom: `git clone` returned HTTP 503 after AutoDL network acceleration was enabled.
-- Hypothesis: Temporary GitHub/acceleration-proxy availability issue.
-- Verification: The repository cloned successfully after retrying with a shallow clone and a separate destination directory.
-- Fix: Retried with `--depth 1`; no code or dataset change was required.
-- Lesson: AutoDL's academic acceleration is useful but not guaranteed; keep a retry or alternate download path available.
+- 状态：已解决
+- 现象：启用 AutoDL 网络加速后，`git clone` 返回 HTTP 503。
+- 假设：GitHub 或加速代理暂时不可用。
+- 验证：改用浅克隆和独立目标目录重试后，仓库成功克隆。
+- 修复：使用 `--depth 1` 重试；不需要修改代码或数据集。
+- 经验：AutoDL 学术加速有帮助但不保证稳定，应保留重试或备用下载路径。
 
-## Entry 2 — AutoDL SSH authentication
+## 条目 2——AutoDL SSH 认证
 
-- Status: Resolved
-- Symptom: The first public-key login attempt returned `Permission denied (publickey,password)`.
-- Hypothesis: The public key was not yet registered for the active AutoDL instance.
-- Verification: Password authentication succeeded for the same host and port; the remote instance and repository were reachable.
-- Fix: Used the instance login credentials for the authorized session and did not modify the training code.
-- Lesson: Keep the AutoDL console key registration and the active instance/port aligned; never store the password in project files.
+- 状态：已解决
+- 现象：第一次使用公钥登录时返回 `Permission denied (publickey,password)`。
+- 假设：当前 AutoDL 实例尚未登记该公钥。
+- 验证：同一主机和端口的密码认证成功，远端实例和仓库均可访问。
+- 修复：在获得授权的会话中使用实例登录凭据，不修改训练代码。
+- 经验：AutoDL 控制台的密钥登记必须与当前实例和端口一致；绝不把密码保存到项目文件。
 
-## Entry 3 — MNIST baseline
+## 条目 3——MNIST 基线
 
-- Status: Completed
-- Symptom: No runtime failure occurred during training, sampling, or EMA FID evaluation.
-- Hypothesis: The configured baseline should fit the RTX 5090 environment.
-- Verification: Training reached step 23,400, produced the final checkpoint and loss curve, and FID evaluation completed with 5,000 samples.
-- Fix: None required.
-- Lesson: The baseline is reproducible in the recorded AutoDL environment; preserve the configuration and seed with the artifacts.
+- 状态：已完成
+- 现象：训练、采样和 EMA FID 评估过程中没有运行时错误。
+- 假设：当前基线配置适合 RTX 5090 环境。
+- 验证：训练达到第 23,400 步，生成最终 checkpoint 和 loss 曲线，并完成 5,000 样本的 FID 评估。
+- 修复：无需修复。
+- 经验：该基线可在记录的 AutoDL 环境中复现，应将配置和 seed 与实验产物一起保留。
 
-## Entry 4 — CIFAR-10 data preparation
+## 条目 4——CIFAR-10 数据准备
 
-- Status: Resolved
-- Symptom: The original CIFAR-10 download endpoint was limited to roughly 10–55 KB/s on AutoDL.
-- Hypothesis: The external Toronto endpoint was the bottleneck rather than the GPU or project code.
-- Verification: A public Hugging Face mirror completed the same 170,498,071-byte archive, and its MD5 matched `c58f30108f718f92721af3b95e74349a`.
-- Fix: Resumed the archive download from the mirror and kept the validated file at `data/cifar-10-python.tar.gz`.
-- Lesson: Validate dataset bytes before training and keep data files on the AutoDL data disk.
+- 状态：已解决
+- 现象：原始 CIFAR-10 下载地址在 AutoDL 上速度约为 10–55 KB/s。
+- 假设：瓶颈在 Toronto 外部下载地址，而不在 GPU 或项目代码。
+- 验证：公共 Hugging Face 镜像成功下载相同的 170,498,071 字节压缩包，MD5 与 `c58f30108f718f92721af3b95e74349a` 一致。
+- 修复：从镜像继续下载，并将验证过的文件保存在 `data/cifar-10-python.tar.gz`。
+- 经验：训练前验证数据字节，并将数据文件放在 AutoDL 数据盘。
 
-## Entry 5 — CIFAR-10 advanced experiment
+## 条目 5——CIFAR-10 进阶实验
 
-- Status: Completed
-- Symptom: No runtime failure occurred during the 200-epoch run or post-training evaluation.
-- Verification: Training reached step 78,000 in 98.2 minutes; EMA FID was 19.2879 and raw FID was 28.7464 on 5,000 training images.
-- Fix: None required for stability. The FID target of 15 was not reached, so the result is recorded as-is.
-- Lesson: EMA materially improved this run's FID, but a stable run and a target metric are separate acceptance criteria.
+- 状态：已完成
+- 现象：200 轮训练和训练后评估均未出现运行时错误。
+- 验证：训练在 98.2 分钟内达到第 78,000 步；在 5,000 张训练图上，EMA FID 为 19.2879，raw FID 为 28.7464。
+- 修复：稳定性方面无需修复。FID 未达到 15 的目标，因此如实记录结果。
+- 经验：EMA 明显改善了本次运行的 FID，但运行稳定和达到目标指标是两个独立的验收条件。

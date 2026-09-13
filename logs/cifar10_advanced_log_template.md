@@ -4,45 +4,45 @@
 
 ## 实验信息
 
-- Experiment ID: `exp_YYYYMMDD_cifar10_advanced`
-- Date:
-- Host / GPU:
-- Git commit:
-- Config: `configs/cifar10.yaml`
-- Seed: `42`
+- 实验编号：`exp_YYYYMMDD_cifar10_advanced`
+- 日期：
+- 主机 / GPU：
+- Git 提交：
+- 配置：`configs/cifar10.yaml`
+- 随机种子：`42`
 
 ## 环境
 
-- Python:
-- PyTorch:
-- CUDA:
-- Dataset root:
+- Python：
+- PyTorch：
+- CUDA：
+- 数据集根目录：
 
 ## 配置
 
-- Dataset: CIFAR-10 train split
-- Resolution: 32x32
-- Batch size: 128
-- Epochs: 200
-- Expected training steps: 78,000
-- Optimizer: AdamW
-- Learning rate: 2e-4
-- Warmup steps: 5,000
-- Diffusion steps T: 1,000
-- Schedule: linear
-- EMA decay: 0.9999
-- Mixed precision: fp16
-- Augmentation: random horizontal flip during training only
+- 数据集：CIFAR-10 训练集
+- 分辨率：32x32
+- Batch size：128
+- 训练轮数：200
+- 预计训练步数：78,000
+- 优化器：AdamW
+- 学习率：2e-4
+- Warmup 步数：5,000
+- 扩散步数 T：1,000
+- 调度策略：linear
+- EMA 衰减：0.9999
+- 混合精度：fp16
+- 数据增强：仅训练阶段随机水平翻转
 
 ## 结果（待实际运行后填写）
 
-- Training time:
-- Final loss:
-- EMA FID @ 5,000 generated / 5,000 train images:
-- Raw FID @ 5,000 generated / 5,000 train images:
-- Raw - EMA:
-- Sample grid path:
-- Checkpoint path:
+- 训练时间：
+- 最终 loss：
+- EMA FID（5,000 张生成图 / 5,000 张训练图）：
+- Raw FID（5,000 张生成图 / 5,000 张训练图）：
+- Raw - EMA（原始权重减 EMA）：
+- 样本网格路径：
+- Checkpoint 路径：
 
 ## 观察与问题
 

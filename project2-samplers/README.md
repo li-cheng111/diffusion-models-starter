@@ -1,39 +1,38 @@
-# Project 2: sampler comparison
+# 项目 2：采样器对比
 
-This directory contains the complete Project 2 implementation imported from
-the course starter at commit `774d640f3915c3396e034068beff318fbf421719`
-and adapted to this repository's monorepo layout.
+本目录包含完整的项目 2 实现。代码从课程 starter 的
+`774d640f3915c3396e034068beff318fbf421719` 提交导入，并适配到本仓库的
+monorepo 目录结构。
 
-It reuses the trained Project 1 epsilon-prediction model without retraining and
-implements or evaluates:
+实现不重新训练，直接复用项目 1 已训练的 epsilon 预测模型，并完成：
 
-- DDPM ancestral sampling as a 1000-NFE reference;
-- DDIM with arbitrary step skipping and `eta` stochasticity;
-- Euler sampling;
-- second-order singlestep DPM-Solver;
-- DDIM inversion and deterministic reconstruction;
-- reproducible FID-versus-NFE and trajectory comparisons.
+- DDPM ancestral sampling 1000 NFE 基线；
+- 支持任意跳步和 `eta` 随机性的 DDIM；
+- Euler 采样；
+- 二阶单步 DPM-Solver；
+- DDIM 反演和确定性重构；
+- 可复现的 FID-NFE 对比和轨迹对比。
 
-## Layout and data policy
+## 目录和数据规则
 
-Project 1 remains in the parent directory. `project1_path.py` checks that parent
-first and imports its `schedule.py`, `dataset.py`, and `model/` package.
+项目 1 保留在父目录。`project1_path.py` 优先检查父目录，并导入其中的
+`schedule.py`、`dataset.py` 和 `model/` 包。
 
-Do not put a `.git` directory below this folder. Model checkpoints, datasets,
-Inception weights, and caches are intentionally ignored. Commit only source,
-configuration, JSON measurements, curated plots/sample grids, logs, and reports.
+本目录下不得放置 `.git` 目录。模型 checkpoint、数据集、Inception 权重和
+缓存均会被忽略。只提交源码、配置、JSON 测量结果、整理后的图表/样本网格、
+日志和报告。
 
-The selected formal checkpoint is the linear-schedule seed-44 EMA model. Keep it
-outside Git, for example:
+正式实验使用 linear 调度策略的随机种子 44 EMA 模型。checkpoint 应放在 Git 仓库
+之外，例如：
 
 ```text
 repository-root/local_checkpoints/cifar10_linear_200ep_seed44_final.pt
 ```
 
-From this directory, its path is
-`../local_checkpoints/cifar10_linear_200ep_seed44_final.pt`.
+从本目录运行时，对应路径为
+`../local_checkpoints/cifar10_linear_200ep_seed44_final.pt`。
 
-## Setup and checks
+## 环境配置和检查
 
 ```bash
 cd project2-samplers
@@ -44,23 +43,23 @@ python -m samplers.ddim
 python -m samplers.dpm_solver
 ```
 
-Generate a qualitative grid without installing the FID dependencies:
+无需安装 FID 依赖即可生成定性样本网格：
 
 ```bash
 python sample_grid.py --ckpt ../runs/exp_mnist_baseline/ckpt/final.pt \
   --sampler ddim --steps 50 --output samples/smoke/mnist_ddim50.png
 ```
 
-To validate the real checkpoint format as well:
+如需同时验证真实 checkpoint 格式：
 
 ```bash
 python check_compat.py \
   --ckpt ../local_checkpoints/cifar10_linear_200ep_seed44_final.pt
 ```
 
-## Quick validation
+## 快速验证
 
-Run a small benchmark before committing expensive AutoDL time:
+在占用 AutoDL 进行长时间计算前，先运行小规模 benchmark：
 
 ```bash
 python benchmark.py \
@@ -71,10 +70,9 @@ python benchmark.py \
   --plot runs/smoke_pareto.png
 ```
 
-Small-sample FID is only a pipeline check and must not be reported as the final
-metric.
+小样本 FID 仅用于检查流程，不能作为最终指标报告。
 
-## Formal AutoDL experiments
+## AutoDL 正式实验
 
 ### 实时可视化监控
 
@@ -88,10 +86,9 @@ ssh -N -L 18765:127.0.0.1:18765 -p 23398 root@connect.bjb1.seetacloud.com
 
 然后打开 `http://127.0.0.1:18765/`。正式实验的远端页面当前运行在该端口；只要 SSH 转发保持连接，浏览器页面就会自动更新。
 
-The full preset uses the assignment matrix: DDPM 1000 steps; DDIM and Euler at
-10/20/50/100/250 steps; DPM-Solver-2 at 5/10/25/50 outer steps. DPM-Solver's
-reported NFE is `2 * outer_steps - 1` because the terminal step needs one model
-call.
+`full` 预设使用作业要求的实验矩阵：DDPM 1000 步；DDIM 和 Euler 使用
+10/20/50/100/250 步；DPM-Solver-2 使用 5/10/25/50 个外层步。DPM-Solver
+报告的 NFE 为 `2 * outer_steps - 1`，因为最后一个终止步只需要一次模型调用。
 
 ```bash
 python benchmark.py \
@@ -102,8 +99,8 @@ python benchmark.py \
   --plot runs/pareto_fid_nfe.png
 ```
 
-The required DDIM-only artifact can be produced independently (use the same
-checkpoint, seed, real-data policy, and batch size):
+DDIM 专项结果可以独立生成（必须使用相同 checkpoint、随机种子、真实数据规则和
+批大小）：
 
 ```bash
 python benchmark.py \
@@ -115,10 +112,10 @@ python benchmark.py \
   --plot runs/pareto_ddim.png
 ```
 
-All configurations use the same 5,000 unaugmented CIFAR-10 training images and
-restart the generated-noise stream from seed 42.
+所有配置都使用相同的 5,000 张无增强 CIFAR-10 训练图，并在每个配置开始时将
+生成噪声流重置为随机种子 42。
 
-Trajectory comparison:
+轨迹对比：
 
 ```bash
 python visualize_trajectories.py \
@@ -128,7 +125,7 @@ python visualize_trajectories.py \
   --metrics_output runs/trajectory_comparison.json
 ```
 
-DDIM inversion:
+DDIM 反演：
 
 ```bash
 python evaluate_inversion.py \
@@ -139,14 +136,14 @@ python evaluate_inversion.py \
   --plot runs/inversion_errors.png
 ```
 
-## Completion status
+## 完成状态
 
-- [x] Project 1 discovery and checkpoint compatibility
-- [x] DDIM implementation
-- [x] reproducible FID/NFE benchmark and Pareto plotting
-- [x] shared-noise trajectory comparison
-- [x] DPM-Solver-2 implementation with true NFE counting
-- [x] DDIM inversion and reconstruction evaluation
-- [x] unit and compatibility tests
-- [x] formal 5,000-sample AutoDL measurements
-- [x] replace report result placeholders with measured values
+- [x] 项目 1 路径发现和 checkpoint 兼容性
+- [x] DDIM 实现
+- [x] 可复现的 FID/NFE benchmark 和 Pareto 图
+- [x] 共享初始噪声的轨迹对比
+- [x] DPM-Solver-2 实现和真实 NFE 计数
+- [x] DDIM 反演和重构评估
+- [x] 单元测试和兼容性测试
+- [x] AutoDL 5,000 样本正式测量
+- [x] 用实测值替换报告中的占位内容

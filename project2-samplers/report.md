@@ -1,32 +1,30 @@
-# Project 2 report: sampler comparison
+# 项目 2 报告：采样器对比
 
-> Implementation, theory, and formal AutoDL measurements are complete. All
-> values below come from the recorded JSON artifacts.
+> 实现、理论分析和 AutoDL 正式测量均已完成。下列数值全部来自已记录的
+> JSON 结果文件。
 
-## 1. Experimental protocol
+## 1. 实验协议
 
-- Model: Project 1 CIFAR-10 linear-schedule seed-44 checkpoint, EMA weights.
-- Real FID set: the first fixed 5,000 CIFAR-10 training images, without random
-  augmentation.
-- Generated set: 5,000 images per configuration, seed 42 reset before every
-  configuration.
-- Data range: training and sampling in `[-1,1]`; FID inputs converted to RGB
-  `uint8` in `[0,255]`.
-- Compute: AutoDL NVIDIA RTX 4090 (24,564 MiB), Python 3.12.3, PyTorch
-  2.8.0+cu128, CUDA 12.8.
-- Checkpoint SHA256: `937853559a1377660f7d4cbd1dd3f7c6cf022aed4ab84e9daa918aa6e34541412`.
-- AutoDL repository commit: `e8f8af6698570485b9909ca1755f0266a09e4da8`;
-  weights were loaded from the nested EMA state.
+- 模型：项目 1 CIFAR-10 linear 调度策略的随机种子 44 checkpoint，使用 EMA 权重。
+- FID 真实图集合：固定使用前 5,000 张 CIFAR-10 训练图，不使用随机增强。
+- 生成图集合：每个配置生成 5,000 张图，每个配置开始前都将随机种子重置为 42。
+- 数据范围：训练和采样数据在 `[-1,1]`；FID 输入转换为 `[0,255]` 的 RGB
+  `uint8`。
+- 计算环境：AutoDL NVIDIA RTX 4090（24,564 MiB），Python 3.12.3，PyTorch
+  2.8.0+cu128，CUDA 12.8。
+- checkpoint SHA256：`937853559a1377660f7d4cbd1dd3f7c6cf022aed4ab84e9daa918aa6e34541412`。
+- AutoDL 仓库提交：`e8f8af6698570485b9909ca1755f0266a09e4da8`；权重从嵌套 EMA
+  状态中加载。
 
-## 2. DDIM derivation and implementation
+## 2. DDIM 推导和实现
 
-The trained model predicts the forward noise in
+训练好的模型预测前向过程中的噪声：
 
 \[
 x_t=\sqrt{\bar\alpha_t}x_0+\sqrt{1-\bar\alpha_t}\epsilon.
 \]
 
-Solving this expression for the clean image gives
+由上式求解干净图像得到：
 
 \[
 \hat x_0(x_t)=
@@ -34,7 +32,7 @@ Solving this expression for the clean image gives
 {\sqrt{\bar\alpha_t}}.
 \]
 
-For arbitrary adjacent members `t > t_prev` of a skipped timestep sequence,
+对于跳步时间序列中任意相邻的 `t > t_prev`：
 
 \[
 \sigma^2=
@@ -49,13 +47,12 @@ x_{t_{prev}}=
 \sigma z.
 \]
 
-The implementation clamps square-root arguments at zero, protects division by
-small `alpha_bar`, and clips generated clean-image predictions to `[-1,1]`.
-When `eta=0`, it does not request random noise.
+实现会将平方根参数截断到不小于零，保护 `alpha_bar` 很小时的除法，并将生成
+的干净图像预测裁剪到 `[-1,1]`。当 `eta=0` 时，不会额外采样随机噪声。
 
-## 3. FID versus NFE
+## 3. FID 与 NFE
 
-| Sampler | Steps | True NFE | FID | Sampling time |
+| 采样器 | 步数 | 真实 NFE | FID | 采样时间 |
 |---|---:|---:|---:|---:|
 | DDPM | 1000 | 1000 | 19.290 | 1010.7 s |
 | DDIM | 10 | 10 | 34.555 | 10.1 s |
@@ -73,57 +70,50 @@ When `eta=0`, it does not request random noise.
 | DPM-Solver-2 | 25 | 49 | 21.361 | 49.4 s |
 | DPM-Solver-2 | 50 | 99 | 21.192 | 100.5 s |
 
-![FID versus NFE Pareto plot](runs/pareto_fid_nfe.png)
+![FID 与 NFE 的 Pareto 图](runs/pareto_fid_nfe.png)
 
-The same trained network, checkpoint, 5,000 real images, and seed were used for
-every point, so changes along a curve measure discretization/solver behavior,
-not retraining. DDIM improves steadily as steps increase, from FID 34.555 at
-10 NFE to 21.241 at 250 NFE. The reference Euler implementation is the same
-deterministic discrete probability-flow update as DDIM with `eta=0`, hence its
-values match exactly. DPM-Solver-2 is strongest at low compute: 21.074 FID at
-19 NFE, close to the 250-NFE DDIM result and substantially better than DDIM at
-20 NFE. DDPM reaches the best absolute FID (19.290), but requires 1,000 NFE.
+每个点都使用相同的训练网络、checkpoint、5,000 张真实图和随机种子，因此曲线
+变化反映的是离散化或求解器行为，而不是重新训练的影响。DDIM 随步数增加而
+稳定改善，FID 从 10 NFE 时的 34.555 降至 250 NFE 时的 21.241。课程 starter
+中的 Euler 实现与 `eta=0` 的 DDIM 使用相同的确定性离散 probability-flow 更新，
+所以数值完全一致。DPM-Solver-2 在低计算量下最有优势：19 NFE 时 FID 为
+21.074，接近 DDIM 250 NFE 的结果，且明显优于 DDIM 20 NFE。DDPM 的绝对 FID
+最佳（19.290），但需要 1,000 NFE。
 
-## 4. Trajectories
+## 4. 采样轨迹
 
-![Shared-noise trajectory comparison](runs/trajectory_comparison.png)
+![共享初始噪声的采样轨迹对比](runs/trajectory_comparison.png)
 
-Measurements are in `runs/trajectory_comparison.json`. All rows use the same
-initial noise (`same_initial_noise=true`) and real timestep labels. At 50
-outer steps, DDPM uses 1,000 NFE and has mean step L2 5.255; DDIM/Euler use 50
-NFE and have mean step L2 1.131; DPM-Solver-2 uses 99 NFE and has mean step L2
-1.123. DDPM is stochastic after initialization, whereas the other selected
-configurations are deterministic.
+测量结果见 `runs/trajectory_comparison.json`。所有行都使用相同的初始噪声
+（`same_initial_noise=true`）和真实时间步标签。在 50 个外层步时，DDPM 使用
+1,000 NFE，平均单步 L2 为 5.255；DDIM/Euler 使用 50 NFE，平均单步 L2 为
+1.131；DPM-Solver-2 使用 99 NFE，平均单步 L2 为 1.123。DDPM 在初始化之后
+仍然是随机过程，而其他配置是确定性的。
 
 ## 5. DPM-Solver-2
 
-With \(\lambda=\log(\alpha/\sigma)\), the linear part of the diffusion ODE is
-integrated analytically. The implementation evaluates the network at the source
-and at the nearest discrete lambda midpoint, then applies the exponential
-midpoint update. A run with `S` outer steps uses `2S-1` network evaluations,
-because the final clean-image projection needs only one evaluation.
+令 \(\lambda=\log(\alpha/\sigma)\)，扩散 ODE 的线性部分可以解析积分。实现
+分别在源点和离散 lambda 中点的最近时间步评估网络，然后应用指数中点更新。
+当运行 `S` 个外层步时，网络实际评估次数为 `2S-1`，因为最后的干净图像投影
+只需要一次评估。
 
-The formal comparison shows that the second-order midpoint correction is most
-useful in the low-NFE regime: DPM-Solver-2 improves from FID 29.295 at 9 NFE to
-21.074 at 19 NFE, then plateaus around 21.2 at 49–99 NFE. The 25-step point is
-slightly worse than the 10-step point (21.361 versus 21.074), a finite-model
-and discrete-grid effect rather than evidence that more evaluations always
-improve a fixed-seed FID. The true model-call count is `2S-1`, recorded in both
-the benchmark JSON and the sampler self-test.
+正式对比表明，二阶中点修正在低 NFE 区间最有用：DPM-Solver-2 的 FID 从 9 NFE
+时的 29.295 降至 19 NFE 时的 21.074，随后在 49–99 NFE 附近稳定在 21.2。
+25 步结果略差于 10 步（21.361 对 21.074），这是有限模型和离散时间网格造成的
+现象，并不意味着固定 seed 下增加评估次数必然改善 FID。真实模型调用次数
+`2S-1` 已同时记录在 benchmark JSON 和 sampler 自测中。
 
-## 6. DDIM inversion
+## 6. DDIM 反演
 
-Inversion walks the exact sampling timestep sequence in reverse and approximates
-the unavailable target-time noise with the prediction at the current state. Both
-inversion and reconstruction disable clean-image clipping so clipping does not
-artificially break the round trip.
+反演严格沿采样时间序列的反方向执行，并使用当前状态的噪声预测近似无法直接
+获得的目标时间噪声。反演和重构都关闭干净图像裁剪，避免裁剪人为破坏往返过程。
 
-![DDIM inversion errors](runs/inversion_errors.png)
+![DDIM 反演误差](runs/inversion_errors.png)
 
-The evaluation used CIFAR-10 test indices 0–63 and disabled clipping during the
-round trip. Results from `runs/inversion_results.json` are:
+评估使用 CIFAR-10 测试集索引 0–63，并在往返过程中关闭裁剪。结果见
+`runs/inversion_results.json`：
 
-| Steps | Mean L2 | MAE | MSE | PSNR |
+| 步数 | 平均 L2 | MAE | MSE | PSNR |
 |---:|---:|---:|---:|---:|
 | 10 | 18.2820 | 0.26955 | 0.11417 | 15.891 dB |
 | 20 | 12.5195 | 0.18369 | 0.05343 | 19.175 dB |
@@ -131,49 +121,45 @@ round trip. Results from `runs/inversion_results.json` are:
 | 100 | 2.3665 | 0.03419 | 0.00197 | 33.644 dB |
 | 250 | 0.9316 | 0.01332 | 0.00032 | 41.836 dB |
 
-The error is monotonic and falls sharply as the number of inversion steps
-increases. More steps reduce local truncation error enough to dominate the
-accumulation of model-prediction error for this checkpoint and timestep policy.
+误差随反演步数增加单调且显著下降。对于本 checkpoint 和时间步策略，增加步数
+带来的局部截断误差下降足以抵消模型预测误差的累积影响。
 
-## 7. Required questions
+## 7. 必答自查问题
 
-### 7.1 Why is DDIM deterministic?
+### 7.1 为什么 DDIM 是确定性的？
 
-At `eta=0`, \(\sigma=0\) and the update contains no newly sampled `z`. Therefore
-the same model, schedule, timestep sequence, weights, and initial \(x_T\) define
-the same mathematical output. Exact bitwise repeatability on GPU additionally
-requires deterministic kernels and a fixed software/hardware environment.
+当 `eta=0` 时，\(\sigma=0\)，更新式中不再包含新采样的 `z`。因此，相同的
+模型、调度策略、时间步序列、权重和初始 \(x_T\) 会定义相同的数学输出。在 GPU
+上要实现逐比特完全一致，还需要确定性 kernel 以及固定的软件和硬件环境。
 
-### 7.2 How should 100 DDIM timesteps be selected for a cosine-trained model?
+### 7.2 cosine 训练模型应如何选择 100 个 DDIM 时间步？
 
-Uniform integer indices do not represent equal changes in noise level, and a
-cosine schedule distributes \(\bar\alpha_t\) differently from a linear schedule.
-The principled choice is to space inference points by log-SNR (or equivalently
-match target noise levels through \(\bar\alpha_t\)) and map them back to unique
-discrete training indices. Reusing the same integer indices is legal but does not
-give the same numerical resolution along the denoising path.
+均匀的整数索引并不代表噪声水平的等量变化，而且 cosine 调度策略对
+\(\bar\alpha_t\) 的分布不同于 linear 调度策略。更合理的做法是按 log-SNR
+均匀布置推理点（或通过 \(\bar\alpha_t\) 匹配目标噪声水平），再将它们映射回
+不重复的离散训练索引。复用相同整数索引在形式上可行，但无法在去噪路径上提供
+相同的数值分辨率。
 
-### 7.3 Why does changing eta change quality?
+### 7.3 为什么改变 eta 会改变质量？
 
-`eta` trades a deterministic ODE-like trajectory for stochastic ancestral
-updates. Injected noise can increase trajectory diversity, but with few large
-steps it also adds variance that the limited remaining updates cannot fully
-remove. Consequently `eta=0` commonly gives better low-step fidelity, while
-positive eta can be valuable when diversity is preferred.
+`eta` 在确定性的 ODE-like 轨迹和随机 ancestral 更新之间进行折中。注入噪声
+可以增加轨迹多样性，但在步数较少、单步跨度较大时，也会引入剩余更新难以完全
+消除的方差。因此 `eta=0` 通常在低步数下具有更好的保真度，而偏大的 eta 在
+更重视多样性时可能更有价值。
 
-### 7.4 Why does the DDIM update reduce to DDPM?
+### 7.4 为什么 DDIM 更新可以退化为 DDPM？
 
-For consecutive steps and
+对于连续时间步，并令
 
 \[
 \sigma_t^2=\tilde\beta_t=
 \frac{1-\bar\alpha_{t-1}}{1-\bar\alpha_t}\beta_t,
 \]
 
-substitute
+将
 \(\hat x_0=(x_t-\sqrt{1-\bar\alpha_t}\epsilon_\theta)/
-\sqrt{\bar\alpha_t}\) into the DDIM mean. Collecting the coefficients of
-\(x_t\) and \(\epsilon_\theta\) yields
+\sqrt{\bar\alpha_t}\) 代入 DDIM 均值，并收集 \(x_t\) 与 \(\epsilon_\theta\)
+的系数，可得
 
 \[
 \mu_\theta=
@@ -182,7 +168,6 @@ substitute
 \epsilon_\theta\right).
 \]
 
-The remaining random term is \(\sqrt{\tilde\beta_t}z\), exactly the DDPM
-ancestral update. This equivalence assumes consecutive steps and no extra
-clean-image clipping; skipped `eta=1` updates are DDPM-like rather than the
-original DDPM Markov chain.
+剩余的随机项为 \(\sqrt{\tilde\beta_t}z\)，正好是 DDPM ancestral 更新。该
+等价关系要求时间步连续且不额外进行干净图像裁剪；跳步时的 `eta=1` 更新只是
+类似 DDPM，并不是原始 DDPM 的 Markov 链。

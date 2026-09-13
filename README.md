@@ -1,27 +1,27 @@
-# Project 1：从零实现 DDPM
+# 项目 1：从零实现 DDPM
 
-本仓库提交 Project 1 基础档和进阶档的源码、配置、静态测试与实验文档模板。实现目标是用 PyTorch 手写一个不依赖 `diffusers` 或 `lucidrains` 的 unconditional DDPM。
+本仓库提交项目 1 基础档和进阶档的源码、配置、静态测试与实验文档模板。实现目标是用 PyTorch 手写一个不依赖 `diffusers` 或 `lucidrains` 的无条件 DDPM。
 
 ## 当前提交状态
 
-基础档源码已经提交；MNIST 实验已在 AutoDL RTX 5090 上完成训练、采样和 EMA FID 评估。进阶档 CIFAR-10 200 epoch 训练和 EMA/raw 对比也已完成，真实结果已整理到 `runs/exp_cifar10_advanced/`。本次 EMA FID 为 19.2879，尚未达到作业目标 15。
+基础档源码已经提交；MNIST 实验已在 AutoDL RTX 5090 上完成训练、采样和 EMA FID 评估。进阶档 CIFAR-10 200 轮训练和 EMA/raw 对比也已完成，真实结果已整理到 `runs/exp_cifar10_advanced/`。本次 EMA FID 为 19.2879，尚未达到作业目标 15。
 
 ## 基础档完成清单
 
-- [x] linear beta schedule 和 DDPM 系数预计算
+- [x] linear beta 调度策略和 DDPM 系数预计算
 - [x] 闭合形式前向加噪 `q_sample`
-- [x] simplified noise-prediction loss `p_losses`
+- [x] 简化的噪声预测损失 `p_losses`
 - [x] 单步反向采样 `p_sample`
 - [x] 完整反向采样循环 `p_sample_loop`
 - [x] sinusoidal timestep embedding
 - [x] ResBlock 的时间 embedding 广播注入
-- [x] MNIST 50 epoch 配置和训练入口
+- [x] MNIST 50 轮配置和训练入口
 - [x] 64 张样本生成与最终产物的后续命令
 - [x] 实际运行 MNIST 训练并补充最终 loss 曲线、样本网格和 checkpoint
 
 ## 进阶档实现状态
 
-- [x] CIFAR-10 200 epoch 配置（`configs/cifar10.yaml`）
+- [x] CIFAR-10 200 轮配置（`configs/cifar10.yaml`）
 - [x] 训练过程维护 raw 与 EMA 两套权重
 - [x] FID 默认使用 5,000 张无增强训练图作为 real split
 - [x] `evaluate.py --compare_ema` 一键生成 EMA/raw 对比记录
@@ -31,12 +31,12 @@
 ## 挑战档实现状态
 
 - [x] `cosine_beta_schedule` 已实现并接入 `DDPMSchedule`
-- [x] linear/cosine 两套 CIFAR-10 200 epoch 配置已建立
-- [x] `challenge.py` 已提供 2 个 schedule × 3 个 seed 的可复现实验编排
-- [x] `challenge.py` 支持 `--epoch_budgets 50 200`，可回答 50/200 epoch 自查问题
-- [x] `challenge.py summarize` 已提供 mean ± std 汇总
+- [x] linear/cosine 两套 CIFAR-10 200 轮配置已建立
+- [x] `challenge.py` 已提供 2 个调度策略 × 3 个随机种子的可复现实验编排
+- [x] `challenge.py` 支持 `--epoch_budgets 50 200`，可回答 50/200 轮自查问题
+- [x] `challenge.py summarize` 已提供均值 ± 标准差汇总
 - [x] `challenge_report.md` 已建立八页技术报告结构和失败案例记录规范
-- [ ] 尚未运行挑战档实验，因此暂无真实 mean ± std、schedule 胜负结论或挑战档失败案例
+- [ ] 尚未运行挑战档实验，因此暂无真实均值 ± 标准差、调度策略胜负结论或挑战档失败案例
 
 挑战档只在明确执行下面命令后才会创建实验目录和运行产物：
 
@@ -50,13 +50,13 @@ python challenge.py run \
 如需先检查将要执行的命令而不运行任何程序，可使用 `--dry_run`。实验完成后使用
 `python challenge.py summarize --output_root runs/challenge` 生成统计结果。
 
-默认挑战矩阵为 200 epoch、2 个 schedule × 3 个 seed，共 6 组。若还要回答报告中的
-50 epoch 自查问题，可显式运行 `--epoch_budgets 50 200`，共 12 组。
+默认挑战矩阵为 200 轮、2 个调度策略 × 3 个随机种子，共 6 组。若还要回答报告中的
+50 轮自查问题，可显式运行 `--epoch_budgets 50 200`，共 12 组。
 
 ## 目录
 
 ```text
-schedule.py       # beta schedule 与 DDPM 系数
+schedule.py       # beta 调度策略与 DDPM 系数
 diffusion.py      # q_sample、训练损失和反向采样
 dataset.py        # MNIST / CIFAR-10 加载与 [-1, 1] 归一化
 train.py          # 配置驱动训练、EMA、AMP、checkpoint
@@ -65,7 +65,7 @@ evaluate.py       # FID 评估
 model/            # sinusoidal embedding、ResBlock、U-Net
 configs/          # MNIST 和 CIFAR-10 配置
 tests/            # 尚未执行的单元测试源码
-challenge.py      # 挑战档多 schedule、多 seed 实验编排与汇总
+challenge.py      # 挑战档多调度策略、多随机种子实验编排与汇总
 challenge_report.md # 挑战档八页技术报告结构稿
 challenge_monitor.py # 挑战矩阵只读实时监控页面
 monitor.py        # 本地只读实时训练进度监控

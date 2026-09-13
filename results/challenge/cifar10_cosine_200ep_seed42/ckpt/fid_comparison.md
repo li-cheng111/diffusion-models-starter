@@ -1,12 +1,12 @@
-# CIFAR-10 EMA comparison
+# CIFAR-10 EMA 对比
 
-- Real split: `train`
-- Real samples: `5000`
-- Generated samples per run: `5000`
-- Seed: `42`
+- 真实数据划分：`train`
+- 真实样本数：`5000`
+- 每次运行的生成样本数：`5000`
+- 随机种子：`42`
 
-| Weights | FID |
+| 权重 | FID |
 |---|---:|
 | EMA | 137.9856 |
-| Raw | 283.4196 |
-| Raw - EMA | +145.4340 |
+| Raw（原始权重） | 283.4196 |
+| Raw - EMA（原始权重减 EMA） | +145.4340 |

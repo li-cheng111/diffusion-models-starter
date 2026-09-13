@@ -2,47 +2,47 @@
 
 ## 实验信息
 
-- Experiment ID: `exp_20260912_cifar10_advanced`
-- Date: `2026-09-12`
-- Host / GPU: AutoDL / NVIDIA GeForce RTX 5090
-- Source version: GitHub `3ebafc3`（AutoDL working tree synced to this version）
-- Config: `configs/cifar10.yaml`
-- Seed: `42`
+- 实验编号：`exp_20260912_cifar10_advanced`
+- 日期：`2026-09-12`
+- 主机 / GPU：AutoDL / NVIDIA GeForce RTX 5090
+- 源码版本：GitHub `3ebafc3`（AutoDL 工作目录已同步到该版本）
+- 配置：`configs/cifar10.yaml`
+- 随机种子：`42`
 
 ## 环境
 
-- Python: `3.12.3`
-- PyTorch: `2.8.0+cu128`
-- CUDA: `12.8`
-- Dataset root: `./data` on AutoDL data disk
+- Python：`3.12.3`
+- PyTorch：`2.8.0+cu128`
+- CUDA：`12.8`
+- 数据集根目录：AutoDL 数据盘上的 `./data`
 
 ## 配置
 
-- Dataset: CIFAR-10 train split
-- Resolution: 32x32
-- Batch size: 128
-- Epochs: 200
-- Training steps: 78,000
-- Optimizer: AdamW
-- Learning rate: 2e-4
-- Warmup steps: 5,000
-- Diffusion steps T: 1,000
-- Schedule: linear
-- EMA decay: 0.9999
-- Mixed precision: fp16
-- Augmentation: random horizontal flip during training only
-- Training time: 98.2 minutes
+- 数据集：CIFAR-10 训练集
+- 分辨率：32x32
+- Batch size：128
+- 训练轮数：200
+- 训练步数：78,000
+- 优化器：AdamW
+- 学习率：2e-4
+- Warmup 步数：5,000
+- 扩散步数 T：1,000
+- 调度策略：linear
+- EMA 衰减：0.9999
+- 混合精度：fp16
+- 数据增强：仅训练阶段随机水平翻转
+- 训练时间：98.2 分钟
 
 ## 结果
 
-- Final logged loss: `0.01938` at step `78,000`
-- EMA FID: `19.2879` using 5,000 generated images vs 5,000 train images
-- Raw FID: `28.7464` using 5,000 generated images vs 5,000 train images
-- Raw - EMA: `+9.4586`
-- Target FID ≤ 15: not reached in this run
-- EMA grid: `runs/exp_cifar10_advanced/samples_inference_ema/grid.png`
-- Raw grid: `runs/exp_cifar10_advanced/samples_inference_raw/grid.png`
-- Checkpoint: `runs/exp_cifar10_advanced/ckpt/final.pt`
+- 最后记录的 loss：第 `78,000` 步为 `0.01938`
+- EMA FID：使用 5,000 张生成图对比 5,000 张训练图时为 `19.2879`
+- Raw FID：使用 5,000 张生成图对比 5,000 张训练图时为 `28.7464`
+- Raw - EMA（原始权重减 EMA）：`+9.4586`
+- 目标 FID ≤ 15：本次运行未达到
+- EMA 网格：`runs/exp_cifar10_advanced/samples_inference_ema/grid.png`
+- Raw 网格：`runs/exp_cifar10_advanced/samples_inference_raw/grid.png`
+- Checkpoint：`runs/exp_cifar10_advanced/ckpt/final.pt`
 
 ## 观察
 
