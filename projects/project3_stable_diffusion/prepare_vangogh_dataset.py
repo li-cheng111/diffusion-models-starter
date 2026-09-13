@@ -23,7 +23,9 @@ except ImportError:  # direct script execution from the project directory
 
 
 API_URL = "https://commons.wikimedia.org/w/api.php"
-CATEGORY = "Category:Paintings_by_Vincent_van_Gogh"
+# The title-indexed category is the stable Commons source referenced by the
+# assignment and contains the public-domain files needed for the 20-image set.
+CATEGORY = "Category:Paintings_by_Vincent_van_Gogh_by_title"
 
 
 def _api(params: dict[str, str]) -> dict:
@@ -33,45 +35,79 @@ def _api(params: dict[str, str]) -> dict:
         return json.loads(response.read().decode("utf-8"))
 
 
-def discover(limit: int) -> list[dict]:
+def _members(category: str, member_type: str) -> list[dict]:
+    """Return one category's members, following the API continuation token."""
     results: list[dict] = []
     cont: dict[str, str] = {}
-    while len(results) < limit and len(results) < 200:
+    while True:
         params = {
-            "action": "query",
-            "format": "json",
-            "generator": "categorymembers",
-            "gcmtitle": CATEGORY,
-            "gcmtype": "file",
-            "gcmlimit": "50",
-            "prop": "imageinfo|info",
-            "iiprop": "url|mime|size|extmetadata",
-            "iiurlwidth": "1024",
+            "action": "query", "format": "json", "list": "categorymembers",
+            "cmtitle": category, "cmtype": member_type, "cmlimit": "500",
         }
         params.update(cont)
         payload = _api(params)
-        for page in payload.get("query", {}).get("pages", {}).values():
-            info = (page.get("imageinfo") or [{}])[0]
-            metadata = info.get("extmetadata") or {}
-            license_name = str((metadata.get("LicenseShortName") or {}).get("value", ""))
-            mime = str(info.get("mime", ""))
-            if not mime.startswith("image/") or "public domain" not in license_name.lower():
-                continue
-            results.append(
-                {
-                    "title": page.get("title", ""),
-                    "page_url": "https://commons.wikimedia.org/wiki/" + page.get("title", "").replace(" ", "_"),
-                    "license": license_name,
-                    "source_url": info.get("thumburl") or info.get("url"),
-                    "mime": mime,
-                }
-            )
-            if len(results) >= limit:
-                break
+        results.extend(payload.get("query", {}).get("categorymembers", []))
         cont = payload.get("continue", {})
         if not cont:
-            break
-        time.sleep(0.2)
+            return results
+
+
+def discover(limit: int) -> list[dict]:
+    results: list[dict] = []
+    seen_files: set[str] = set()
+    # Commons organises the title-indexed category into subcategories. Walk
+    # those categories breadth-first, while retaining a hard cap for safety.
+    queue: list[tuple[str, int]] = [(CATEGORY, 0)]
+    seen_categories: set[str] = set()
+    while queue and len(results) < limit and len(seen_categories) < 200:
+        category, depth = queue.pop(0)
+        if not category or category in seen_categories:
+            continue
+        seen_categories.add(category)
+        if depth < 3:
+            for member in _members(category, "subcat"):
+                queue.append((member.get("title", ""), depth + 1))
+        cont: dict[str, str] = {}
+        while len(results) < limit and len(results) < 200:
+            params = {
+                "action": "query",
+                "format": "json",
+                "generator": "categorymembers",
+                "gcmtitle": category,
+                "gcmtype": "file",
+                "gcmlimit": "50",
+                "prop": "imageinfo|info",
+                "iiprop": "url|mime|size|extmetadata",
+                "iiurlwidth": "1024",
+            }
+            params.update(cont)
+            payload = _api(params)
+            for page in payload.get("query", {}).get("pages", {}).values():
+                info = (page.get("imageinfo") or [{}])[0]
+                metadata = info.get("extmetadata") or {}
+                license_name = str((metadata.get("LicenseShortName") or {}).get("value", ""))
+                mime = str(info.get("mime", ""))
+                if not mime.startswith("image/") or "public domain" not in license_name.lower():
+                    continue
+                title = page.get("title", "")
+                if title in seen_files:
+                    continue
+                seen_files.add(title)
+                results.append(
+                    {
+                        "title": title,
+                        "page_url": "https://commons.wikimedia.org/wiki/" + title.replace(" ", "_"),
+                        "license": license_name,
+                        "source_url": info.get("thumburl") or info.get("url"),
+                        "mime": mime,
+                    }
+                )
+                if len(results) >= limit:
+                    break
+            cont = payload.get("continue", {})
+            if not cont:
+                break
+            time.sleep(0.2)
     if len(results) < limit:
         raise RuntimeError(f"only found {len(results)} public-domain images in {CATEGORY}")
     return results[:limit]
