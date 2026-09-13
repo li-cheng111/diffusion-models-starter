@@ -50,6 +50,24 @@ def _latest_loss(path: Path) -> str | None:
         return None
 
 
+def _runner_alive() -> bool:
+    """Return whether a challenge runner or its active training process exists."""
+
+    proc_root = Path("/proc")
+    if not proc_root.exists():
+        return True
+    for entry in proc_root.iterdir():
+        if not entry.name.isdigit() or int(entry.name) == os.getpid():
+            continue
+        try:
+            command = (entry / "cmdline").read_text(errors="replace").replace("\x00", " ")
+        except OSError:
+            continue
+        if "challenge.py" in command or " train.py" in f" {command}":
+            return True
+    return False
+
+
 class ChallengeMonitor:
     def __init__(self, args: argparse.Namespace) -> None:
         self.root = args.root.resolve()
@@ -85,6 +103,7 @@ class ChallengeMonitor:
             active_dir = Path(checkpoint_paths[-1]).resolve().parent.parent
         else:
             active_dir = None
+        runner_alive = _runner_alive()
 
         runs: list[dict[str, Any]] = []
         for schedule in self.schedules:
@@ -96,9 +115,11 @@ class ChallengeMonitor:
                 step = self.total_steps if final.exists() else max((_step(path) for path in step_paths), default=0)
                 is_active = active_dir == run_dir.resolve()
                 status = "completed" if final.exists() else (
-                    "running" if step > 0 or is_active else "pending"
+                    "running" if (step > 0 or is_active) and runner_alive else (
+                        "stopped" if step > 0 or is_active else "pending"
+                    )
                 )
-                if final.exists() and is_active and phase in {"sampling", "evaluating"}:
+                if final.exists() and is_active and phase in {"sampling", "evaluating"} and runner_alive:
                     status = phase
                 loss = _latest_loss(run_dir / "loss_history.csv")
                 runs.append({
@@ -114,6 +135,7 @@ class ChallengeMonitor:
                         "running": "训练中",
                         "sampling": "采样中",
                         "evaluating": "FID 评估中",
+                        "stopped": "已中断",
                         "pending": "等待中",
                     }[status],
                     "loss": loss,
@@ -123,7 +145,7 @@ class ChallengeMonitor:
             (
                 row
                 for row in runs
-                if row["status"] in {"running", "sampling", "evaluating"}
+                if row["status"] in {"running", "sampling", "evaluating", "stopped"}
             ),
             None,
         )
@@ -142,6 +164,7 @@ class ChallengeMonitor:
                 "running": "训练中",
                 "sampling": "采样中",
                 "evaluating": "FID 评估中",
+                "stopped": "已中断",
                 "pending": "等待启动",
             }[status],
             "current": f"{current['schedule']} / {current['epochs']}ep / seed {current['seed']}" if current else None,
