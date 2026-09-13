@@ -5,6 +5,11 @@
 > `451f4fe16113bff5a5d2269ed5ad43b0592e9a14`。模型权重、HF cache、训练原图和
 > checkpoint 均不进入 Git。
 
+AutoDL 安装基线写在 `requirements/project3.txt`：PyTorch 2.8.0 / torchvision
+0.23.0（CUDA 12.8 镜像）、Diffusers 0.40.0、Transformers 5.15.1、PEFT 0.20.0、
+Accelerate 1.14.0、Hugging Face Hub 1.31.0。本机 smoke 使用同一上层库版本，
+但 PyTorch 为本机 CUDA 12.6 build，不能替代 AutoDL 结果。
+
 ## 0. 当前交付状态
 
 代码、测试、手写推理和 VAE notebook 已提交并推送；参数扫描、LoRA 重载和
