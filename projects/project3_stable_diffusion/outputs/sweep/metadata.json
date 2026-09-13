@@ -1,0 +1,88 @@
+{
+  "cfg_scales": [
+    1.0,
+    3.0,
+    7.5,
+    15.0,
+    25.0
+  ],
+  "command": "02_parameter_sweep.py --preset full --model_id /root/autodl-tmp/models/sd15-clean --model_revision  --output_dir outputs/sweep --metadata_output outputs/sweep/metadata.json --seed 42",
+  "cuda_available": true,
+  "elapsed_seconds": 36.642,
+  "files": [
+    "cfg_1.0.png",
+    "cfg_15.0.png",
+    "cfg_25.0.png",
+    "cfg_3.0.png",
+    "cfg_7.5.png",
+    "grid_2d.png",
+    "sampler_DDIM.png",
+    "sampler_DPMpp_2M.png",
+    "sampler_Euler-A.png",
+    "steps_10.png",
+    "steps_100.png",
+    "steps_20.png",
+    "steps_50.png",
+    "sweep_cfg.png",
+    "sweep_sampler.png",
+    "sweep_steps.png"
+  ],
+  "git_commit": null,
+  "gpu": "NVIDIA GeForce RTX 4090",
+  "gpu_capability": [
+    8,
+    9
+  ],
+  "gpu_memory_bytes": 25252724736,
+  "height": 512,
+  "model_id": "/root/autodl-tmp/models/sd15-clean",
+  "model_revision": "",
+  "negative_prompt": "low quality, blurry",
+  "output_sha256": {
+    "outputs/sweep/cfg_1.0.png": "834746a436f3061853e51a84eaf1dab54898863f246d8c07062f9dbaf515e68b",
+    "outputs/sweep/cfg_15.0.png": "c3e9eaae5f5db983f7e9e9f6a33b6a1b176df625cc008d5783af0ce578db65c4",
+    "outputs/sweep/cfg_25.0.png": "8003987601c325541d19b96402f49f0529044ed1dad34d87c163b8e05f03f861",
+    "outputs/sweep/cfg_3.0.png": "d16ca46c96022c6f87210c3bc3d6a7ca34790bf0bfca7efca943bfc1d32ba985",
+    "outputs/sweep/cfg_7.5.png": "dac09efe3dcc551ff564cffa177b8817387903965b28714f2d0403c59bbdcdc2",
+    "outputs/sweep/grid_2d.png": "60db72d1aa2b0acd4da88525660a2a8bf3fd9c9b8962ccea44da6756988836d9",
+    "outputs/sweep/sampler_DDIM.png": "44fe769126f5c3c4d1f0048723b8793858142ee7d4a234c6f10ee4b28882ef35",
+    "outputs/sweep/sampler_DPMpp_2M.png": "ff4a21a632e7b2aa3233f31dea6d080201a703b14e0ee842dcb665c341248873",
+    "outputs/sweep/sampler_Euler-A.png": "744e7fda97bde01b46e9e3a504771501e9ff7e14ece31f746c27ef11dd74aa78",
+    "outputs/sweep/steps_10.png": "8b34d3cd8f788cf749e0e97c50698a422eaa419d6cabecbbafbdfe9e7bbc8959",
+    "outputs/sweep/steps_100.png": "ef9c992ead0f4a0acc8b2940317bf7221bd5063b0ea46d8a04e783b520062edd",
+    "outputs/sweep/steps_20.png": "623e28d24567e3fb2115f8a349e43b2c0db5d9c6624fe18c869676f5aefc7b7f",
+    "outputs/sweep/steps_50.png": "dac09efe3dcc551ff564cffa177b8817387903965b28714f2d0403c59bbdcdc2",
+    "outputs/sweep/sweep_cfg.png": "68598bad175b4139b032f15d0a839daa579df78fb65394e1193ed3453a2551e3",
+    "outputs/sweep/sweep_sampler.png": "525436279e404b2e50828de60c766374facb66edeee0887e76ef1d4ae3e7a92f",
+    "outputs/sweep/sweep_steps.png": "48a70700bb07a963f5d99be7a94104d110706239560dc266adc66cedee3f025f"
+  },
+  "packages": {
+    "accelerate": "1.14.0",
+    "diffusers": "0.40.0",
+    "matplotlib": "3.10.5",
+    "peft": "0.20.0",
+    "safetensors": "0.8.0",
+    "torch": "2.8.0+cu128",
+    "torchvision": "0.23.0+cu128",
+    "transformers": "5.15.1"
+  },
+  "platform": "Linux-5.15.0-97-generic-x86_64-with-glibc2.35",
+  "preset": "full",
+  "prompt": "a photograph of a cat wearing a wizard hat, fantasy art",
+  "python": "3.12.3",
+  "samplers": [
+    "DDIM",
+    "Euler-A",
+    "DPM++ 2M"
+  ],
+  "seed": 42,
+  "steps": [
+    10,
+    20,
+    50,
+    100
+  ],
+  "timestamp_utc": "2026-09-13T15:24:21.881348+00:00",
+  "torch_cuda": "12.8",
+  "width": 512
+}

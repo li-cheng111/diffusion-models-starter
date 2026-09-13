@@ -1,0 +1,67 @@
+{
+  "timestamp_utc": "2026-09-13T15:31:54.873424+00:00",
+  "python": "3.12.3",
+  "platform": "Linux-5.15.0-97-generic-x86_64-with-glibc2.35",
+  "packages": {
+    "torch": "2.8.0+cu128",
+    "torchvision": "0.23.0+cu128",
+    "diffusers": "0.40.0",
+    "transformers": "5.15.1",
+    "accelerate": "1.14.0",
+    "peft": "0.20.0",
+    "safetensors": "0.8.0",
+    "huggingface_hub": "1.31.0",
+    "opencv-python-headless": "5.0.0.93",
+    "matplotlib": "3.10.5",
+    "pyarrow": "20.0.0"
+  },
+  "cuda": "12.8",
+  "cuda_available": true,
+  "gpu": "NVIDIA GeForce RTX 4090",
+  "gpu_memory_bytes": 25252724736,
+  "base_model": {
+    "source": "ModelScope mirror",
+    "repo": "AI-ModelScope/stable-diffusion-v1-5",
+    "revision": "master",
+    "local_path": "/root/autodl-tmp/models/sd15-clean"
+  },
+  "controlnet": {
+    "source": "ModelScope mirror",
+    "repo": "lllyasviel/sd-controlnet-canny",
+    "revision": "master",
+    "local_path": "/root/autodl-tmp/models/sd-controlnet-canny"
+  },
+  "weight_sha256": [
+    {
+      "path": "/root/autodl-tmp/models/sd15-clean/unet/diffusion_pytorch_model.safetensors",
+      "bytes": 3438167540,
+      "sha256": "19da7aaa4b880e59d56843f1fcb4dd9b599c28a1d9d9af7c1143057c8ffae9f1"
+    },
+    {
+      "path": "/root/autodl-tmp/models/sd15-clean/vae/diffusion_pytorch_model.safetensors",
+      "bytes": 334643276,
+      "sha256": "a2b5134f4dbc140d9c11f11cba3233099e00af40f262f136c691fb7d38d2194c"
+    },
+    {
+      "path": "/root/autodl-tmp/models/sd15-clean/text_encoder/model.safetensors",
+      "bytes": 492265874,
+      "sha256": "d008943c017f0092921106440254dbbe00b6a285f7883ec8ba160c3faad88334"
+    },
+    {
+      "path": "/root/autodl-tmp/models/sd-controlnet-canny/diffusion_pytorch_model.safetensors",
+      "bytes": 1445157124,
+      "sha256": "e19821a00e6d1817b37286a21d5c4f8915076949b0e81846c4f92c96ffb46db7"
+    }
+  ],
+  "dataset": {
+    "source": "ModelScope mirror",
+    "repo": "huggan/vangogh2photo",
+    "license": "Apache-2.0 (mirror metadata)",
+    "count": 20,
+    "local_path": ".local/datasets/project3_vangogh"
+  },
+  "notes": [
+    "Hugging Face endpoints unreachable from AutoDL; ModelScope mirrors used.",
+    "Wikimedia API returned OSError 99 (address resource exhaustion); original Commons downloader remains in source and was not fabricated."
+  ]
+}

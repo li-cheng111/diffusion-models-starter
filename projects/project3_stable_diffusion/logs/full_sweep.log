@@ -1,0 +1,27 @@
+/root/miniconda3/lib/python3.12/site-packages/diffusers/utils/deprecation_utils.py:23: FutureWarning: `torch_dtype` is deprecated and will be removed in version 1.0.0. Please use `dtype` instead.
+  deprecate("torch_dtype", "1.0.0", _TORCH_DTYPE_DEPRECATION_MESSAGE)
+Loading /root/autodl-tmp/models/sd15-clean...
+Loading pipeline components...:   0%|          | 0/7 [00:00<?, ?it/s]Loading pipeline components...:  14%|█▍        | 1/7 [00:00<00:02,  2.40it/s]
+Loading weights:   0%|          | 0/196 [00:00<?, ?it/s][A
+Loading weights:  65%|██████▌   | 128/196 [00:00<00:00, 1109.72it/s][ALoading weights: 100%|██████████| 196/196 [00:00<00:00, 1522.10it/s]
+Loading pipeline components...:  29%|██▊       | 2/7 [00:00<00:01,  3.06it/s]
+Loading weights:   0%|          | 0/396 [00:00<?, ?it/s][A
+Loading weights:  48%|████▊     | 189/396 [00:00<00:00, 1409.90it/s][A
+Loading weights:  83%|████████▎ | 330/396 [00:00<00:00, 1333.86it/s][ALoading weights: 100%|██████████| 396/396 [00:00<00:00, 1183.30it/s]
+Loading pipeline components...:  43%|████▎     | 3/7 [00:01<00:01,  2.36it/s]Loading pipeline components...:  71%|███████▏  | 5/7 [00:01<00:00,  4.28it/s]CLIPFeatureExtractor appears to have been deprecated in transformers. Using CLIPImageProcessor instead.
+Loading pipeline components...: 100%|██████████| 7/7 [00:01<00:00,  4.97it/s]
+
+=== Experiment 1: CFG scale sweep ===
+  saved outputs/sweep/sweep_cfg.png
+
+=== Experiment 2: Steps sweep ===
+  saved outputs/sweep/sweep_steps.png
+
+=== Experiment 3: Sampler sweep ===
+  saved outputs/sweep/sweep_sampler.png
+
+=== Experiment 4: 2D grid CFG × Steps ===
+  saved outputs/sweep/grid_2d.png
+
+[done] All outputs in outputs/sweep
+[saved] metadata -> outputs/sweep/metadata.json

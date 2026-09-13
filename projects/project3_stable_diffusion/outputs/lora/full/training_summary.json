@@ -1,0 +1,52 @@
+{
+  "alpha": 8,
+  "batch_size": 1,
+  "checkpointing_steps": 200,
+  "command": "03_lora_finetune.py --train_data_dir .local/datasets/project3_vangogh --instance_prompt a painting in the style of van gogh --output_dir outputs/lora/full --model_id /root/autodl-tmp/models/sd15-clean --model_revision  --seed 42 --rank 8 --num_train_steps 800 --checkpointing_steps 200 --gradient_checkpointing --mixed_precision fp16 --num_workers 2 --max_grad_norm 1.0 --validation_prompts a landscape in the style of van gogh a vase of sunflowers in the style of van gogh",
+  "cuda_available": true,
+  "dataset_dir": "/root/autodl-tmp/p3-run/project3_stable_diffusion/.local/datasets/project3_vangogh",
+  "dataset_size": 20,
+  "elapsed_seconds": 209.47,
+  "final_loss": 0.1527308225631714,
+  "final_step": 800,
+  "final_weights": "outputs/lora/full/pytorch_lora_weights.safetensors",
+  "git_commit": null,
+  "gpu": "NVIDIA GeForce RTX 4090",
+  "gpu_capability": [
+    8,
+    9
+  ],
+  "gpu_memory_bytes": 25252724736,
+  "gradient_checkpointing": true,
+  "initial_loss": 0.28103673458099365,
+  "instance_prompt": "a painting in the style of van gogh",
+  "lr": 0.0001,
+  "max_grad_norm": 1.0,
+  "mean_last_50_loss": 0.228209664542228,
+  "mixed_precision": "fp16",
+  "model_id": "/root/autodl-tmp/models/sd15-clean",
+  "model_revision": "",
+  "num_train_steps": 800,
+  "num_workers": 2,
+  "packages": {
+    "accelerate": "1.14.0",
+    "diffusers": "0.40.0",
+    "matplotlib": "3.10.5",
+    "peft": "0.20.0",
+    "safetensors": "0.8.0",
+    "torch": "2.8.0+cu128",
+    "torchvision": "0.23.0+cu128",
+    "transformers": "5.15.1"
+  },
+  "platform": "Linux-5.15.0-97-generic-x86_64-with-glibc2.35",
+  "python": "3.12.3",
+  "random_flip": false,
+  "rank": 8,
+  "seed": 42,
+  "timestamp_utc": "2026-09-13T15:24:42.758409+00:00",
+  "torch_cuda": "12.8",
+  "validation_prompts": [
+    "a landscape in the style of van gogh",
+    "a vase of sunflowers in the style of van gogh"
+  ]
+}

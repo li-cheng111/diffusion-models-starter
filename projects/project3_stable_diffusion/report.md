@@ -1,8 +1,11 @@
 # Project 3：Stable Diffusion 全流程实验报告
 
-> 本报告对应 `codex/monorepo-organization` 分支。基础模型固定为
-> `stable-diffusion-v1-5/stable-diffusion-v1-5`，revision
-> `451f4fe16113bff5a5d2269ed5ad43b0592e9a14`。模型权重、HF cache、训练原图和
+> 本报告对应 `codex/monorepo-organization` 分支。代码默认固定
+> `stable-diffusion-v1-5/stable-diffusion-v1-5` revision
+> `451f4fe16113bff5a5d2269ed5ad43b0592e9a14`；AutoDL 实测因 Hugging Face
+> endpoint 不可达，使用 ModelScope 的标准 Diffusers 镜像
+> `AI-ModelScope/stable-diffusion-v1-5@master`，来源和权重 SHA256 见
+> `outputs/autodl_environment.json`。模型权重、HF cache、训练原图和临时
 > checkpoint 均不进入 Git。
 
 AutoDL 安装基线写在 `requirements/project3.txt`：PyTorch 2.8.0 / torchvision
@@ -12,11 +15,11 @@ Accelerate 1.14.0、Hugging Face Hub 1.31.0。本机 smoke 使用同一上层库
 
 ## 0. 当前交付状态
 
-代码、测试、手写推理和 VAE notebook 已提交并推送；参数扫描、LoRA 重载和
-cross-attention 已完成本机 smoke 验证。当前工作站只有 RTX 4060 Laptop 8 GB，且
-没有可用的 AutoDL 浏览器/SSH 会话，因此 4090 上的 800-step LoRA、full sweep 和
-ControlNet 长任务不能在本次本地会话中冒充已完成。AutoDL 执行时按
-`README.md` 的命令生成产物，再将 `outputs/`、`logs/` 和本报告作为第二次提交。
+代码、测试、执行后的 A/C/E notebook、full sweep、ControlNet、cross-attention 和
+800-step LoRA 均已在 AutoDL RTX 4090 上完成并回传。AutoDL 环境为 Python 3.12.3、
+PyTorch 2.8.0+cu128、CUDA 12.8、显存 24 GB；所有命令、依赖、运行时间和产物
+SHA256 写入 `outputs/autodl_environment.json` 及各实验 metadata。训练原图只保留在
+AutoDL 被忽略目录 `.local/datasets/project3_vangogh`。
 
 ## 1. 总体流程与 shape 来源
 
@@ -49,7 +52,7 @@ notebook 已执行并保留 execution count、文本及图片输出。
 `low quality, blurry, distorted`，seed=42，steps=50，CFG=7.5。执行过程中记录
 step 0、9、24、49 的 latent 统计量；最终 latent 仍为 `(1,4,64,64)`，图像为
 `(1,3,512,512)`。`manual_sd_seed42.png` 和 `manual_sd_stats.json` 同时由 notebook
-生成到外部运行目录，避免把缓存带入仓库。
+AutoDL notebook 生成并回传，其中记录 step 0、9、24、49 的 latent 演化和最终 SHA256。
 
 思考题：
 
@@ -72,8 +75,9 @@ step 0、9、24、49 的 latent 统计量；最终 latent 仍为 `(1,4,64,64)`�
 
 解释：CFG 从 1 增大到中等值时 prompt adherence 通常增强；过大的 CFG 会过饱和、边缘
 发硬或出现伪影。steps 增加主要改善早期结构和细节，但采样器的离散化方式也会改变
-结果，不能把 steps 与 sampler 的影响混为一谈。最终报告应以 AutoDL `metadata.json`
-中的实测图像和时间为准。
+结果，不能把 steps 与 sampler 的影响混为一谈。AutoDL full sweep 的 `metadata.json`
+记录 16 张单图、3 张 sampler/CFG/steps 总图和 1 张 2D grid，512×512、seed=42、
+耗时 36.642 秒；报告结论以这些实测产物为准。
 
 ## 4. C：VAE anatomy
 
@@ -86,8 +90,10 @@ latent channel、原图/重构图、右下角细节 crop 和 metrics JSON。已�
 | latent | `(1,4,64,64)` |
 | 重构 RGB | `(1,3,512,512)` |
 
-本次已执行输入的可追溯指标为 MSE=`1.6900175e-4`、PSNR=`37.7211 dB`（指标定义在
-notebook 中，范围为 `[0,1]`）。四个 channel 的均值/std 也写入 `vae_metrics.json`。
+AutoDL 本次输入（full sweep 的 `grid_2d.png`）指标为 MSE=`0.0019791808`、
+PSNR=`27.0351 dB`（指标定义在 notebook 中，范围为 `[0,1]`）；四个 channel 的
+均值/std 写入 `outputs/vae_metrics.json`。本机先前的 512×512 单图 smoke 指标
+`1.6900175e-4 / 37.7211 dB` 仅作为对照，不与 AutoDL 数字混用。
 VAE 是有损压缩：低频颜色和大形状保持较好，细小文字、尖锐边缘和纹理会被平滑。
 
 ## 5. D：LoRA
@@ -99,7 +105,10 @@ FP16 autocast/GradScaler，支持 gradient checkpointing、max-grad-norm、JSONL
 800 optimizer steps、seed=42。
 
 `evaluate_lora.py` 会从全新 pipeline 逐个加载 base、checkpoint-0200/0400/0600/0800，
-使用相同 prompt/seed 生成对比图。重要实现细节是 `UNet.save_lora_adapter` 生成的
+使用相同 prompt/seed 生成对比图，结果在 `outputs/lora/full_eval/`。AutoDL 实测
+20 张训练图、800 steps 耗时 209.47 秒，初始 loss=`0.2810367`、最终
+loss=`0.1527308`、last-50 mean=`0.2282097`，无 NaN/Inf；最终 adapter 为
+6,414,448 bytes（约 6.4 MB）。重要实现细节是 `UNet.save_lora_adapter` 生成的
 UNet-only safetensors 必须通过 `unet.load_lora_adapter(..., prefix=None,
 weight_name=...)` 重载；直接用 pipeline API 会静默忽略未带 `unet.` 前缀的 keys。
 该问题已用本地 2-step smoke 复现并修复。
@@ -107,14 +116,17 @@ weight_name=...)` 重载；直接用 pipeline API 会静默忽略未带 `unet.` 
 ## 6. E：ControlNet 与 cross-attention challenge
 
 `04_controlnet_demo.ipynb` 先计算 Canny，再以同一结构运行四个风格 prompt，并额外
-运行“同一边缘图但 prompt 要求 golden retriever dog”的冲突实验。ControlNet 通过
+运行“同一边缘图但 prompt 要求 golden retriever dog”的冲突实验。AutoDL 已生成
+`controlnet_prompt_00..03.png`、`controlnet_grid.png`、输入/Canny 图和冲突图，
+metadata 同时记录阈值 `[100,200]`、seed=42 及 SHA256。ControlNet 通过
 zero-convolution 将条件分支的 residual 注入冻结的 SD UNet：初始 zero 保证训练初期
 不破坏 base，训练后才逐渐改变结构特征。
 
 `06_cross_attention_visualization.py` 安装自定义 processor，只保存 CFG conditional
 half，在中后期 timestep 聚合 16×16/32×32 query map，排除 BOS/EOS/padding，再插值叠加
-到生成图。metadata 记录有效 token index、token string、层数、分辨率和 SHA256。已用
-5-step smoke 验证 `cat/wizard/hat/forest` 四个 token 均产生有限的 32×32 heatmap。
+到生成图。AutoDL 30-step 实测捕获 `cat/wizard/hat/forest` 四个有效 token，聚合
+32 个 attention 层的 16×16/32×32 map，输出 4 张 heatmap overlay、generated 图和
+metadata；数值有限，BOS/EOS/padding 已排除。另有 5-step smoke 产物用于快速回归。
 
 ## 7. 真实 debug 记录
 
@@ -129,14 +141,18 @@ half，在中后期 timestep 聚合 16×16/32×32 query map，排除 BOS/EOS/pad
    `norm_encoder_hidden_states`，触发 assertion；现在只在 `norm_cross` 为真时归一化。
 5. tokenizer token 名含 `<`、`>`，Windows 文件名保存失败；输出 label 现在用安全字符
    过滤并保留 token index。
+6. AutoDL 访问 Wikimedia Commons 时出现 `OSError: [Errno 99] Cannot assign requested
+   address`；为保持可复现实测，改用 ModelScope 公共 `huggan/vangogh2photo` 镜像的
+   20 张 `imageA`，其来源、许可证说明和 SHA256 写入 `outputs/lora/vangogh_manifest.json`。
+   Commons 版本 downloader 仍保留在源码中，未把镜像冒充为 Commons 原图。
 
 ## 8. AutoDL 执行与验收
 
-在 AutoDL 4090/24GB 实例上，从本分支最新 HEAD 开始，HF cache 放在仓库外，先执行
-`check_env.py`、Project 3 pytest、5-step manual smoke、smoke sweep、2-step LoRA
-保存/重载、单 prompt ControlNet 和 attention smoke；全部通过后再执行 full sweep、
-notebook `nbconvert --execute --inplace`、800-step LoRA、ControlNet 四风格+冲突和
-attention challenge。长任务置于 tmux，持续保留 stdout、JSONL、metadata 和 SHA256。
+在 AutoDL 4090/24GB 实例上，从独立运行目录开始，Project 3 pytest（5 passed）、
+5-step manual/sweep smoke、2-step LoRA 保存/重载、单 prompt ControlNet 和 attention
+smoke 全部通过；随后执行 full sweep、三个 `nbconvert --execute --inplace` notebook、
+800-step LoRA、ControlNet 四风格+冲突和 30-step attention challenge。长任务置于
+tmux（`p3_sweep`、`p3_lora`），stdout、JSONL、metadata 和 SHA256 均已保留。
 
 验收必须同时满足：LoRA 无 NaN/Inf 且 adapter <25MB；四张 sweep 总图、四张以上
 ControlNet 结果和冲突图齐全；attention metadata 只包含有效 token 和 16/32 分辨率；

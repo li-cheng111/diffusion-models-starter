@@ -1,0 +1,35 @@
+{
+  "model_id": "/root/autodl-tmp/models/sd15-clean",
+  "model_revision": "",
+  "controlnet_id": "/root/autodl-tmp/models/sd-controlnet-canny",
+  "seed": 42,
+  "canny_thresholds": [
+    100,
+    200
+  ],
+  "prompts": [
+    "a modern oil painting, vibrant colors",
+    "a manga style illustration",
+    "a cyberpunk character with neon lights",
+    "a pixar 3D rendering, soft lighting"
+  ],
+  "conflict_prompt": "a realistic golden retriever dog, high detail",
+  "files": [
+    "control_input_and_canny.png",
+    "controlnet_conflict_dog_on_same_edges.png",
+    "controlnet_grid.png",
+    "controlnet_prompt_00.png",
+    "controlnet_prompt_01.png",
+    "controlnet_prompt_02.png",
+    "controlnet_prompt_03.png"
+  ],
+  "sha256": {
+    "control_input_and_canny.png": "9c619f200e4e3232bfc347b1c0bc3a2bd1ad8e930aefd9899b7957133e314416",
+    "controlnet_conflict_dog_on_same_edges.png": "224e8fd9f55437144d6256e2789915c0baaf4f11f2a8e5dd292ab381b198bfbe",
+    "controlnet_grid.png": "c397a4ccf3c443359f2c512842787c73dd4c616a5870db3db9c14efd53d8727d",
+    "controlnet_prompt_00.png": "c861a345c665e5f03ce019a6c27da727678264e4ec8423ff199d8b1e17a42029",
+    "controlnet_prompt_01.png": "6a4ea692090b4d4fc547569a78bfad35637a46922a054e7647ff9a8648410ecd",
+    "controlnet_prompt_02.png": "5a369fe2125733dd8549345d222f9eec3895394fd089ccbe60bac5d9809cd444",
+    "controlnet_prompt_03.png": "dbb76f923b958fd9d1421860c5e8584480543b2a4b01c9a301cf5ea3b4d822e9"
+  }
+}
