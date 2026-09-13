@@ -10,6 +10,7 @@ SD 参数扫描
 """
 
 import argparse
+import time
 from pathlib import Path
 
 import torch
@@ -21,6 +22,11 @@ from diffusers import (
     EulerAncestralDiscreteScheduler,
     DPMSolverMultistepScheduler,
 )
+
+try:
+    from .experiment_utils import add_file_hashes, git_commit, runtime_metadata, write_json
+except ImportError:  # direct ``python 02_parameter_sweep.py`` execution
+    from experiment_utils import add_file_hashes, git_commit, runtime_metadata, write_json
 
 
 SAMPLER_REGISTRY = {
@@ -39,7 +45,11 @@ def main():
     parser.add_argument('--seed', type=int, default=42)
     parser.add_argument('--output_dir', type=str, default='./outputs/sweep')
     parser.add_argument('--model_id', type=str,
-                        default="runwayml/stable-diffusion-v1-5")
+                        default="stable-diffusion-v1-5/stable-diffusion-v1-5")
+    parser.add_argument('--model_revision', type=str, default='451f4fe16113bff5a5d2269ed5ad43b0592e9a14')
+    parser.add_argument('--preset', choices=['smoke', 'full'], default='full',
+                        help='smoke uses a small matrix for validating the environment')
+    parser.add_argument('--metadata_output', type=str, default=None)
 
     # 扫描范围
     parser.add_argument('--cfg_scales', nargs='+', type=float,
@@ -48,7 +58,18 @@ def main():
                         default=[10, 20, 50, 100])
     parser.add_argument('--samplers', nargs='+', type=str,
                         default=['DDIM', 'Euler-A', 'DPM++ 2M'])
+    parser.add_argument('--height', type=int, default=512)
+    parser.add_argument('--width', type=int, default=512)
     args = parser.parse_args()
+    started = time.time()
+
+    if args.preset == 'smoke':
+        args.cfg_scales = [1.0, 7.5]
+        args.steps = [5, 10]
+        args.samplers = ['DDIM']
+
+    if any(value % 8 for value in (args.height, args.width)):
+        raise ValueError('--height and --width must be divisible by 8')
 
     output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -57,8 +78,13 @@ def main():
     dtype = torch.float16 if torch.cuda.is_available() else torch.float32
 
     print(f"Loading {args.model_id}...")
-    pipe = StableDiffusionPipeline.from_pretrained(args.model_id, torch_dtype=dtype).to(device)
+    load_kwargs = {'torch_dtype': dtype}
+    if args.model_revision:
+        load_kwargs['revision'] = args.model_revision
+    pipe = StableDiffusionPipeline.from_pretrained(args.model_id, **load_kwargs).to(device)
     pipe.safety_checker = None  # 简化，建议自己使用时也禁用
+    if hasattr(pipe, 'enable_attention_slicing'):
+        pipe.enable_attention_slicing()
     pipe.set_progress_bar_config(disable=True)
 
     # ─────────── 实验 1: CFG scale 扫描 ───────────
@@ -70,7 +96,8 @@ def main():
     for i, cfg in enumerate(args.cfg_scales):
         gen = torch.Generator(device=device).manual_seed(args.seed)
         img = pipe(args.prompt, negative_prompt=args.negative_prompt,
-                   num_inference_steps=50, guidance_scale=cfg,
+                   num_inference_steps=50 if args.preset == 'full' else 5,
+                   guidance_scale=cfg, height=args.height, width=args.width,
                    generator=gen).images[0]
         axes[i].imshow(img)
         axes[i].set_title(f"CFG={cfg}")
@@ -92,6 +119,7 @@ def main():
         gen = torch.Generator(device=device).manual_seed(args.seed)
         img = pipe(args.prompt, negative_prompt=args.negative_prompt,
                    num_inference_steps=steps, guidance_scale=7.5,
+                   height=args.height, width=args.width,
                    generator=gen).images[0]
         axes[i].imshow(img)
         axes[i].set_title(f"steps={steps}")
@@ -109,11 +137,15 @@ def main():
                               squeeze=False)
     axes = axes[0]
     for i, sampler_name in enumerate(args.samplers):
-        scheduler_cls = SAMPLER_REGISTRY[sampler_name]
+        try:
+            scheduler_cls = SAMPLER_REGISTRY[sampler_name]
+        except KeyError as exc:
+            raise ValueError(f"unknown sampler {sampler_name!r}; choose from {sorted(SAMPLER_REGISTRY)}") from exc
         pipe.scheduler = scheduler_cls.from_config(pipe.scheduler.config)
         gen = torch.Generator(device=device).manual_seed(args.seed)
         img = pipe(args.prompt, negative_prompt=args.negative_prompt,
-                   num_inference_steps=30, guidance_scale=7.5,
+                   num_inference_steps=30 if args.preset == 'full' else 5,
+                   guidance_scale=7.5, height=args.height, width=args.width,
                    generator=gen).images[0]
         axes[i].imshow(img)
         axes[i].set_title(f"{sampler_name}")
@@ -128,8 +160,12 @@ def main():
     # ─────────── 实验 4: 2D 网格 CFG × steps ───────────
     print("\n=== Experiment 4: 2D grid CFG × Steps ===")
     pipe.scheduler = DDIMScheduler.from_config(pipe.scheduler.config)
-    cfgs_2d = [3.0, 7.5, 15.0]
-    steps_2d = [10, 20, 50]
+    if args.preset == 'full':
+        cfgs_2d = [3.0, 7.5, 15.0]
+        steps_2d = [10, 20, 50]
+    else:
+        cfgs_2d = [3.0, 7.5]
+        steps_2d = [5, 10]
     fig, axes = plt.subplots(len(cfgs_2d), len(steps_2d),
                               figsize=(3 * len(steps_2d), 3 * len(cfgs_2d)),
                               squeeze=False)
@@ -138,6 +174,7 @@ def main():
             gen = torch.Generator(device=device).manual_seed(args.seed)
             img = pipe(args.prompt, negative_prompt=args.negative_prompt,
                        num_inference_steps=steps, guidance_scale=cfg,
+                       height=args.height, width=args.width,
                        generator=gen).images[0]
             axes[i][j].imshow(img)
             axes[i][j].set_title(f"CFG={cfg}, steps={steps}")
@@ -147,7 +184,26 @@ def main():
     plt.close()
     print(f"  saved {output_dir / 'grid_2d.png'}")
 
+    metadata_path = Path(args.metadata_output) if args.metadata_output else output_dir / 'metadata.json'
+    metadata = runtime_metadata(seed=args.seed, model_id=args.model_id,
+                                model_revision=args.model_revision)
+    metadata.update({
+        'git_commit': git_commit(),
+        'preset': args.preset,
+        'prompt': args.prompt,
+        'negative_prompt': args.negative_prompt,
+        'cfg_scales': args.cfg_scales,
+        'steps': args.steps,
+        'samplers': args.samplers,
+        'height': args.height,
+        'width': args.width,
+        'elapsed_seconds': round(time.time() - started, 3) if 'started' in locals() else None,
+        'files': sorted(str(p.relative_to(output_dir)) for p in output_dir.glob('*.png')),
+    })
+    add_file_hashes(metadata, [output_dir / name for name in metadata['files']])
+    write_json(metadata_path, metadata)
     print(f"\n[done] All outputs in {output_dir}")
+    print(f"[saved] metadata -> {metadata_path}")
 
 
 if __name__ == '__main__':

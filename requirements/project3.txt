@@ -1,9 +1,12 @@
 -r base.txt
 torch>=2.0
 torchvision>=0.15
-diffusers>=0.25
-transformers>=4.35
-accelerate>=0.25
-peft>=0.7
-opencv-python>=4.8
+diffusers==0.40.0
+transformers==5.15.1
+accelerate==1.14.0
+peft==0.20.0
+safetensors==0.8.0
+opencv-python-headless>=4.8
 jupyter>=1.0
+nbconvert>=7.16
+pytest>=7.0

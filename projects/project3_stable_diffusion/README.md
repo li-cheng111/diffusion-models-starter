@@ -1,5 +1,9 @@
 # 项目 3：Stable Diffusion 完整解剖与微调
 
+> 本目录的实现与 AutoDL 实验产物位于 monorepo 分支
+> `codex/monorepo-organization`。基础模型固定为
+> `stable-diffusion-v1-5/stable-diffusion-v1-5` revision；权重、缓存和原始训练图像不提交。
+
 > **难度**：中-高
 > **预期完成时间**：1.5-2 周
 > **前置**：完成 L08-L09，已有 SD 概念基础。任务 A-C 学完 L09 即可动手；
@@ -59,6 +63,11 @@ git clone https://github.com/Qi-StarterTrain/diffusion-models-starter-materials.
 ├── 04_controlnet_demo.ipynb        ← ControlNet demo（依赖 L10）
 ├── experiment_log_template.md      ← 实验日志模板
 ├── reading_note_template.md        ← 论文笔记模板（任务 A 的 reading note 用）
+├── 05_vae_anatomy.ipynb            ← 任务 C：VAE 四通道与重构
+├── 06_cross_attention_visualization.py ← 任务 E：token 热力图
+├── evaluate_lora.py                ← LoRA checkpoint 重载与前后对比
+├── prepare_vangogh_dataset.py      ← 公共领域数据下载与 SHA256 manifest
+├── tests/                          ← CPU 合约测试与训练步测试
 └── outputs/                        ← 生成结果保存（自己建）
 ```
 
@@ -66,6 +75,12 @@ git clone https://github.com/Qi-StarterTrain/diffusion-models-starter-materials.
 
 ```bash
 python check_env.py
+```
+
+从 monorepo 根目录运行 Project 3 的静态与训练步测试：
+
+```bash
+python -m pytest projects/project3_stable_diffusion/tests -q
 ```
 
 它会检查依赖包、显存、以及 HuggingFace 是否连得上（只发 HEAD 请求，不下载权重）。
@@ -115,6 +130,12 @@ python 02_parameter_sweep.py \
     --seed 42 --output_dir ./outputs/sweep
 ```
 
+AutoDL 上首次验证环境时使用缩小矩阵：
+
+```bash
+python 02_parameter_sweep.py --preset smoke --output_dir ./outputs/sweep_smoke
+```
+
 脚本会跑 4 组实验，输出 `sweep_cfg.png`、`sweep_steps.png`、`sweep_sampler.png`、
 `grid_2d.png`（CFG × steps 二维网格）到 `--output_dir`，同时单独存每张图。
 
@@ -159,6 +180,28 @@ python 03_lora_finetune.py \
     --rank 8 --num_train_steps 800
 ```
 
+完整实验显式固定 seed、revision，并在 200 步间隔保存 adapter：
+
+```bash
+python 03_lora_finetune.py \
+    --train_data_dir .local/datasets/project3_vangogh \
+    --instance_prompt "a painting in sks style" \
+    --output_dir outputs/lora --seed 42 --rank 8 \
+    --num_train_steps 800 --checkpointing_steps 200 \
+    --gradient_checkpointing --mixed_precision fp16
+
+python evaluate_lora.py --lora_dir outputs/lora \
+    --output_dir outputs/lora/evaluation --seed 42
+```
+
+下载公共领域训练图并生成来源/许可/SHA256 清单：
+
+```bash
+python prepare_vangogh_dataset.py \
+    --output_dir .local/datasets/project3_vangogh \
+    --manifest_output outputs/lora/vangogh_manifest.json
+```
+
 参考：
 - **L10 §3**（LoRA）——§3.5 直接给出了 SD 该改哪些 `target_modules`，§3.6 给了数据量/步数的量级
 - `paper_notes/11_LoRA_Hu2021.md`
@@ -187,12 +230,22 @@ python 03_lora_finetune.py \
 
 需要 hook 进 UNet 的内部模块，提取 attention 矩阵。
 
+命令行挑战实现：
+
+```bash
+python 06_cross_attention_visualization.py \
+    --output_dir outputs/attention --seed 42
+```
+
 **或者**做 L09 §10 挑战档那道：自己组装 **SDXL 双模型（base + refiner）推理流水线**。
 两道二选一即可，计同样的 bonus 分。
 
 ---
 
 ## 自查问题（在报告中回答）
+
+实现状态：A–E 的代码路径、测试、AutoDL 命令和交付物目录均已准备；执行 notebook
+后必须保留输出，模型权重、缓存和训练原图继续保持被忽略。
 
 前 5 道来自 `01_inference_walkthrough.ipynb` 末尾的思考题，
 第 6-9 道来自 `04_controlnet_demo.ipynb`（做了 ControlNet 再答）：
