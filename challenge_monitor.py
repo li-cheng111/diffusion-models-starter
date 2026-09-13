@@ -119,8 +119,8 @@ class ChallengeMonitor:
                 step_paths = list(ckpt_dir.glob("step_*.pt")) + list((run_dir / "samples").glob("step_*.png"))
                 step = self.total_steps if final.exists() else max((_step(path) for path in step_paths), default=0)
                 is_active = active_dir == run_dir.resolve()
-                if is_active or (step > 0 and latest_log_step > 0):
-                    step = max(step, latest_log_step)
+                if step > 0 and latest_log_step > 0:
+                    step = latest_log_step if runner_alive else max(step, latest_log_step)
                 status = "completed" if final.exists() else (
                     "running" if (step > 0 or is_active) and runner_alive else (
                         "stopped" if step > 0 or is_active else "pending"
