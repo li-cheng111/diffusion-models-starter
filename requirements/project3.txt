@@ -1,0 +1,9 @@
+-r base.txt
+torch>=2.0
+torchvision>=0.15
+diffusers>=0.25
+transformers>=4.35
+accelerate>=0.25
+peft>=0.7
+opencv-python>=4.8
+jupyter>=1.0

@@ -1,0 +1,34 @@
+# 冒烟测试：50 条 demo + 500 步，几分钟跑完 采数据 → 训练 → 闭环评估 全流程
+#
+# 用来确认 TODO 19/20/21 接得上，不是用来出结果的——成功率会很低，正常。
+#
+#   python train.py --config configs/reach2d_debug.yaml
+#   python eval.py  --config configs/reach2d_debug.yaml \
+#                   --ckpt ckpts_debug/model_final.pt --n_episodes 10
+
+# Data
+n_demos: 50
+n_distractors: 2
+chunk_size: 16                   # 小 chunk，样本更少、显存更省
+demo_path: ./data/demos_debug.pkl
+seed: 0
+
+# Model
+use_vision: false                # 先不碰 TODO 20；跑通后改成 true 再跑一遍
+vision_out_dim: 64
+hidden: 128
+
+# Diffusion
+diffusion_steps: 100
+
+# Training
+batch_size: 64
+lr: 1.0e-3
+weight_decay: 0.0
+ema_decay: 0.95                  # 只训 500 步，EMA 衰减必须调小，
+                                 # 否则 EMA 权重还停在随机初始化上，评估全是失败
+max_steps: 500
+log_every: 50
+save_every: 250
+ckpt_dir: ./ckpts_debug
+num_workers: 0

@@ -1,0 +1,6 @@
+-r base.txt
+torch>=2.0
+torchvision>=0.15
+pytest>=7.0
+torchmetrics[image]>=1.0
+torch-fidelity>=0.3

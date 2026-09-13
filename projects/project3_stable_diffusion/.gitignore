@@ -1,0 +1,23 @@
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.venv/
+venv/
+
+# 模型权重与缓存（几 GB，绝对不要提交）
+*.safetensors
+*.ckpt
+*.bin
+huggingface/
+.cache/
+
+# 训练数据（自己准备的图片不提交）
+my_dataset/
+input.png
+
+# 例外：LoRA 权重只有几 MB，需要提交
+!outputs/lora/**

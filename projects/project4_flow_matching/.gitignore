@@ -1,0 +1,18 @@
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.venv/
+venv/
+
+# 数据与 checkpoint（几百 MB，不要提交）
+data/
+checkpoints/
+ckpts/
+*.pt
+*.pth
+
+# results/*.json 和图要提交，不要忽略
