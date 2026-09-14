@@ -258,6 +258,11 @@ def main():
 
     scheduler = DDPMScheduler(T=cfg["diffusion_steps"], device=device)
 
+    status_path = Path(args.output).parent / "status.json" if args.output else None
+    if status_path:
+        status_path.write_text(json.dumps({"state": "evaluating", "method": method,
+                                           "episodes": args.n_episodes}, indent=2), encoding="utf-8")
+
     results = evaluate(
         model, scheduler, cfg, device,
         n_episodes=args.n_episodes,
@@ -280,6 +285,9 @@ def main():
         output = Path(args.output)
         output.parent.mkdir(parents=True, exist_ok=True)
         output.write_text(json.dumps(results, ensure_ascii=False, indent=2), encoding="utf-8")
+        status_path.write_text(json.dumps({"state": "completed", "method": method,
+                                           "step": ckpt.get("step"),
+                                           "eval": results}, ensure_ascii=False, indent=2), encoding="utf-8")
         print(f"Saved results: {output}")
 
 
