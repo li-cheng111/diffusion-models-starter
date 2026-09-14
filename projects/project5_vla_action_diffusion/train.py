@@ -174,6 +174,7 @@ def main():
             n_distractors=cfg["n_distractors"],
             save_path=demo_path,
             seed=cfg.get("seed", 0),
+            target_choices=cfg.get("target_choices"),
         )
 
     # Dataset
@@ -194,6 +195,8 @@ def main():
         vision_out_dim=cfg["vision_out_dim"],
         hidden=cfg["hidden"],
         use_vision=use_vision,
+        vision_encoder=cfg.get("vision_encoder", "small"),
+        vision_pretrained=cfg.get("vision_pretrained", False),
     ).to(device)
     print(f"条件模式: {'image + agent_pos' if use_vision else 'agent_pos + target_pos（无视觉）'}"
           f"  state_dim={state_dim_for(use_vision)}")

@@ -1,0 +1,21 @@
+# Bonus: ImageNet-pretrained ResNet-18 comparison.
+n_demos: 1000
+n_distractors: 2
+chunk_size: 16
+demo_path: ./data/demos_16.pkl
+seed: 0
+use_vision: true
+vision_encoder: resnet18
+vision_pretrained: true
+vision_out_dim: 128
+hidden: 256
+diffusion_steps: 100
+batch_size: 128
+lr: 3.0e-4
+weight_decay: 1.0e-5
+ema_decay: 0.999
+max_steps: 5000
+log_every: 200
+save_every: 1000
+ckpt_dir: ./ckpts_resnet18
+num_workers: 2

@@ -1,12 +1,14 @@
 import sys
 from pathlib import Path
 
+import numpy as np
 import torch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from eval import evaluate
-from model import DiffusionPolicy, VisionEncoder
+from env import Reach2DEnv
+from model import DiffusionPolicy, ResNetVisionEncoder, VisionEncoder
 from train import DDPMScheduler, behavior_cloning_loss, diffusion_loss, flow_matching_loss
 
 
@@ -53,3 +55,18 @@ def test_closed_loop_returns_complete_metrics():
     assert result["episodes"] == 2
     assert 0 <= result["success_rate"] <= 1
     assert result["successes"] + result["collisions"] + result["timeouts"] == 2
+
+
+def test_bonus_target_modes_and_moving_distractors():
+    choices = [[-0.65, 0.55], [0.65, 0.55]]
+    env = Reach2DEnv(n_distractors=1, target_choices=choices,
+                     moving_distractors=True, seed=7)
+    assert any(np.allclose(env.target_pos, choice) for choice in choices)
+    before = env.distractors.copy()
+    env.step([0.0, 0.0])
+    assert not np.allclose(before, env.distractors)
+
+
+def test_resnet_encoder_offline_shape():
+    encoder = ResNetVisionEncoder(out_dim=32, pretrained=False)
+    assert encoder(torch.randn(2, 3, 64, 64)).shape == (2, 32)

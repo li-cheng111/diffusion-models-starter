@@ -73,3 +73,19 @@ AutoDL 上的启动命令和只读 dashboard 见项目 README。训练、评估�
 ## 6. 结论
 
 TODO 19–21 已完成并通过自检/测试。最终小型 spatial CNN + H=16 DDPM 在 100 集未见测试 seed 上达到 71%，提交 checkpoint 为 `ckpts/model_final.pt`。所有对照、失败实验、训练曲线和成功 rollout 均已保留，能够从仓库脚本和配置复现实验。
+
+## 7. 加分项实验与讨论
+
+### 7.1 双目标多模态 demo
+
+为验证模型是否能覆盖多个目标模式，`reach2d_multimodal.yaml` 将目标采样改为两个离散位置 `(-0.65, 0.55)` 与 `(0.65, 0.55)`，其余障碍、H=16 和 spatial CNN 均与最终模型一致。评估额外记录 `mode_stats`，而不是只报告总体均值。100 个未见 seed（20000–20099）得到 97% 成功率（97/100）、3% 碰撞、0% 超时；左目标 mode 0 为 50/52=96.2%，右目标 mode 1 为 47/48=97.9%。这说明 action diffusion 在这个设置下没有塌缩到单一目标，两个条件模式都可执行。结果与目标位置示意见 [results/bonus_summary.png](results/bonus_summary.png)。
+
+### 7.2 ImageNet-pretrained ResNet18 对照
+
+`model.py` 增加了真实 ImageNet 权重的 ResNet18 encoder：输入从 `[-1,1]` 转换到 ImageNet mean/std，最后的分类层替换为 128 维条件特征。它约 11.48M 参数，而最终 spatial CNN 约 0.59M 参数。为避免把偶然的短训结果误当结论，我保留了两个预算：5,000 steps 的成功率为 3%（碰撞 8%、超时 89%），15,000 steps 仍为 2%（碰撞 18%、超时 80%），评估 seed 均为 30000–30099。这个负结果是有价值的对照：在 64×64、小规模 demo 和从像素直接微调的条件下，预训练 backbone 的容量与归一化开销反而使优化困难；实际使用应继续比较冻结 backbone、较大数据集、分层学习率和更长训练，而不能只看参数量或“预训练”标签。
+
+### 7.3 移动障碍泛化
+
+`Reach2DEnv` 新增了有速度的 distractor：每个 step 更新位置并在边界反弹。使用静态障碍训练得到的最终 DDPM checkpoint，不重新训练，直接在速度 0.025 的动态测试环境评估 100 个 seed（40000–40099），成功率 72%、碰撞率 20%、超时率 8%，平均步数 34.94。与静态测试的 71%/3%/26% 相比，策略仍能到达目标，但碰撞明显增加，体现了观测延迟和训练分布变化带来的风险。该实验也保留了 6 张成功 rollout 图，便于复核行为。
+
+三项加分实验的完整 JSON、metrics、日志和配置均已提交；`run_bonus_experiments.py` 可在 AutoDL 的 tmux 中按 preset 重新执行，`plot_bonus.py` 重新生成汇总图。Flow Matching 加分项已在第 1 节和主 ablation 中给出（10 步 Euler，57% 成功率）。

@@ -1,0 +1,19 @@
+Loaded EMA model from runs/project5/bonus_resnet18_long/ckpts/model_final.pt (ddpm)
+episode 1/100 | success=0 collision=0
+episode 10/100 | success=0 collision=1
+episode 20/100 | success=0 collision=3
+episode 30/100 | success=0 collision=6
+episode 40/100 | success=0 collision=9
+episode 50/100 | success=1 collision=10
+episode 60/100 | success=2 collision=11
+episode 70/100 | success=2 collision=15
+episode 80/100 | success=2 collision=16
+episode 90/100 | success=2 collision=17
+episode 100/100 | success=2 collision=18
+
+=== Evaluation Results ===
+Success rate:   2.0%
+Collision rate: 18.0%
+Avg steps:      89.3
+Total episodes: 100
+Saved results: runs/project5/bonus_resnet18_long/eval_resnet18_long.json

@@ -279,6 +279,23 @@ def evaluate(policy, env, n_episodes=100, chunk_size=32, exec_steps=10):
 - 用真实 ImageNet-pretrained ResNet18 替换小 CNN，比较收敛速度（+5）
 - 在更难的环境（如 obstacles 移动）上测试 generalization（+10）
 
+本次提交已完成以上四项，并保留了可复现实验材料：
+
+| 加分项 | 配置/入口 | 已提交结果 |
+|---|---|---|
+| Flow Matching | `configs/reach2d_16.yaml` + `run_experiments.py --preset full` | `results/eval_fm.json`，57% |
+| 多模态 demo | `configs/reach2d_multimodal.yaml` | `results/eval_multimodal.json`，97%；含 `mode_stats` |
+| ImageNet ResNet18 | `configs/reach2d_resnet18.yaml` 或 `_long.yaml` | `results/eval_resnet18*.json`，记录 3%/2% 的真实对照结果 |
+| 移动障碍泛化 | `configs/reach2d_moving.yaml` | `results/eval_moving.json`，72% |
+
+在 AutoDL 上复现实验：
+
+```bash
+python -u run_bonus_experiments.py --preset all > logs/bonus_run.log 2>&1
+```
+
+也可按 `multimodal`、`resnet18`、`resnet18-long`、`moving` 单独运行。动态障碍 preset 默认复用 `ckpts/model_final.pt`，不需要重新采 demo。完成后运行 `python plot_bonus.py` 可生成 `results/bonus_summary.png`。报告中的 ResNet18 数字是负结果，未做挑选或隐藏。
+
 ---
 
 ## 常见问题

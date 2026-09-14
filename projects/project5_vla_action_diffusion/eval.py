@@ -130,12 +130,25 @@ def evaluate(model, scheduler, cfg, device, n_episodes=100, exec_steps=10,
     total_steps = 0
     final_distances = []
     saved_rollouts = 0
+    mode_counts = {}
+    mode_successes = {}
     rollout_dir = Path(rollout_dir) if rollout_dir else None
     if rollout_dir:
         rollout_dir.mkdir(parents=True, exist_ok=True)
 
     for ep in range(n_episodes):
-        env = Reach2DEnv(n_distractors=n_dist, seed=seed_start + ep)
+        env = Reach2DEnv(
+            n_distractors=n_dist,
+            seed=seed_start + ep,
+            target_choices=cfg.get("target_choices"),
+            moving_distractors=cfg.get("moving_distractors", False),
+            distractor_speed=cfg.get("distractor_speed", 0.025),
+        )
+        mode = None
+        if cfg.get("target_choices") is not None:
+            choices = np.asarray(cfg["target_choices"], dtype=np.float32)
+            mode = int(np.argmin(np.linalg.norm(choices - env.target_pos, axis=1)))
+            mode_counts[mode] = mode_counts.get(mode, 0) + 1
         obs = env.reset()
         positions = [obs["state"].copy()]
         action_chunk = None
@@ -169,6 +182,8 @@ def evaluate(model, scheduler, cfg, device, n_episodes=100, exec_steps=10,
         final_distances.append(info["dist_to_target"])
         if info["success"]:
             successes += 1
+            if mode is not None:
+                mode_successes[mode] = mode_successes.get(mode, 0) + 1
             if rollout_dir and saved_rollouts < max_success_plots:
                 import matplotlib.pyplot as plt
                 path = np.asarray(positions)
@@ -195,7 +210,7 @@ def evaluate(model, scheduler, cfg, device, n_episodes=100, exec_steps=10,
         if verbose and ((ep + 1) % 10 == 0 or ep == 0):
             print(f"episode {ep + 1}/{n_episodes} | success={successes} collision={collisions}", flush=True)
 
-    return {
+    result = {
         "method": method,
         "success_rate": successes / n_episodes,
         "collision_rate": collisions / n_episodes,
@@ -213,6 +228,14 @@ def evaluate(model, scheduler, cfg, device, n_episodes=100, exec_steps=10,
         "n_sample_steps": n_sample_steps,
         "rollouts_saved": saved_rollouts,
     }
+    if mode_counts:
+        result["mode_stats"] = {
+            str(k): {"episodes": mode_counts[k],
+                     "successes": mode_successes.get(k, 0),
+                     "success_rate": mode_successes.get(k, 0) / mode_counts[k]}
+            for k in sorted(mode_counts)
+        }
+    return result
     # ============================================================
     # END TODO 21
     # ============================================================
@@ -247,6 +270,8 @@ def main():
         vision_out_dim=cfg["vision_out_dim"],
         hidden=cfg["hidden"],
         use_vision=cfg["use_vision"],
+        vision_encoder=cfg.get("vision_encoder", "small"),
+        vision_pretrained=cfg.get("vision_pretrained", False),
     ).to(device)
 
     ckpt = torch.load(args.ckpt, map_location=device)

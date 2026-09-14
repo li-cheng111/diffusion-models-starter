@@ -32,9 +32,19 @@ class Reach2DEnv:
     MAX_STEPS = 100
     ACTION_SCALE = 0.05  # action 在 [-1, 1] 之间，env 内部乘 ACTION_SCALE
 
-    def __init__(self, n_distractors=2, image_size=64, seed=None):
+    def __init__(self, n_distractors=2, image_size=64, seed=None,
+                 target_choices=None, moving_distractors=False,
+                 distractor_speed=0.025):
         self.n_distractors = n_distractors
         self.image_size = image_size
+        self.target_choices = (np.asarray(target_choices, dtype=np.float32)
+                               if target_choices is not None else None)
+        if self.target_choices is not None and (
+                self.target_choices.ndim != 2 or self.target_choices.shape[1] != 2):
+            raise ValueError("target_choices must have shape (num_modes, 2)")
+        self.moving_distractors = bool(moving_distractors)
+        self.distractor_speed = float(distractor_speed)
+        self.distractor_velocities = np.zeros((0, 2), dtype=np.float32)
         self.rng = np.random.RandomState(seed)
         self.reset()
 
@@ -44,7 +54,11 @@ class Reach2DEnv:
         # Random positions, ensure agent not too close to target/distractor
         while True:
             self.agent_pos = self.rng.uniform(-0.8, 0.8, 2)
-            self.target_pos = self.rng.uniform(-0.8, 0.8, 2)
+            if self.target_choices is None:
+                self.target_pos = self.rng.uniform(-0.8, 0.8, 2)
+            else:
+                mode = self.rng.randint(len(self.target_choices))
+                self.target_pos = self.target_choices[mode].copy()
             dist_to_target = np.linalg.norm(self.agent_pos - self.target_pos)
             if dist_to_target > 0.4:
                 break
@@ -58,6 +72,13 @@ class Reach2DEnv:
                     self.distractors.append(pos)
                     break
         self.distractors = np.array(self.distractors) if len(self.distractors) else np.zeros((0, 2))
+        if self.moving_distractors and len(self.distractors):
+            angles = self.rng.uniform(0, 2 * np.pi, len(self.distractors))
+            self.distractor_velocities = np.stack([np.cos(angles), np.sin(angles)], axis=1)
+            self.distractor_velocities = (self.distractor_velocities
+                                          * self.distractor_speed).astype(np.float32)
+        else:
+            self.distractor_velocities = np.zeros_like(self.distractors, dtype=np.float32)
         self.step_count = 0
         return self.observation()
 
@@ -68,6 +89,17 @@ class Reach2DEnv:
         new_pos = np.clip(new_pos, -self.BOUND, self.BOUND)
         self.agent_pos = new_pos
         self.step_count += 1
+
+        if self.moving_distractors and len(self.distractors):
+            # Reflect obstacles at the inner boundary so they remain visible
+            # and do not disappear at the edge of the rendered workspace.
+            next_pos = self.distractors + self.distractor_velocities
+            for j in range(len(next_pos)):
+                for axis in range(2):
+                    if next_pos[j, axis] < -0.8 or next_pos[j, axis] > 0.8:
+                        self.distractor_velocities[j, axis] *= -1
+                        next_pos[j, axis] = self.distractors[j, axis] + self.distractor_velocities[j, axis]
+            self.distractors = np.clip(next_pos, -0.8, 0.8)
 
         # Check success / collision
         dist_to_target = np.linalg.norm(self.agent_pos - self.target_pos)

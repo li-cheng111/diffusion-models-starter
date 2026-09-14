@@ -1,0 +1,39 @@
+Demo dataset: 27163 samples
+条件模式: image + agent_pos  state_dim=2
+Params: 11.48M
+step 500/15000 | loss 0.2370 (avg100 0.2223) | 65.0/s
+step 1000/15000 | loss 0.1853 (avg100 0.1891) | 66.9/s
+step 1500/15000 | loss 0.1510 (avg100 0.1606) | 66.9/s
+step 2000/15000 | loss 0.1490 (avg100 0.1479) | 67.3/s
+step 2500/15000 | loss 0.1487 (avg100 0.1379) | 67.5/s
+step 3000/15000 | loss 0.1182 (avg100 0.1342) | 67.6/s
+Saved runs/project5/bonus_resnet18_long/ckpts/model_003000.pt
+step 3500/15000 | loss 0.1555 (avg100 0.1290) | 67.3/s
+step 4000/15000 | loss 0.1388 (avg100 0.1251) | 67.3/s
+step 4500/15000 | loss 0.1410 (avg100 0.1212) | 67.4/s
+step 5000/15000 | loss 0.1288 (avg100 0.1199) | 67.2/s
+step 5500/15000 | loss 0.1005 (avg100 0.1215) | 67.0/s
+step 6000/15000 | loss 0.1301 (avg100 0.1143) | 66.8/s
+Saved runs/project5/bonus_resnet18_long/ckpts/model_006000.pt
+step 6500/15000 | loss 0.0887 (avg100 0.1129) | 66.5/s
+step 7000/15000 | loss 0.1049 (avg100 0.1101) | 66.3/s
+step 7500/15000 | loss 0.0871 (avg100 0.1122) | 66.2/s
+step 8000/15000 | loss 0.1206 (avg100 0.1080) | 66.2/s
+step 8500/15000 | loss 0.1064 (avg100 0.1066) | 66.2/s
+step 9000/15000 | loss 0.0911 (avg100 0.1240) | 66.3/s
+Saved runs/project5/bonus_resnet18_long/ckpts/model_009000.pt
+step 9500/15000 | loss 0.0764 (avg100 0.1092) | 66.2/s
+step 10000/15000 | loss 0.1206 (avg100 0.0984) | 66.1/s
+step 10500/15000 | loss 0.1022 (avg100 0.1032) | 66.2/s
+step 11000/15000 | loss 0.1204 (avg100 0.1005) | 66.2/s
+step 11500/15000 | loss 0.1127 (avg100 0.1002) | 66.5/s
+step 12000/15000 | loss 0.0760 (avg100 0.0944) | 66.8/s
+Saved runs/project5/bonus_resnet18_long/ckpts/model_012000.pt
+step 12500/15000 | loss 0.1167 (avg100 0.1006) | 67.0/s
+step 13000/15000 | loss 0.0908 (avg100 0.0994) | 67.0/s
+step 13500/15000 | loss 0.0793 (avg100 0.1029) | 67.0/s
+step 14000/15000 | loss 0.1032 (avg100 0.0954) | 67.0/s
+step 14500/15000 | loss 0.0912 (avg100 0.0933) | 67.0/s
+step 15000/15000 | loss 0.1016 (avg100 0.0950) | 67.0/s
+Saved runs/project5/bonus_resnet18_long/ckpts/model_015000.pt
+Done. Final ckpt: runs/project5/bonus_resnet18_long/ckpts/model_final.pt

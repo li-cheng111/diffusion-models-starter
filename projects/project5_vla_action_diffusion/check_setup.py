@@ -28,7 +28,8 @@ except (AttributeError, ValueError):
     pass
 
 PACKAGES = [('torch', 'torch'), ('numpy', 'numpy'), ('yaml', 'PyYAML'),
-            ('tqdm', 'tqdm'), ('matplotlib', 'matplotlib')]
+            ('tqdm', 'tqdm'), ('matplotlib', 'matplotlib'),
+            ('torchvision', 'torchvision')]
 
 
 def check_packages():
@@ -120,6 +121,10 @@ def check_model(cfg_path):
             horizon=cfg["chunk_size"], action_dim=2, state_dim=sd, image_size=64,
             vision_out_dim=cfg["vision_out_dim"], hidden=cfg["hidden"],
             use_vision=use_vision,
+            vision_encoder=cfg.get("vision_encoder", "small"),
+            # Setup should be offline-safe; the actual bonus training command
+            # enables pretrained weights explicitly.
+            vision_pretrained=False,
         )
     except NotImplementedError:
         print(f"   ⏳ {cfg_path.name}: use_vision=true，等 TODO 20 完成（预期）")

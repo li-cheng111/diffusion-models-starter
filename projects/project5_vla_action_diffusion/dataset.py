@@ -12,14 +12,16 @@ import torch
 from torch.utils.data import Dataset
 
 
-def collect_demos(n_demos=1000, chunk_size=32, n_distractors=2, save_path=None, seed=0):
+def collect_demos(n_demos=1000, chunk_size=32, n_distractors=2, save_path=None,
+                  seed=0, target_choices=None):
     """Collect n_demos rollouts, return list of (image_seq, state_seq, action_chunk)."""
     from env import Reach2DEnv, expert_policy
 
     data = []
     n_success = 0
     for i in range(n_demos * 2):  # over-sample to get enough successes
-        env = Reach2DEnv(n_distractors=n_distractors, seed=seed + i)
+        env = Reach2DEnv(n_distractors=n_distractors, seed=seed + i,
+                         target_choices=target_choices)
         env.reset()
         obs_list, act_list, info = expert_policy(env)
         if not info["success"]:

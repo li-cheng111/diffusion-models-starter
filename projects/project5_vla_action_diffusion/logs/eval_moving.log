@@ -1,0 +1,19 @@
+Loaded EMA model from runs/project5/vision_ddpm_spatial/ckpts/model_final.pt (ddpm)
+episode 1/100 | success=1 collision=0
+episode 10/100 | success=5 collision=3
+episode 20/100 | success=11 collision=6
+episode 30/100 | success=17 collision=8
+episode 40/100 | success=25 collision=10
+episode 50/100 | success=32 collision=13
+episode 60/100 | success=41 collision=13
+episode 70/100 | success=50 collision=14
+episode 80/100 | success=57 collision=16
+episode 90/100 | success=66 collision=17
+episode 100/100 | success=72 collision=20
+
+=== Evaluation Results ===
+Success rate:   72.0%
+Collision rate: 20.0%
+Avg steps:      34.9
+Total episodes: 100
+Saved results: runs/project5/bonus_moving/eval_moving.json

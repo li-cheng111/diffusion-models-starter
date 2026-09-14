@@ -54,3 +54,10 @@ python -u eval.py --config configs/reach2d_16.yaml \
 ## 6. 结论与下一步
 
 空间 encoder 假设成立，最终达到 70% 目标。后续应加入 action mask、更多随机光照/障碍分布和多 seed 置信区间，再评估 FM 的更长训练是否能追平 DDPM。
+
+## Bonus experiments (AutoDL, 2026-09-14)
+
+- **Multimodal**: `reach2d_multimodal.yaml`, two target positions, 10k steps. Eval seeds 20000–20099: success 97%, collision 3%, timeout 0%; per-mode 96.2%/97.9%.
+- **ImageNet ResNet18**: `reach2d_resnet18.yaml`, pretrained weights, 5k steps. Eval seeds 30000–30099: 3% success, 8% collision, 89% timeout. A 15k-step run remained 2%/18%/80%; retained as an honest negative comparison against the 0.59M-parameter spatial CNN.
+- **Moving distractors**: `reach2d_moving.yaml`, static-trained final checkpoint, distractor speed 0.025. Eval seeds 40000–40099: success 72%, collision 20%, timeout 8%.
+- Reproduction: `python run_bonus_experiments.py --preset all`; summary figure: `python plot_bonus.py`.

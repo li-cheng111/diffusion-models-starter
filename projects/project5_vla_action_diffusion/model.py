@@ -85,6 +85,28 @@ class VisionEncoder(nn.Module):
         return self.net(x)
 
 
+class ResNetVisionEncoder(nn.Module):
+    """ImageNet-pretrained ResNet-18 adapter for the bonus comparison."""
+
+    def __init__(self, out_dim=128, pretrained=True):
+        super().__init__()
+        from torchvision.models import ResNet18_Weights, resnet18
+
+        weights = ResNet18_Weights.DEFAULT if pretrained else None
+        backbone = resnet18(weights=weights)
+        in_features = backbone.fc.in_features
+        backbone.fc = nn.Linear(in_features, out_dim)
+        self.backbone = backbone
+        self.register_buffer("mean", torch.tensor([0.485, 0.456, 0.406]).view(1, 3, 1, 1))
+        self.register_buffer("std", torch.tensor([0.229, 0.224, 0.225]).view(1, 3, 1, 1))
+
+    def forward(self, x):
+        # Dataset images are in [-1, 1]; ImageNet weights expect [0, 1]
+        # followed by channel-wise mean/std normalization.
+        x = ((x + 1.0) * 0.5 - self.mean) / self.std
+        return self.backbone(x)
+
+
 # =============================================================================
 # Main diffusion policy
 # =============================================================================
@@ -110,6 +132,8 @@ class DiffusionPolicy(nn.Module):
         time_emb_dim=64,
         hidden=256,
         use_vision=True,
+        vision_encoder="small",
+        vision_pretrained=False,
     ):
         super().__init__()
         self.horizon = horizon
@@ -125,7 +149,14 @@ class DiffusionPolicy(nn.Module):
 
         # Vision (TODO 20)
         if use_vision:
-            self.vision = VisionEncoder(out_dim=vision_out_dim, image_size=image_size)
+            if vision_encoder == "resnet18":
+                self.vision = ResNetVisionEncoder(
+                    out_dim=vision_out_dim, pretrained=vision_pretrained,
+                )
+            elif vision_encoder in {"small", "cnn"}:
+                self.vision = VisionEncoder(out_dim=vision_out_dim, image_size=image_size)
+            else:
+                raise ValueError(f"Unknown vision_encoder: {vision_encoder}")
         else:
             self.vision = None
             vision_out_dim = 0
