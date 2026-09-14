@@ -113,6 +113,25 @@ pip install torch torchvision pyyaml tqdm matplotlib numpy
 
 不需要 mujoco / Isaac Gym 等仿真器；env.py 自己处理碰撞与渲染。
 
+## AutoDL 运行与实时监控
+
+项目目录中提供了 `run_experiments.py` 和只读 `monitor_dashboard.py`。在 AutoDL
+上建议把两者放在 `tmux` 会话中运行：
+
+```bash
+python -u monitor_dashboard.py --run-root runs/project5 --total-runs 5 --port 18765
+python -u run_experiments.py --preset full > logs/full_run.log 2>&1
+```
+
+本地使用 SSH 隧道访问页面（端口和实例 SSH 指令按实际值替换）：
+
+```bash
+ssh -N -L 18765:127.0.0.1:18765 root@<autodl-host> -p <ssh-port>
+```
+
+然后打开 `http://127.0.0.1:18765/`。页面每 2 秒读取训练状态、loss、GPU、评估
+结果和 rollout 图片；页面本身没有训练控制接口。
+
 ---
 
 ## 任务流
