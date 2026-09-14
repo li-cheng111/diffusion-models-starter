@@ -28,12 +28,33 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p /tmp/repro/project2 /tmp/repro/project3 /tmp/repro/project4
-          curl --fail --retry 5 --retry-all-errors -L "$AUTO_URL/release/project2/project2-input-ddpm-cifar10-linear-seed44.pt" \
-            -o /tmp/repro/project2/project2-input-ddpm-cifar10-linear-seed44.pt
-          curl --fail --retry 5 --retry-all-errors -L "$AUTO_URL/release/project3/project3-lora-vangogh-full.safetensors" \
-            -o /tmp/repro/project3/project3-lora-vangogh-full.safetensors
-          curl --fail --retry 5 --retry-all-errors -L "$AUTO_URL/release/project4/project4-fm-dit-s-step200000.pt" \
-            -o /tmp/repro/project4/project4-fm-dit-s-step200000.pt
+          download_parallel() {
+            local url="$1" out="$2" total="$3" parts=16
+            local dir="${out}.parts"
+            mkdir -p "$dir"
+            local chunk=$(( (total + parts - 1) / parts ))
+            for ((i=0; i<parts; i++)); do
+              local start=$((i * chunk))
+              local end=$((start + chunk - 1))
+              if (( end >= total )); then end=$((total - 1)); fi
+              if (( start >= total )); then continue; fi
+              curl --fail --retry 5 --retry-all-errors --connect-timeout 30 -L \
+                "$url?start=${start}&end=${end}" -o "$dir/$i" &
+            done
+            wait
+            : > "$out"
+            for ((i=0; i<parts; i++)); do
+              [[ -f "$dir/$i" ]] && cat "$dir/$i" >> "$out"
+            done
+            rm -rf "$dir"
+            [[ "$(stat -c %s "$out")" == "$total" ]]
+          }
+          download_parallel "$AUTO_URL/release/project2/project2-input-ddpm-cifar10-linear-seed44.pt" \
+            /tmp/repro/project2/project2-input-ddpm-cifar10-linear-seed44.pt 459538769
+          download_parallel "$AUTO_URL/release/project3/project3-lora-vangogh-full.safetensors" \
+            /tmp/repro/project3/project3-lora-vangogh-full.safetensors 6414448
+          download_parallel "$AUTO_URL/release/project4/project4-fm-dit-s-step200000.pt" \
+            /tmp/repro/project4/project4-fm-dit-s-step200000.pt 522163965
           cat > /tmp/repro/checksums.sha256 <<'EOF'
           937853559a1377660f7d4cbd1dd3f7c6cf022aed4ab84e9daa918a6e34541412  /tmp/repro/project2/project2-input-ddpm-cifar10-linear-seed44.pt
           82b93c827e18fc4024f3bb03c87163159acc6c1c981db751c572f9f3e0bf9410  /tmp/repro/project3/project3-lora-vangogh-full.safetensors
