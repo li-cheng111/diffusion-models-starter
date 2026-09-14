@@ -5,6 +5,7 @@
 import argparse
 import os
 import time
+import random
 
 import torch
 import torch.nn.functional as F
@@ -15,7 +16,7 @@ from torchvision import datasets, transforms
 
 
 def load_config(path):
-    with open(path) as f:
+    with open(path, encoding="utf-8") as f:
         return yaml.safe_load(f)
 
 
@@ -81,14 +82,32 @@ def compute_fm_loss(model, x_1, y, cond_drop_prob, num_classes):
     B = x_1.shape[0]
     device = x_1.device
 
-    # === Your code here ===
-    raise NotImplementedError("TODO 16: implement Rectified Flow loss")
-    # === End ===
+    # Sample a point on the conditional linear probability path.
+    t = torch.rand(B, device=device)
+    epsilon = torch.randn_like(x_1)
+    t_view = t.view(B, 1, 1, 1)
+    x_t = (1.0 - t_view) * epsilon + t_view * x_1
+    target = x_1 - epsilon
+
+    # The final embedding entry is reserved for the unconditional/null token.
+    y_null = torch.full_like(y, num_classes)
+    drop_mask = torch.rand(B, device=device) < cond_drop_prob
+    y_in = torch.where(drop_mask, y_null, y)
+
+    velocity = model(x_t, t, y_in)
+    return F.mse_loss(velocity, target)
 
 
-def train(cfg, output_dir):
+def train(cfg, output_dir, seed=42, precision='fp32', resume=None):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     os.makedirs(output_dir, exist_ok=True)
+
+    torch.manual_seed(seed)
+    random.seed(seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed_all(seed)
+        torch.backends.cuda.matmul.allow_tf32 = True
+        torch.backends.cudnn.benchmark = True
 
     # Data
     tf = transforms.Compose([
@@ -103,41 +122,51 @@ def train(cfg, output_dir):
         shuffle=True,
         num_workers=cfg['data']['num_workers'],
         drop_last=True,
-        pin_memory=True,
+        pin_memory=(device.type == 'cuda'),
+        persistent_workers=(cfg['data']['num_workers'] > 0),
     )
 
-    # Model
     model = build_model(cfg).to(device)
     print(f"Model params: {sum(p.numel() for p in model.parameters())/1e6:.2f}M")
+    amp_enabled = precision == 'bf16' and device.type == 'cuda'
+    if precision not in ('fp32', 'bf16'):
+        raise ValueError("precision must be 'fp32' or 'bf16'")
+    print(f"device={device} precision={precision} seed={seed}")
 
-    # EMA
     ema = {k: v.clone().detach() for k, v in model.state_dict().items()}
     ema_decay = cfg['train'].get('ema_decay', 0.9999)
-
     opt = torch.optim.AdamW(
         model.parameters(),
         lr=cfg['train']['lr'],
         weight_decay=cfg['train']['weight_decay'],
     )
 
-    num_classes = cfg['model']['num_classes']  # 10 for CIFAR-10
-    cond_drop_prob = cfg['train'].get('cond_drop_prob', 0.1)
-
     step = 0
     losses = []
+    if resume:
+        ckpt = torch.load(resume, map_location=device, weights_only=False)
+        model.load_state_dict(ckpt['model'])
+        if 'ema' in ckpt:
+            ema = {k: v.to(device).clone().detach() for k, v in ckpt['ema'].items()}
+        if 'opt' in ckpt:
+            opt.load_state_dict(ckpt['opt'])
+        step = int(ckpt.get('step', 0))
+        print(f"Resumed from {resume} at step {step}")
+
+    num_classes = cfg['model']['num_classes']
+    cond_drop_prob = cfg['train'].get('cond_drop_prob', 0.1)
     t0 = time.time()
 
     while step < cfg['train']['max_steps']:
         for x, y in loader:
             x, y = x.to(device, non_blocking=True), y.to(device, non_blocking=True)
-
-            loss = compute_fm_loss(model, x, y, cond_drop_prob, num_classes)
-            opt.zero_grad()
+            opt.zero_grad(set_to_none=True)
+            with torch.autocast(device_type=device.type, dtype=torch.bfloat16, enabled=amp_enabled):
+                loss = compute_fm_loss(model, x, y, cond_drop_prob, num_classes)
             loss.backward()
             torch.nn.utils.clip_grad_norm_(model.parameters(), cfg['train'].get('grad_clip', 1.0))
             opt.step()
 
-            # EMA update
             with torch.no_grad():
                 for k, v in model.state_dict().items():
                     if v.dtype.is_floating_point:
@@ -149,18 +178,21 @@ def train(cfg, output_dir):
             if step % cfg['train'].get('log_every', 100) == 0:
                 mean = sum(losses[-100:]) / min(len(losses), 100)
                 elapsed = time.time() - t0
-                print(f"step {step:6d} | loss {mean:.4f} | {step/elapsed:.1f} step/s")
+                print(f"step {step:6d} | loss {mean:.4f} | {step/elapsed:.2f} step/s", flush=True)
 
-            if step % cfg['train']['save_every'] == 0:
+            if step % cfg['train']['save_every'] == 0 or step >= cfg['train']['max_steps']:
                 ckpt = {
                     'step': step,
                     'model': model.state_dict(),
                     'ema': ema,
                     'opt': opt.state_dict(),
                     'cfg': cfg,
+                    'seed': seed,
+                    'precision': precision,
                 }
                 torch.save(ckpt, os.path.join(output_dir, f'step_{step}.pt'))
                 torch.save(ckpt, os.path.join(output_dir, 'latest.pt'))
+                print(f"saved checkpoint at step {step}", flush=True)
 
             if step >= cfg['train']['max_steps']:
                 break
@@ -170,6 +202,9 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--config', required=True)
     parser.add_argument('--output', required=True)
+    parser.add_argument('--seed', type=int, default=42)
+    parser.add_argument('--precision', choices=['fp32', 'bf16'], default='fp32')
+    parser.add_argument('--resume', default=None, help='checkpoint path to resume from')
     args = parser.parse_args()
     cfg = load_config(args.config)
-    train(cfg, args.output)
+    train(cfg, args.output, seed=args.seed, precision=args.precision, resume=args.resume)

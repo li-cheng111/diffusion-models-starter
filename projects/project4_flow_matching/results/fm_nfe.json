@@ -1,0 +1,42 @@
+[
+  {
+    "nfe": 4,
+    "cfg_scale": 0.0,
+    "forward_passes": 4,
+    "fid": 47.37732696533203,
+    "num_samples": 5000,
+    "weights": "ema"
+  },
+  {
+    "nfe": 8,
+    "cfg_scale": 0.0,
+    "forward_passes": 8,
+    "fid": 28.305387496948242,
+    "num_samples": 5000,
+    "weights": "ema"
+  },
+  {
+    "nfe": 16,
+    "cfg_scale": 0.0,
+    "forward_passes": 16,
+    "fid": 22.121469497680664,
+    "num_samples": 5000,
+    "weights": "ema"
+  },
+  {
+    "nfe": 32,
+    "cfg_scale": 0.0,
+    "forward_passes": 32,
+    "fid": 19.310813903808594,
+    "num_samples": 5000,
+    "weights": "ema"
+  },
+  {
+    "nfe": 50,
+    "cfg_scale": 0.0,
+    "forward_passes": 50,
+    "fid": 18.299362182617188,
+    "num_samples": 5000,
+    "weights": "ema"
+  }
+]

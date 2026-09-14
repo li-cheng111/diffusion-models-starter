@@ -44,9 +44,35 @@ def euler_sample(model, n_samples, n_steps, num_classes, class_label, image_size
         - 注意是 + v * dt（FM 是 t=0 → t=1 前向积分）
     ============================================================
     """
-    # === Your code here ===
-    raise NotImplementedError("TODO 17: implement Euler ODE sampler")
-    # === End ===
+    if n_samples <= 0 or n_steps <= 0:
+        raise ValueError("n_samples and n_steps must be positive")
+    x = torch.randn(n_samples, 3, image_size, image_size, device=device)
+    y = torch.full((n_samples,), class_label, dtype=torch.long, device=device)
+    timesteps = torch.linspace(0.0, 1.0, n_steps + 1, device=device)
+    for i in range(n_steps):
+        t = timesteps[i]
+        dt = timesteps[i + 1] - t
+        velocity = model(x, t.expand(n_samples), y)
+        x = x + velocity * dt
+    return x
+
+
+@torch.no_grad()
+def heun_sample(model, n_samples, n_steps, num_classes, class_label, image_size=32, device='cuda'):
+    """Second-order Heun integration for the FM velocity field."""
+    if n_samples <= 0 or n_steps <= 0:
+        raise ValueError("n_samples and n_steps must be positive")
+    x = torch.randn(n_samples, 3, image_size, image_size, device=device)
+    y = torch.full((n_samples,), class_label, dtype=torch.long, device=device)
+    timesteps = torch.linspace(0.0, 1.0, n_steps + 1, device=device)
+    for i in range(n_steps):
+        t0, t1 = timesteps[i], timesteps[i + 1]
+        dt = t1 - t0
+        v0 = model(x, t0.expand(n_samples), y)
+        x_euler = x + v0 * dt
+        v1 = model(x_euler, t1.expand(n_samples), y)
+        x = x + 0.5 * (v0 + v1) * dt
+    return x
 
 
 @torch.no_grad()
@@ -75,9 +101,23 @@ def euler_sample_cfg(model, n_samples, n_steps, num_classes, class_label, cfg_sc
           v_uncond, v_cond = model(x_in, t.repeat(2*n_samples), y_in).chunk(2)
     ============================================================
     """
-    # === Your code here ===
-    raise NotImplementedError("TODO 18: implement CFG for FM")
-    # === End ===
+    if n_samples <= 0 or n_steps <= 0:
+        raise ValueError("n_samples and n_steps must be positive")
+    x = torch.randn(n_samples, 3, image_size, image_size, device=device)
+    y_cond = torch.full((n_samples,), class_label, dtype=torch.long, device=device)
+    y_null = torch.full_like(y_cond, num_classes)
+    timesteps = torch.linspace(0.0, 1.0, n_steps + 1, device=device)
+    for i in range(n_steps):
+        t = timesteps[i]
+        dt = timesteps[i + 1] - t
+        x_in = torch.cat([x, x], dim=0)
+        y_in = torch.cat([y_null, y_cond], dim=0)
+        velocity_uncond, velocity_cond = model(
+            x_in, t.expand(2 * n_samples), y_in
+        ).chunk(2, dim=0)
+        velocity = velocity_uncond + cfg_scale * (velocity_cond - velocity_uncond)
+        x = x + velocity * dt
+    return x
 
 
 def main():
@@ -88,7 +128,7 @@ def main():
     parser.add_argument('--cfg', type=float, nargs='+', default=[0.0, 1.0, 3.0, 7.5])
     parser.add_argument('--n_samples', type=int, default=64)
     parser.add_argument('--class_label', type=int, default=0)
-    parser.add_argument('--use_ema', action='store_true', default=True)
+    parser.add_argument('--no_ema', action='store_true', help='use raw model weights')
     args = parser.parse_args()
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -96,7 +136,7 @@ def main():
     cfg = ckpt['cfg']
     model = build_model(cfg).to(device)
 
-    state = ckpt['ema'] if (args.use_ema and 'ema' in ckpt) else ckpt['model']
+    state = ckpt['model'] if args.no_ema else ckpt.get('ema', ckpt['model'])
     model.load_state_dict(state)
     model.eval()
     num_classes = cfg['model']['num_classes']

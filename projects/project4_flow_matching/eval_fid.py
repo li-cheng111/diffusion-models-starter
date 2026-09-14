@@ -64,14 +64,16 @@ def compute_fid(fake_uint8, data_root, num_samples, batch_size, device):
 
     ds = datasets.CIFAR10(data_root, train=True, download=True,
                           transform=transforms.ToTensor())
-    loader = torch.utils.data.DataLoader(ds, batch_size=batch_size, shuffle=True,
+    real_subset = torch.utils.data.Subset(ds, list(range(num_samples)))
+    loader = torch.utils.data.DataLoader(real_subset, batch_size=batch_size, shuffle=False,
                                          num_workers=4)
     n_real = 0
     for x, _ in loader:
+        take = min(x.shape[0], num_samples - n_real)
+        fid.update((x[:take] * 255).to(torch.uint8).to(device), real=True)
+        n_real += take
         if n_real >= num_samples:
             break
-        fid.update((x * 255).to(torch.uint8).to(device), real=True)
-        n_real += x.shape[0]
 
     return fid.compute().item()
 
@@ -107,6 +109,10 @@ def main():
     results = []
     for nfe in args.nfe:
         for cfg_scale in args.cfg:
+            # Reuse the same initial-noise seed at each point for paired comparisons.
+            torch.manual_seed(args.seed)
+            if torch.cuda.is_available():
+                torch.cuda.manual_seed_all(args.seed)
             print(f"\n[eval] NFE={nfe}, CFG={cfg_scale}")
             fake = generate(model, args.num_samples, args.batch_size,
                             nfe, num_classes, cfg_scale, device)
