@@ -1,0 +1,226 @@
+{
+  "count": 20,
+  "source_note": "AutoDL Wikimedia API unavailable; using public ModelScope mirror of vangogh2photo for reproducible smoke/full run. Original image bytes remain outside Git.",
+  "entries": [
+    {
+      "path": ".local/datasets/project3_vangogh/vangogh_000.jpg",
+      "source_url": "https://www.modelscope.cn/datasets/huggan/vangogh2photo",
+      "source_repo": "huggan/vangogh2photo",
+      "license": "Apache-2.0 (mirror metadata)",
+      "sha256": "bb2995f0933a4bcfb944549961e05a21339776c937f08a742747760c05bf9366",
+      "size": [
+        256,
+        256
+      ]
+    },
+    {
+      "path": ".local/datasets/project3_vangogh/vangogh_001.jpg",
+      "source_url": "https://www.modelscope.cn/datasets/huggan/vangogh2photo",
+      "source_repo": "huggan/vangogh2photo",
+      "license": "Apache-2.0 (mirror metadata)",
+      "sha256": "ccd45e7b2209e035afccac35d4ac3306b2296247a7b8d6a132bf92e80a7c56b7",
+      "size": [
+        256,
+        256
+      ]
+    },
+    {
+      "path": ".local/datasets/project3_vangogh/vangogh_002.jpg",
+      "source_url": "https://www.modelscope.cn/datasets/huggan/vangogh2photo",
+      "source_repo": "huggan/vangogh2photo",
+      "license": "Apache-2.0 (mirror metadata)",
+      "sha256": "6eb77bfb149927b1662f3517491922a62c9d1f1cf62953683393fa3820681ea3",
+      "size": [
+        256,
+        256
+      ]
+    },
+    {
+      "path": ".local/datasets/project3_vangogh/vangogh_003.jpg",
+      "source_url": "https://www.modelscope.cn/datasets/huggan/vangogh2photo",
+      "source_repo": "huggan/vangogh2photo",
+      "license": "Apache-2.0 (mirror metadata)",
+      "sha256": "26f49258a88dae1e61f166689d3e3f001a837a62b16b9f3a87d4e421126a63bd",
+      "size": [
+        256,
+        256
+      ]
+    },
+    {
+      "path": ".local/datasets/project3_vangogh/vangogh_004.jpg",
+      "source_url": "https://www.modelscope.cn/datasets/huggan/vangogh2photo",
+      "source_repo": "huggan/vangogh2photo",
+      "license": "Apache-2.0 (mirror metadata)",
+      "sha256": "372f722be2f5b233e63e73e699341727bbd4052715d17482d1ecf82250e9f2ac",
+      "size": [
+        256,
+        256
+      ]
+    },
+    {
+      "path": ".local/datasets/project3_vangogh/vangogh_005.jpg",
+      "source_url": "https://www.modelscope.cn/datasets/huggan/vangogh2photo",
+      "source_repo": "huggan/vangogh2photo",
+      "license": "Apache-2.0 (mirror metadata)",
+      "sha256": "0464b7485168cb2110b3544301dc612d15caaade9077c2f22d82fd1686c0a924",
+      "size": [
+        256,
+        256
+      ]
+    },
+    {
+      "path": ".local/datasets/project3_vangogh/vangogh_006.jpg",
+      "source_url": "https://www.modelscope.cn/datasets/huggan/vangogh2photo",
+      "source_repo": "huggan/vangogh2photo",
+      "license": "Apache-2.0 (mirror metadata)",
+      "sha256": "bcb333a666decd91306cc659df02824f585b66b99805185bf74f4226a41fcf1a",
+      "size": [
+        256,
+        256
+      ]
+    },
+    {
+      "path": ".local/datasets/project3_vangogh/vangogh_007.jpg",
+      "source_url": "https://www.modelscope.cn/datasets/huggan/vangogh2photo",
+      "source_repo": "huggan/vangogh2photo",
+      "license": "Apache-2.0 (mirror metadata)",
+      "sha256": "fddd50c102b231911d5dfab6c32db4973423fb49609acf8b5fd492896bc14958",
+      "size": [
+        256,
+        256
+      ]
+    },
+    {
+      "path": ".local/datasets/project3_vangogh/vangogh_008.jpg",
+      "source_url": "https://www.modelscope.cn/datasets/huggan/vangogh2photo",
+      "source_repo": "huggan/vangogh2photo",
+      "license": "Apache-2.0 (mirror metadata)",
+      "sha256": "f40df30d5c95c28690ce32ff8d5178d59f7951eb622c36c27d10bd165040d12a",
+      "size": [
+        256,
+        256
+      ]
+    },
+    {
+      "path": ".local/datasets/project3_vangogh/vangogh_009.jpg",
+      "source_url": "https://www.modelscope.cn/datasets/huggan/vangogh2photo",
+      "source_repo": "huggan/vangogh2photo",
+      "license": "Apache-2.0 (mirror metadata)",
+      "sha256": "3150cd2309e21e77db8c47c6f7d7bdb15e3797274ce7b6286b643c96a11169bf",
+      "size": [
+        256,
+        256
+      ]
+    },
+    {
+      "path": ".local/datasets/project3_vangogh/vangogh_010.jpg",
+      "source_url": "https://www.modelscope.cn/datasets/huggan/vangogh2photo",
+      "source_repo": "huggan/vangogh2photo",
+      "license": "Apache-2.0 (mirror metadata)",
+      "sha256": "b9b130ac649b2f1e337454bb2bf9588005c73688f6bca56830921371ae2aaed6",
+      "size": [
+        256,
+        256
+      ]
+    },
+    {
+      "path": ".local/datasets/project3_vangogh/vangogh_011.jpg",
+      "source_url": "https://www.modelscope.cn/datasets/huggan/vangogh2photo",
+      "source_repo": "huggan/vangogh2photo",
+      "license": "Apache-2.0 (mirror metadata)",
+      "sha256": "e62ff32ce19ada332bd30146b099d210de4e98991a41ab86c01305390ed91f5b",
+      "size": [
+        256,
+        256
+      ]
+    },
+    {
+      "path": ".local/datasets/project3_vangogh/vangogh_012.jpg",
+      "source_url": "https://www.modelscope.cn/datasets/huggan/vangogh2photo",
+      "source_repo": "huggan/vangogh2photo",
+      "license": "Apache-2.0 (mirror metadata)",
+      "sha256": "d4534ca925ece45c4498a9217d7df222c234ccdfd0bbdb3a97f1958736c5b910",
+      "size": [
+        256,
+        256
+      ]
+    },
+    {
+      "path": ".local/datasets/project3_vangogh/vangogh_013.jpg",
+      "source_url": "https://www.modelscope.cn/datasets/huggan/vangogh2photo",
+      "source_repo": "huggan/vangogh2photo",
+      "license": "Apache-2.0 (mirror metadata)",
+      "sha256": "ce6e4bff80f020c085a13d068d45061ce92f0628327be13b4b6a2a8b459a0634",
+      "size": [
+        256,
+        256
+      ]
+    },
+    {
+      "path": ".local/datasets/project3_vangogh/vangogh_014.jpg",
+      "source_url": "https://www.modelscope.cn/datasets/huggan/vangogh2photo",
+      "source_repo": "huggan/vangogh2photo",
+      "license": "Apache-2.0 (mirror metadata)",
+      "sha256": "bf7f33cf79192a13c13db9f5f4695ad222b48463aa219e69216a3a36f751f489",
+      "size": [
+        256,
+        256
+      ]
+    },
+    {
+      "path": ".local/datasets/project3_vangogh/vangogh_015.jpg",
+      "source_url": "https://www.modelscope.cn/datasets/huggan/vangogh2photo",
+      "source_repo": "huggan/vangogh2photo",
+      "license": "Apache-2.0 (mirror metadata)",
+      "sha256": "13271dbeafb7955b596686ff73e64b8e45a2270d2598cc402f6e374ffcf05068",
+      "size": [
+        256,
+        256
+      ]
+    },
+    {
+      "path": ".local/datasets/project3_vangogh/vangogh_016.jpg",
+      "source_url": "https://www.modelscope.cn/datasets/huggan/vangogh2photo",
+      "source_repo": "huggan/vangogh2photo",
+      "license": "Apache-2.0 (mirror metadata)",
+      "sha256": "c8ca6f8cfa18a6b8fbaa0c1795c00622ab56fcc511e3cc492cf42c2a5425c42e",
+      "size": [
+        256,
+        256
+      ]
+    },
+    {
+      "path": ".local/datasets/project3_vangogh/vangogh_017.jpg",
+      "source_url": "https://www.modelscope.cn/datasets/huggan/vangogh2photo",
+      "source_repo": "huggan/vangogh2photo",
+      "license": "Apache-2.0 (mirror metadata)",
+      "sha256": "097aab43ccc5cef9685c01114c3f67d2ebf41d0daa3e01d0f6e128c6f62a0abb",
+      "size": [
+        256,
+        256
+      ]
+    },
+    {
+      "path": ".local/datasets/project3_vangogh/vangogh_018.jpg",
+      "source_url": "https://www.modelscope.cn/datasets/huggan/vangogh2photo",
+      "source_repo": "huggan/vangogh2photo",
+      "license": "Apache-2.0 (mirror metadata)",
+      "sha256": "dd0b88d1639df982b0f30fa885fd660689d02fcd2f87d649c615146cfce3f5aa",
+      "size": [
+        256,
+        256
+      ]
+    },
+    {
+      "path": ".local/datasets/project3_vangogh/vangogh_019.jpg",
+      "source_url": "https://www.modelscope.cn/datasets/huggan/vangogh2photo",
+      "source_repo": "huggan/vangogh2photo",
+      "license": "Apache-2.0 (mirror metadata)",
+      "sha256": "4d71f0987cc8ec587e9d53dcb72fd3597887f7e4f08f78e4082b2ba217ea3ff6",
+      "size": [
+        256,
+        256
+      ]
+    }
+  ]
+}

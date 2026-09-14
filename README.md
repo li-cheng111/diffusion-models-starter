@@ -10,7 +10,7 @@
 |---|---|---|---|
 | 项目 1：DDPM | `projects/project1_ddpm/` | 已完成基础档、进阶档和挑战实验，目录迁移已完成，待安装 pytest 做完整回归 | 无 |
 | 项目 2：采样器对比 | `projects/project2_samplers/` | 已完成 DDIM、Euler、DPM-Solver-2、反演和 FID 实验 | 项目 1 |
-| 项目 3：Stable Diffusion 解剖 | `projects/project3_stable_diffusion/` | 已导入 starter，待实现 | `diffusers`、`transformers`、`peft` |
+| 项目 3：Stable Diffusion 解剖 | `projects/project3_stable_diffusion/` | A–E 代码、测试和 AutoDL 运行入口已完成，待正式产物回填 | `diffusers`、`transformers`、`peft` |
 | 项目 4：Flow Matching | `projects/project4_flow_matching/` | 已导入 starter，待实现 | PyTorch、CIFAR-10、FID |
 | 项目 5：VLA Action Diffusion | `projects/project5_vla_action_diffusion/` | 已导入 starter，待实现 | PyTorch、玩具 2D 环境 |
 

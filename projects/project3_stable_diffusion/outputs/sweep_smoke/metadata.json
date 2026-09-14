@@ -1,0 +1,67 @@
+{
+  "cfg_scales": [
+    1.0,
+    7.5
+  ],
+  "command": "02_parameter_sweep.py --preset smoke --model_id /root/autodl-tmp/models/sd15-clean --output_dir outputs/sweep_smoke --metadata_output outputs/sweep_smoke/metadata.json --height 256 --width 256 --seed 42 --model_revision ",
+  "cuda_available": true,
+  "elapsed_seconds": 5.437,
+  "files": [
+    "cfg_1.0.png",
+    "cfg_7.5.png",
+    "grid_2d.png",
+    "sampler_DDIM.png",
+    "steps_10.png",
+    "steps_5.png",
+    "sweep_cfg.png",
+    "sweep_sampler.png",
+    "sweep_steps.png"
+  ],
+  "git_commit": null,
+  "gpu": "NVIDIA GeForce RTX 4090",
+  "gpu_capability": [
+    8,
+    9
+  ],
+  "gpu_memory_bytes": 25252724736,
+  "height": 256,
+  "model_id": "/root/autodl-tmp/models/sd15-clean",
+  "model_revision": "",
+  "negative_prompt": "low quality, blurry",
+  "output_sha256": {
+    "outputs/sweep_smoke/cfg_1.0.png": "de8028bffb15cdfcccf4c29b101f3fcdacc5a44b7ee2be09487015b5630394a8",
+    "outputs/sweep_smoke/cfg_7.5.png": "05cbf14bc6c4ec9e74bc89ca1db794665d4779a50fb9996f7b826f0e89bafb46",
+    "outputs/sweep_smoke/grid_2d.png": "2861d168b186e9469df690b7abfcef4dec3acf403ffb42ec03e759d8d4ad7453",
+    "outputs/sweep_smoke/sampler_DDIM.png": "05cbf14bc6c4ec9e74bc89ca1db794665d4779a50fb9996f7b826f0e89bafb46",
+    "outputs/sweep_smoke/steps_10.png": "1f0f070a46af8cb975bec63d386c6b1602698b9275693e59b6c928be0720223a",
+    "outputs/sweep_smoke/steps_5.png": "05cbf14bc6c4ec9e74bc89ca1db794665d4779a50fb9996f7b826f0e89bafb46",
+    "outputs/sweep_smoke/sweep_cfg.png": "9da8846d45b323360d9ab7909c56b682595682b8d2503a70da25e92d08b6d2f1",
+    "outputs/sweep_smoke/sweep_sampler.png": "c49d2069745a56cff0a4f526192f26e10e4d32ca196c63a7ce5c10bc9138131e",
+    "outputs/sweep_smoke/sweep_steps.png": "43cc4d4fdbcd708f33d2c76c278f20f98e1fc84d15d04f76e8601176f6d86d0d"
+  },
+  "packages": {
+    "accelerate": "1.14.0",
+    "diffusers": "0.40.0",
+    "matplotlib": "3.10.5",
+    "peft": "0.20.0",
+    "safetensors": "0.8.0",
+    "torch": "2.8.0+cu128",
+    "torchvision": "0.23.0+cu128",
+    "transformers": "5.15.1"
+  },
+  "platform": "Linux-5.15.0-97-generic-x86_64-with-glibc2.35",
+  "preset": "smoke",
+  "prompt": "a photograph of a cat wearing a wizard hat, fantasy art",
+  "python": "3.12.3",
+  "samplers": [
+    "DDIM"
+  ],
+  "seed": 42,
+  "steps": [
+    5,
+    10
+  ],
+  "timestamp_utc": "2026-09-13T15:03:11.877791+00:00",
+  "torch_cuda": "12.8",
+  "width": 256
+}

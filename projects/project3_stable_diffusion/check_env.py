@@ -15,8 +15,13 @@ SD 权重有 ~7 GB，跑到一半才发现装错库或下不动很浪费时间�
 
 import argparse
 import importlib
+import json
 import os
 import sys
+
+if hasattr(sys.stdout, "reconfigure"):
+    # AutoDL is UTF-8; Windows local consoles may still default to GBK.
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
 # (import 名, pip 名, 是哪个任务需要的)
 PACKAGES = [
@@ -29,7 +34,8 @@ PACKAGES = [
     ('cv2', 'opencv-python', '任务 E / ControlNet demo'),
 ]
 
-DEFAULT_MODEL_ID = "runwayml/stable-diffusion-v1-5"
+DEFAULT_MODEL_ID = "stable-diffusion-v1-5/stable-diffusion-v1-5"
+DEFAULT_MODEL_REVISION = "451f4fe16113bff5a5d2269ed5ad43b0592e9a14"
 CONTROLNET_ID = "lllyasviel/sd-controlnet-canny"
 
 
@@ -75,7 +81,7 @@ def check_device():
     return True
 
 
-def check_model_reachable(model_id):
+def check_model_reachable(model_id, model_revision=DEFAULT_MODEL_REVISION):
     """只发 HEAD 请求探测配置文件，不下载权重（用标准库，不依赖 requests）."""
     from urllib.error import HTTPError, URLError
     from urllib.request import Request, urlopen
@@ -86,7 +92,8 @@ def check_model_reachable(model_id):
     ok = True
     for repo, fname in [(model_id, 'model_index.json'),
                         (CONTROLNET_ID, 'config.json')]:
-        url = f"{endpoint}/{repo}/resolve/main/{fname}"
+        revision = model_revision if repo == model_id and model_revision else 'main'
+        url = f"{endpoint}/{repo}/resolve/{revision}/{fname}"
         try:
             req = Request(url, method='HEAD')
             with urlopen(req, timeout=15) as r:
@@ -111,6 +118,8 @@ def check_model_reachable(model_id):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--model_id', type=str, default=DEFAULT_MODEL_ID)
+    parser.add_argument('--model_revision', type=str, default=DEFAULT_MODEL_REVISION)
+    parser.add_argument('--json_output', type=str, default=None)
     args = parser.parse_args()
 
     print("[1/3] 依赖包")
@@ -120,11 +129,23 @@ def main():
     check_device()   # 没有 GPU 只是警告，不算失败
 
     print("\n[3/3] 模型下载通道")
-    ok_net = check_model_reachable(args.model_id)
+    ok_net = check_model_reachable(args.model_id, args.model_revision)
 
     print()
     if ok_pkg and ok_net:
         print("环境就绪 ✅ 可以开始任务 A 了")
+        if args.json_output:
+            from pathlib import Path
+            try:
+                Path(args.json_output).parent.mkdir(parents=True, exist_ok=True)
+                Path(args.json_output).write_text(json.dumps({
+                    "packages_ok": True,
+                    "model_reachable": True,
+                    "model_id": args.model_id,
+                    "model_revision": args.model_revision,
+                }, indent=2) + "\n", encoding='utf-8')
+            except OSError as exc:
+                print(f"   ⚠️  无法写入 JSON 检查结果：{exc}")
         return 0
     print("有检查未通过 ❌ 按上面的提示处理后重跑")
     return 1
