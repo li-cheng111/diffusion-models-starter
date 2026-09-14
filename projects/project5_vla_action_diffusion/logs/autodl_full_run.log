@@ -1,0 +1,414 @@
+$ /root/miniconda3/bin/python train.py --config /root/autodl-tmp/project5-run/projects/project5_vla_action_diffusion/configs/reach2d_16.yaml --method ddpm --run-dir /root/autodl-tmp/project5-run/projects/project5_vla_action_diffusion/runs/project5/vision_ddpm --seed 42 --collect
+Saved 27163 (image, state, chunk) samples from 1000 demos → ./data/demos_16.pkl
+Demo dataset: 27163 samples
+条件模式: image + agent_pos  state_dim=2
+Params: 0.35M
+step 200/10000 | loss 0.2336 (avg100 0.3026) | 57.8/s
+step 400/10000 | loss 0.2180 (avg100 0.2281) | 62.5/s
+step 600/10000 | loss 0.2128 (avg100 0.2192) | 64.6/s
+step 800/10000 | loss 0.2158 (avg100 0.2088) | 65.7/s
+step 1000/10000 | loss 0.1831 (avg100 0.1955) | 65.8/s
+step 1200/10000 | loss 0.1640 (avg100 0.1903) | 66.0/s
+step 1400/10000 | loss 0.1940 (avg100 0.1843) | 66.2/s
+step 1600/10000 | loss 0.1623 (avg100 0.1816) | 67.0/s
+step 1800/10000 | loss 0.1973 (avg100 0.1766) | 68.5/s
+step 2000/10000 | loss 0.1930 (avg100 0.1751) | 69.1/s
+Saved /root/autodl-tmp/project5-run/projects/project5_vla_action_diffusion/runs/project5/vision_ddpm/ckpts/model_002000.pt
+step 2200/10000 | loss 0.1653 (avg100 0.1704) | 69.5/s
+step 2400/10000 | loss 0.1822 (avg100 0.1714) | 69.6/s
+step 2600/10000 | loss 0.1829 (avg100 0.1668) | 69.6/s
+step 2800/10000 | loss 0.1567 (avg100 0.1615) | 69.6/s
+step 3000/10000 | loss 0.1465 (avg100 0.1604) | 69.4/s
+step 3200/10000 | loss 0.1964 (avg100 0.1575) | 69.6/s
+step 3400/10000 | loss 0.1407 (avg100 0.1572) | 69.7/s
+step 3600/10000 | loss 0.1445 (avg100 0.1494) | 70.1/s
+step 3800/10000 | loss 0.1514 (avg100 0.1454) | 70.1/s
+step 4000/10000 | loss 0.1494 (avg100 0.1447) | 70.1/s
+Saved /root/autodl-tmp/project5-run/projects/project5_vla_action_diffusion/runs/project5/vision_ddpm/ckpts/model_004000.pt
+step 4200/10000 | loss 0.1589 (avg100 0.1426) | 70.0/s
+step 4400/10000 | loss 0.1473 (avg100 0.1416) | 69.9/s
+step 4600/10000 | loss 0.1443 (avg100 0.1398) | 69.8/s
+step 4800/10000 | loss 0.1294 (avg100 0.1402) | 69.8/s
+step 5000/10000 | loss 0.1170 (avg100 0.1371) | 70.0/s
+step 5200/10000 | loss 0.1399 (avg100 0.1363) | 70.2/s
+step 5400/10000 | loss 0.1494 (avg100 0.1346) | 70.5/s
+step 5600/10000 | loss 0.1420 (avg100 0.1338) | 70.5/s
+step 5800/10000 | loss 0.1170 (avg100 0.1304) | 70.5/s
+step 6000/10000 | loss 0.1326 (avg100 0.1320) | 70.5/s
+Saved /root/autodl-tmp/project5-run/projects/project5_vla_action_diffusion/runs/project5/vision_ddpm/ckpts/model_006000.pt
+step 6200/10000 | loss 0.1433 (avg100 0.1307) | 70.4/s
+step 6400/10000 | loss 0.1298 (avg100 0.1304) | 70.3/s
+step 6600/10000 | loss 0.1268 (avg100 0.1308) | 70.3/s
+step 6800/10000 | loss 0.1295 (avg100 0.1269) | 70.3/s
+step 7000/10000 | loss 0.1262 (avg100 0.1279) | 70.4/s
+step 7200/10000 | loss 0.1267 (avg100 0.1260) | 70.7/s
+step 7400/10000 | loss 0.1196 (avg100 0.1257) | 70.7/s
+step 7600/10000 | loss 0.1164 (avg100 0.1261) | 70.7/s
+step 7800/10000 | loss 0.1360 (avg100 0.1235) | 70.7/s
+step 8000/10000 | loss 0.1420 (avg100 0.1252) | 70.6/s
+Saved /root/autodl-tmp/project5-run/projects/project5_vla_action_diffusion/runs/project5/vision_ddpm/ckpts/model_008000.pt
+step 8200/10000 | loss 0.1599 (avg100 0.1228) | 70.7/s
+step 8400/10000 | loss 0.1295 (avg100 0.1200) | 70.7/s
+step 8600/10000 | loss 0.1071 (avg100 0.1235) | 70.7/s
+step 8800/10000 | loss 0.1118 (avg100 0.1205) | 70.7/s
+step 9000/10000 | loss 0.1072 (avg100 0.1213) | 70.8/s
+step 9200/10000 | loss 0.1244 (avg100 0.1220) | 70.8/s
+step 9400/10000 | loss 0.1303 (avg100 0.1180) | 70.7/s
+step 9600/10000 | loss 0.1104 (avg100 0.1193) | 70.5/s
+step 9800/10000 | loss 0.1151 (avg100 0.1178) | 70.4/s
+step 10000/10000 | loss 0.1232 (avg100 0.1177) | 70.4/s
+Saved /root/autodl-tmp/project5-run/projects/project5_vla_action_diffusion/runs/project5/vision_ddpm/ckpts/model_010000.pt
+Done. Final ckpt: /root/autodl-tmp/project5-run/projects/project5_vla_action_diffusion/runs/project5/vision_ddpm/ckpts/model_final.pt
+$ /root/miniconda3/bin/python eval.py --config /root/autodl-tmp/project5-run/projects/project5_vla_action_diffusion/configs/reach2d_16.yaml --ckpt /root/autodl-tmp/project5-run/projects/project5_vla_action_diffusion/runs/project5/vision_ddpm/ckpts/model_final.pt --method ddpm --n_episodes 100 --seed-start 10000 --exec_steps 4 --n_sample_steps 20 --output /root/autodl-tmp/project5-run/projects/project5_vla_action_diffusion/runs/project5/vision_ddpm/eval_vision_ddpm.json --rollout-dir /root/autodl-tmp/project5-run/projects/project5_vla_action_diffusion/runs/project5/vision_ddpm/rollouts --max-success-plots 3
+Loaded EMA model from /root/autodl-tmp/project5-run/projects/project5_vla_action_diffusion/runs/project5/vision_ddpm/ckpts/model_final.pt (ddpm)
+episode 1/100 | success=1 collision=0
+episode 10/100 | success=7 collision=0
+episode 20/100 | success=13 collision=0
+episode 30/100 | success=18 collision=2
+episode 40/100 | success=20 collision=3
+episode 50/100 | success=28 collision=4
+episode 60/100 | success=34 collision=4
+episode 70/100 | success=39 collision=4
+episode 80/100 | success=44 collision=6
+episode 90/100 | success=49 collision=6
+episode 100/100 | success=54 collision=6
+
+=== Evaluation Results ===
+Success rate:   54.0%
+Collision rate: 6.0%
+Avg steps:      68.9
+Total episodes: 100
+Saved results: /root/autodl-tmp/project5-run/projects/project5_vla_action_diffusion/runs/project5/vision_ddpm/eval_vision_ddpm.json
+$ /root/miniconda3/bin/python train.py --config /root/autodl-tmp/project5-run/projects/project5_vla_action_diffusion/configs/reach2d_state_16.yaml --method ddpm --run-dir /root/autodl-tmp/project5-run/projects/project5_vla_action_diffusion/runs/project5/state_ddpm --seed 42
+Demo dataset: 27163 samples
+条件模式: agent_pos + target_pos（无视觉）  state_dim=4
+Params: 0.20M
+step 200/10000 | loss 0.2238 (avg100 0.2467) | 54.5/s
+step 400/10000 | loss 0.2054 (avg100 0.2160) | 58.6/s
+step 600/10000 | loss 0.2215 (avg100 0.2102) | 61.4/s
+step 800/10000 | loss 0.2233 (avg100 0.2078) | 62.8/s
+step 1000/10000 | loss 0.2029 (avg100 0.1957) | 63.7/s
+step 1200/10000 | loss 0.1525 (avg100 0.1935) | 64.1/s
+step 1400/10000 | loss 0.1884 (avg100 0.1892) | 64.5/s
+step 1600/10000 | loss 0.1732 (avg100 0.1862) | 65.8/s
+step 1800/10000 | loss 0.1874 (avg100 0.1868) | 66.1/s
+step 2000/10000 | loss 0.2007 (avg100 0.1869) | 66.1/s
+Saved /root/autodl-tmp/project5-run/projects/project5_vla_action_diffusion/runs/project5/state_ddpm/ckpts/model_002000.pt
+step 2200/10000 | loss 0.1682 (avg100 0.1824) | 66.2/s
+step 2400/10000 | loss 0.2193 (avg100 0.1842) | 66.3/s
+step 2600/10000 | loss 0.2215 (avg100 0.1818) | 66.3/s
+step 2800/10000 | loss 0.1699 (avg100 0.1765) | 66.3/s
+step 3000/10000 | loss 0.1572 (avg100 0.1761) | 66.2/s
+step 3200/10000 | loss 0.2147 (avg100 0.1780) | 65.9/s
+step 3400/10000 | loss 0.1635 (avg100 0.1760) | 66.0/s
+step 3600/10000 | loss 0.1568 (avg100 0.1670) | 66.3/s
+step 3800/10000 | loss 0.1624 (avg100 0.1609) | 66.3/s
+step 4000/10000 | loss 0.1517 (avg100 0.1593) | 66.4/s
+Saved /root/autodl-tmp/project5-run/projects/project5_vla_action_diffusion/runs/project5/state_ddpm/ckpts/model_004000.pt
+step 4200/10000 | loss 0.1656 (avg100 0.1575) | 66.4/s
+step 4400/10000 | loss 0.1806 (avg100 0.1535) | 66.5/s
+step 4600/10000 | loss 0.1553 (avg100 0.1529) | 66.5/s
+step 4800/10000 | loss 0.1545 (avg100 0.1517) | 66.5/s
+step 5000/10000 | loss 0.1277 (avg100 0.1460) | 66.4/s
+step 5200/10000 | loss 0.1479 (avg100 0.1452) | 66.6/s
+step 5400/10000 | loss 0.1415 (avg100 0.1409) | 66.7/s
+step 5600/10000 | loss 0.1449 (avg100 0.1391) | 66.8/s
+step 5800/10000 | loss 0.1212 (avg100 0.1350) | 66.9/s
+step 6000/10000 | loss 0.1506 (avg100 0.1368) | 66.8/s
+Saved /root/autodl-tmp/project5-run/projects/project5_vla_action_diffusion/runs/project5/state_ddpm/ckpts/model_006000.pt
+step 6200/10000 | loss 0.1387 (avg100 0.1360) | 66.7/s
+step 6400/10000 | loss 0.1358 (avg100 0.1337) | 66.6/s
+step 6600/10000 | loss 0.1379 (avg100 0.1357) | 66.5/s
+step 6800/10000 | loss 0.1235 (avg100 0.1305) | 66.5/s
+step 7000/10000 | loss 0.1312 (avg100 0.1317) | 66.7/s
+step 7200/10000 | loss 0.1389 (avg100 0.1299) | 66.9/s
+step 7400/10000 | loss 0.1346 (avg100 0.1290) | 67.1/s
+step 7600/10000 | loss 0.1238 (avg100 0.1293) | 67.2/s
+step 7800/10000 | loss 0.1366 (avg100 0.1264) | 67.3/s
+step 8000/10000 | loss 0.1502 (avg100 0.1284) | 67.3/s
+Saved /root/autodl-tmp/project5-run/projects/project5_vla_action_diffusion/runs/project5/state_ddpm/ckpts/model_008000.pt
+step 8200/10000 | loss 0.1646 (avg100 0.1258) | 67.3/s
+step 8400/10000 | loss 0.1272 (avg100 0.1252) | 67.2/s
+step 8600/10000 | loss 0.0968 (avg100 0.1273) | 67.2/s
+step 8800/10000 | loss 0.1256 (avg100 0.1234) | 67.2/s
+step 9000/10000 | loss 0.0974 (avg100 0.1227) | 67.4/s
+step 9200/10000 | loss 0.1141 (avg100 0.1247) | 67.4/s
+step 9400/10000 | loss 0.1443 (avg100 0.1219) | 67.4/s
+step 9600/10000 | loss 0.1046 (avg100 0.1222) | 67.3/s
+step 9800/10000 | loss 0.1185 (avg100 0.1225) | 67.2/s
+step 10000/10000 | loss 0.1288 (avg100 0.1218) | 67.1/s
+Saved /root/autodl-tmp/project5-run/projects/project5_vla_action_diffusion/runs/project5/state_ddpm/ckpts/model_010000.pt
+Done. Final ckpt: /root/autodl-tmp/project5-run/projects/project5_vla_action_diffusion/runs/project5/state_ddpm/ckpts/model_final.pt
+$ /root/miniconda3/bin/python eval.py --config /root/autodl-tmp/project5-run/projects/project5_vla_action_diffusion/configs/reach2d_state_16.yaml --ckpt /root/autodl-tmp/project5-run/projects/project5_vla_action_diffusion/runs/project5/state_ddpm/ckpts/model_final.pt --method ddpm --n_episodes 100 --seed-start 10000 --exec_steps 4 --n_sample_steps 20 --output /root/autodl-tmp/project5-run/projects/project5_vla_action_diffusion/runs/project5/state_ddpm/eval_state_ddpm.json --rollout-dir /root/autodl-tmp/project5-run/projects/project5_vla_action_diffusion/runs/project5/state_ddpm/rollouts --max-success-plots 3
+Loaded EMA model from /root/autodl-tmp/project5-run/projects/project5_vla_action_diffusion/runs/project5/state_ddpm/ckpts/model_final.pt (ddpm)
+episode 1/100 | success=1 collision=0
+episode 10/100 | success=7 collision=1
+episode 20/100 | success=17 collision=1
+episode 30/100 | success=26 collision=2
+episode 40/100 | success=33 collision=4
+episode 50/100 | success=41 collision=4
+episode 60/100 | success=50 collision=5
+episode 70/100 | success=58 collision=7
+episode 80/100 | success=66 collision=8
+episode 90/100 | success=73 collision=10
+episode 100/100 | success=81 collision=12
+
+=== Evaluation Results ===
+Success rate:   81.0%
+Collision rate: 12.0%
+Avg steps:      55.9
+Total episodes: 100
+Saved results: /root/autodl-tmp/project5-run/projects/project5_vla_action_diffusion/runs/project5/state_ddpm/eval_state_ddpm.json
+$ /root/miniconda3/bin/python train.py --config /root/autodl-tmp/project5-run/projects/project5_vla_action_diffusion/configs/reach2d_16.yaml --method bc --run-dir /root/autodl-tmp/project5-run/projects/project5_vla_action_diffusion/runs/project5/vision_bc --seed 42
+Demo dataset: 27163 samples
+条件模式: image + agent_pos  state_dim=2
+Params: 0.35M
+step 200/10000 | loss 0.2443 (avg100 0.2459) | 56.3/s
+step 400/10000 | loss 0.2496 (avg100 0.2457) | 60.3/s
+step 600/10000 | loss 0.2016 (avg100 0.2169) | 62.4/s
+step 800/10000 | loss 0.0728 (avg100 0.0752) | 64.0/s
+step 1000/10000 | loss 0.0601 (avg100 0.0659) | 64.8/s
+step 1200/10000 | loss 0.0590 (avg100 0.0591) | 65.5/s
+step 1400/10000 | loss 0.0536 (avg100 0.0561) | 65.4/s
+step 1600/10000 | loss 0.0472 (avg100 0.0504) | 65.8/s
+step 1800/10000 | loss 0.0447 (avg100 0.0444) | 66.5/s
+step 2000/10000 | loss 0.0387 (avg100 0.0379) | 67.1/s
+Saved /root/autodl-tmp/project5-run/projects/project5_vla_action_diffusion/runs/project5/vision_bc/ckpts/model_002000.pt
+step 2200/10000 | loss 0.0332 (avg100 0.0302) | 67.1/s
+step 2400/10000 | loss 0.0219 (avg100 0.0236) | 67.2/s
+step 2600/10000 | loss 0.0194 (avg100 0.0192) | 67.2/s
+step 2800/10000 | loss 0.0122 (avg100 0.0176) | 67.3/s
+step 3000/10000 | loss 0.0145 (avg100 0.0145) | 67.0/s
+step 3200/10000 | loss 0.0136 (avg100 0.0132) | 66.8/s
+step 3400/10000 | loss 0.0097 (avg100 0.0121) | 66.8/s
+step 3600/10000 | loss 0.0106 (avg100 0.0115) | 67.3/s
+step 3800/10000 | loss 0.0107 (avg100 0.0111) | 67.4/s
+step 4000/10000 | loss 0.0115 (avg100 0.0102) | 67.5/s
+Saved /root/autodl-tmp/project5-run/projects/project5_vla_action_diffusion/runs/project5/vision_bc/ckpts/model_004000.pt
+step 4200/10000 | loss 0.0127 (avg100 0.0114) | 67.5/s
+step 4400/10000 | loss 0.0088 (avg100 0.0121) | 67.6/s
+step 4600/10000 | loss 0.0114 (avg100 0.0095) | 67.4/s
+step 4800/10000 | loss 0.0081 (avg100 0.0094) | 67.3/s
+step 5000/10000 | loss 0.0080 (avg100 0.0092) | 67.2/s
+step 5200/10000 | loss 0.0087 (avg100 0.0088) | 67.2/s
+step 5400/10000 | loss 0.0108 (avg100 0.0089) | 67.5/s
+step 5600/10000 | loss 0.0095 (avg100 0.0089) | 67.6/s
+step 5800/10000 | loss 0.0078 (avg100 0.0116) | 67.5/s
+step 6000/10000 | loss 0.0082 (avg100 0.0082) | 67.1/s
+Saved /root/autodl-tmp/project5-run/projects/project5_vla_action_diffusion/runs/project5/vision_bc/ckpts/model_006000.pt
+step 6200/10000 | loss 0.0095 (avg100 0.0081) | 66.9/s
+step 6400/10000 | loss 0.0089 (avg100 0.0080) | 66.9/s
+step 6600/10000 | loss 0.0067 (avg100 0.0079) | 66.9/s
+step 6800/10000 | loss 0.0082 (avg100 0.0083) | 66.7/s
+step 7000/10000 | loss 0.0077 (avg100 0.0076) | 66.5/s
+step 7200/10000 | loss 0.0066 (avg100 0.0077) | 66.6/s
+step 7400/10000 | loss 0.0090 (avg100 0.0079) | 66.5/s
+step 7600/10000 | loss 0.0081 (avg100 0.0080) | 66.4/s
+step 7800/10000 | loss 0.0071 (avg100 0.0077) | 66.2/s
+step 8000/10000 | loss 0.0121 (avg100 0.0086) | 66.1/s
+Saved /root/autodl-tmp/project5-run/projects/project5_vla_action_diffusion/runs/project5/vision_bc/ckpts/model_008000.pt
+step 8200/10000 | loss 0.0083 (avg100 0.0081) | 66.0/s
+step 8400/10000 | loss 0.0067 (avg100 0.0073) | 66.1/s
+step 8600/10000 | loss 0.0065 (avg100 0.0073) | 66.1/s
+step 8800/10000 | loss 0.0093 (avg100 0.0072) | 66.1/s
+step 9000/10000 | loss 0.0072 (avg100 0.0072) | 66.3/s
+step 9200/10000 | loss 0.0075 (avg100 0.0073) | 66.3/s
+step 9400/10000 | loss 0.0064 (avg100 0.0070) | 66.3/s
+step 9600/10000 | loss 0.0085 (avg100 0.0073) | 66.3/s
+step 9800/10000 | loss 0.0082 (avg100 0.0071) | 66.3/s
+step 10000/10000 | loss 0.0084 (avg100 0.0074) | 66.4/s
+Saved /root/autodl-tmp/project5-run/projects/project5_vla_action_diffusion/runs/project5/vision_bc/ckpts/model_010000.pt
+Done. Final ckpt: /root/autodl-tmp/project5-run/projects/project5_vla_action_diffusion/runs/project5/vision_bc/ckpts/model_final.pt
+$ /root/miniconda3/bin/python eval.py --config /root/autodl-tmp/project5-run/projects/project5_vla_action_diffusion/configs/reach2d_16.yaml --ckpt /root/autodl-tmp/project5-run/projects/project5_vla_action_diffusion/runs/project5/vision_bc/ckpts/model_final.pt --method bc --n_episodes 100 --seed-start 10000 --exec_steps 4 --n_sample_steps 1 --output /root/autodl-tmp/project5-run/projects/project5_vla_action_diffusion/runs/project5/vision_bc/eval_vision_bc.json --rollout-dir /root/autodl-tmp/project5-run/projects/project5_vla_action_diffusion/runs/project5/vision_bc/rollouts --max-success-plots 3
+Loaded EMA model from /root/autodl-tmp/project5-run/projects/project5_vla_action_diffusion/runs/project5/vision_bc/ckpts/model_final.pt (bc)
+episode 1/100 | success=1 collision=0
+episode 10/100 | success=7 collision=0
+episode 20/100 | success=13 collision=0
+episode 30/100 | success=17 collision=3
+episode 40/100 | success=23 collision=4
+episode 50/100 | success=30 collision=5
+episode 60/100 | success=36 collision=7
+episode 70/100 | success=44 collision=7
+episode 80/100 | success=49 collision=9
+episode 90/100 | success=53 collision=11
+episode 100/100 | success=58 collision=12
+
+=== Evaluation Results ===
+Success rate:   58.0%
+Collision rate: 12.0%
+Avg steps:      50.7
+Total episodes: 100
+Saved results: /root/autodl-tmp/project5-run/projects/project5_vla_action_diffusion/runs/project5/vision_bc/eval_vision_bc.json
+$ /root/miniconda3/bin/python train.py --config /root/autodl-tmp/project5-run/projects/project5_vla_action_diffusion/configs/reach2d_16.yaml --method fm --run-dir /root/autodl-tmp/project5-run/projects/project5_vla_action_diffusion/runs/project5/vision_fm --seed 42
+Demo dataset: 27163 samples
+条件模式: image + agent_pos  state_dim=2
+Params: 0.35M
+step 200/10000 | loss 0.4315 (avg100 0.5113) | 48.7/s
+step 400/10000 | loss 0.4323 (avg100 0.4125) | 57.4/s
+step 600/10000 | loss 0.4138 (avg100 0.4067) | 61.1/s
+step 800/10000 | loss 0.3928 (avg100 0.3997) | 62.3/s
+step 1000/10000 | loss 0.3059 (avg100 0.3432) | 63.1/s
+step 1200/10000 | loss 0.3150 (avg100 0.2897) | 64.0/s
+step 1400/10000 | loss 0.2726 (avg100 0.2797) | 63.9/s
+step 1600/10000 | loss 0.2781 (avg100 0.2679) | 64.2/s
+step 1800/10000 | loss 0.2657 (avg100 0.2498) | 64.6/s
+step 2000/10000 | loss 0.2337 (avg100 0.2409) | 64.7/s
+Saved /root/autodl-tmp/project5-run/projects/project5_vla_action_diffusion/runs/project5/vision_fm/ckpts/model_002000.pt
+step 2200/10000 | loss 0.2151 (avg100 0.2267) | 65.0/s
+step 2400/10000 | loss 0.2038 (avg100 0.2220) | 65.3/s
+step 2600/10000 | loss 0.1972 (avg100 0.2119) | 65.6/s
+step 2800/10000 | loss 0.1833 (avg100 0.2043) | 65.8/s
+step 3000/10000 | loss 0.2081 (avg100 0.1949) | 65.8/s
+step 3200/10000 | loss 0.2026 (avg100 0.1861) | 66.2/s
+step 3400/10000 | loss 0.1671 (avg100 0.1866) | 66.3/s
+step 3600/10000 | loss 0.1837 (avg100 0.1844) | 66.8/s
+step 3800/10000 | loss 0.1753 (avg100 0.1760) | 66.8/s
+step 4000/10000 | loss 0.1960 (avg100 0.1744) | 67.0/s
+Saved /root/autodl-tmp/project5-run/projects/project5_vla_action_diffusion/runs/project5/vision_fm/ckpts/model_004000.pt
+step 4200/10000 | loss 0.1961 (avg100 0.1751) | 67.0/s
+step 4400/10000 | loss 0.1805 (avg100 0.1675) | 66.9/s
+step 4600/10000 | loss 0.1898 (avg100 0.1670) | 66.9/s
+step 4800/10000 | loss 0.1705 (avg100 0.1624) | 66.8/s
+step 5000/10000 | loss 0.1442 (avg100 0.1632) | 66.9/s
+step 5200/10000 | loss 0.1662 (avg100 0.1641) | 66.9/s
+step 5400/10000 | loss 0.1294 (avg100 0.1581) | 67.2/s
+step 5600/10000 | loss 0.1461 (avg100 0.1577) | 67.2/s
+step 5800/10000 | loss 0.1495 (avg100 0.1538) | 67.4/s
+step 6000/10000 | loss 0.1323 (avg100 0.1537) | 67.4/s
+Saved /root/autodl-tmp/project5-run/projects/project5_vla_action_diffusion/runs/project5/vision_fm/ckpts/model_006000.pt
+step 6200/10000 | loss 0.1396 (avg100 0.1507) | 67.4/s
+step 6400/10000 | loss 0.1658 (avg100 0.1500) | 67.4/s
+step 6600/10000 | loss 0.1667 (avg100 0.1487) | 67.4/s
+step 6800/10000 | loss 0.1293 (avg100 0.1468) | 67.4/s
+step 7000/10000 | loss 0.1511 (avg100 0.1447) | 67.4/s
+step 7200/10000 | loss 0.1459 (avg100 0.1461) | 67.7/s
+step 7400/10000 | loss 0.1456 (avg100 0.1432) | 67.7/s
+step 7600/10000 | loss 0.1353 (avg100 0.1439) | 67.7/s
+step 7800/10000 | loss 0.1363 (avg100 0.1431) | 67.6/s
+step 8000/10000 | loss 0.1123 (avg100 0.1401) | 67.6/s
+Saved /root/autodl-tmp/project5-run/projects/project5_vla_action_diffusion/runs/project5/vision_fm/ckpts/model_008000.pt
+step 8200/10000 | loss 0.1207 (avg100 0.1412) | 67.6/s
+step 8400/10000 | loss 0.1574 (avg100 0.1405) | 67.7/s
+step 8600/10000 | loss 0.1208 (avg100 0.1402) | 67.8/s
+step 8800/10000 | loss 0.1506 (avg100 0.1387) | 67.8/s
+step 9000/10000 | loss 0.1507 (avg100 0.1413) | 68.0/s
+step 9200/10000 | loss 0.1249 (avg100 0.1362) | 68.0/s
+step 9400/10000 | loss 0.1498 (avg100 0.1380) | 68.1/s
+step 9600/10000 | loss 0.1244 (avg100 0.1345) | 68.1/s
+step 9800/10000 | loss 0.1388 (avg100 0.1346) | 68.2/s
+step 10000/10000 | loss 0.1135 (avg100 0.1338) | 68.2/s
+Saved /root/autodl-tmp/project5-run/projects/project5_vla_action_diffusion/runs/project5/vision_fm/ckpts/model_010000.pt
+Done. Final ckpt: /root/autodl-tmp/project5-run/projects/project5_vla_action_diffusion/runs/project5/vision_fm/ckpts/model_final.pt
+$ /root/miniconda3/bin/python eval.py --config /root/autodl-tmp/project5-run/projects/project5_vla_action_diffusion/configs/reach2d_16.yaml --ckpt /root/autodl-tmp/project5-run/projects/project5_vla_action_diffusion/runs/project5/vision_fm/ckpts/model_final.pt --method fm --n_episodes 100 --seed-start 10000 --exec_steps 4 --n_sample_steps 10 --output /root/autodl-tmp/project5-run/projects/project5_vla_action_diffusion/runs/project5/vision_fm/eval_vision_fm.json --rollout-dir /root/autodl-tmp/project5-run/projects/project5_vla_action_diffusion/runs/project5/vision_fm/rollouts --max-success-plots 3
+Loaded EMA model from /root/autodl-tmp/project5-run/projects/project5_vla_action_diffusion/runs/project5/vision_fm/ckpts/model_final.pt (fm)
+episode 1/100 | success=1 collision=0
+episode 10/100 | success=8 collision=0
+episode 20/100 | success=13 collision=0
+episode 30/100 | success=18 collision=1
+episode 40/100 | success=21 collision=3
+episode 50/100 | success=29 collision=4
+episode 60/100 | success=35 collision=5
+episode 70/100 | success=40 collision=6
+episode 80/100 | success=46 collision=9
+episode 90/100 | success=52 collision=9
+episode 100/100 | success=57 collision=9
+
+=== Evaluation Results ===
+Success rate:   57.0%
+Collision rate: 9.0%
+Avg steps:      52.9
+Total episodes: 100
+Saved results: /root/autodl-tmp/project5-run/projects/project5_vla_action_diffusion/runs/project5/vision_fm/eval_vision_fm.json
+$ /root/miniconda3/bin/python train.py --config /root/autodl-tmp/project5-run/projects/project5_vla_action_diffusion/configs/reach2d.yaml --method ddpm --run-dir /root/autodl-tmp/project5-run/projects/project5_vla_action_diffusion/runs/project5/vision_ddpm_h32 --seed 42 --collect
+Saved 27163 (image, state, chunk) samples from 1000 demos → ./data/demos.pkl
+Demo dataset: 27163 samples
+条件模式: image + agent_pos  state_dim=2
+Params: 0.36M
+step 200/10000 | loss 0.3213 (avg100 0.4104) | 67.0/s
+step 400/10000 | loss 0.2025 (avg100 0.2178) | 71.5/s
+step 600/10000 | loss 0.2105 (avg100 0.2046) | 74.4/s
+step 800/10000 | loss 0.2021 (avg100 0.2035) | 74.4/s
+step 1000/10000 | loss 0.2040 (avg100 0.1947) | 74.6/s
+step 1200/10000 | loss 0.1952 (avg100 0.1923) | 74.0/s
+step 1400/10000 | loss 0.1984 (avg100 0.1878) | 73.5/s
+step 1600/10000 | loss 0.1585 (avg100 0.1791) | 73.5/s
+step 1800/10000 | loss 0.1951 (avg100 0.1762) | 73.9/s
+step 2000/10000 | loss 0.2013 (avg100 0.1741) | 73.8/s
+Saved /root/autodl-tmp/project5-run/projects/project5_vla_action_diffusion/runs/project5/vision_ddpm_h32/ckpts/model_002000.pt
+step 2200/10000 | loss 0.1666 (avg100 0.1664) | 74.1/s
+step 2400/10000 | loss 0.1855 (avg100 0.1648) | 74.6/s
+step 2600/10000 | loss 0.1739 (avg100 0.1608) | 74.5/s
+step 2800/10000 | loss 0.1374 (avg100 0.1549) | 74.2/s
+step 3000/10000 | loss 0.1381 (avg100 0.1546) | 74.0/s
+step 3200/10000 | loss 0.1698 (avg100 0.1533) | 73.7/s
+step 3400/10000 | loss 0.1481 (avg100 0.1530) | 73.5/s
+step 3600/10000 | loss 0.1440 (avg100 0.1472) | 73.6/s
+step 3800/10000 | loss 0.1408 (avg100 0.1440) | 73.7/s
+step 4000/10000 | loss 0.1484 (avg100 0.1451) | 73.7/s
+Saved /root/autodl-tmp/project5-run/projects/project5_vla_action_diffusion/runs/project5/vision_ddpm_h32/ckpts/model_004000.pt
+step 4200/10000 | loss 0.1540 (avg100 0.1451) | 73.8/s
+step 4400/10000 | loss 0.1715 (avg100 0.1444) | 73.7/s
+step 4600/10000 | loss 0.1393 (avg100 0.1427) | 73.7/s
+step 4800/10000 | loss 0.1355 (avg100 0.1419) | 73.6/s
+step 5000/10000 | loss 0.1257 (avg100 0.1393) | 73.4/s
+step 5200/10000 | loss 0.1464 (avg100 0.1407) | 73.4/s
+step 5400/10000 | loss 0.1429 (avg100 0.1387) | 73.5/s
+step 5600/10000 | loss 0.1344 (avg100 0.1380) | 73.5/s
+step 5800/10000 | loss 0.1254 (avg100 0.1337) | 73.6/s
+step 6000/10000 | loss 0.1275 (avg100 0.1367) | 73.6/s
+Saved /root/autodl-tmp/project5-run/projects/project5_vla_action_diffusion/runs/project5/vision_ddpm_h32/ckpts/model_006000.pt
+step 6200/10000 | loss 0.1378 (avg100 0.1346) | 73.5/s
+step 6400/10000 | loss 0.1205 (avg100 0.1331) | 73.4/s
+step 6600/10000 | loss 0.1355 (avg100 0.1354) | 73.4/s
+step 6800/10000 | loss 0.1268 (avg100 0.1321) | 73.4/s
+step 7000/10000 | loss 0.1327 (avg100 0.1335) | 73.4/s
+step 7200/10000 | loss 0.1324 (avg100 0.1315) | 73.5/s
+step 7400/10000 | loss 0.1360 (avg100 0.1310) | 73.5/s
+step 7600/10000 | loss 0.1260 (avg100 0.1311) | 73.5/s
+step 7800/10000 | loss 0.1420 (avg100 0.1285) | 73.5/s
+step 8000/10000 | loss 0.1258 (avg100 0.1298) | 73.5/s
+Saved /root/autodl-tmp/project5-run/projects/project5_vla_action_diffusion/runs/project5/vision_ddpm_h32/ckpts/model_008000.pt
+step 8200/10000 | loss 0.1533 (avg100 0.1285) | 73.4/s
+step 8400/10000 | loss 0.1214 (avg100 0.1273) | 73.3/s
+step 8600/10000 | loss 0.1186 (avg100 0.1292) | 73.1/s
+step 8800/10000 | loss 0.1156 (avg100 0.1272) | 73.2/s
+step 9000/10000 | loss 0.1098 (avg100 0.1273) | 73.2/s
+step 9200/10000 | loss 0.1285 (avg100 0.1306) | 73.0/s
+step 9400/10000 | loss 0.1306 (avg100 0.1270) | 72.9/s
+step 9600/10000 | loss 0.1155 (avg100 0.1245) | 72.6/s
+step 9800/10000 | loss 0.1228 (avg100 0.1256) | 72.5/s
+step 10000/10000 | loss 0.1247 (avg100 0.1231) | 72.3/s
+Saved /root/autodl-tmp/project5-run/projects/project5_vla_action_diffusion/runs/project5/vision_ddpm_h32/ckpts/model_010000.pt
+Done. Final ckpt: /root/autodl-tmp/project5-run/projects/project5_vla_action_diffusion/runs/project5/vision_ddpm_h32/ckpts/model_final.pt
+$ /root/miniconda3/bin/python eval.py --config /root/autodl-tmp/project5-run/projects/project5_vla_action_diffusion/configs/reach2d.yaml --ckpt /root/autodl-tmp/project5-run/projects/project5_vla_action_diffusion/runs/project5/vision_ddpm_h32/ckpts/model_final.pt --method ddpm --n_episodes 100 --seed-start 10000 --exec_steps 4 --n_sample_steps 20 --output /root/autodl-tmp/project5-run/projects/project5_vla_action_diffusion/runs/project5/vision_ddpm_h32/eval_vision_ddpm_h32.json --rollout-dir /root/autodl-tmp/project5-run/projects/project5_vla_action_diffusion/runs/project5/vision_ddpm_h32/rollouts --max-success-plots 3
+Loaded EMA model from /root/autodl-tmp/project5-run/projects/project5_vla_action_diffusion/runs/project5/vision_ddpm_h32/ckpts/model_final.pt (ddpm)
+episode 1/100 | success=0 collision=0
+episode 10/100 | success=2 collision=0
+episode 20/100 | success=3 collision=0
+episode 30/100 | success=5 collision=0
+episode 40/100 | success=5 collision=0
+episode 50/100 | success=7 collision=0
+episode 60/100 | success=7 collision=1
+episode 70/100 | success=9 collision=1
+episode 80/100 | success=10 collision=1
+episode 90/100 | success=12 collision=1
+episode 100/100 | success=14 collision=1
+
+=== Evaluation Results ===
+Success rate:   14.0%
+Collision rate: 1.0%
+Avg steps:      95.0
+Total episodes: 100
+Saved results: /root/autodl-tmp/project5-run/projects/project5_vla_action_diffusion/runs/project5/vision_ddpm_h32/eval_vision_ddpm_h32.json
+{
+  "state": "full_complete",
+  "run_root": "/root/autodl-tmp/project5-run/projects/project5_vla_action_diffusion/runs/project5",
+  "results": {
+    "vision_ddpm": "/root/autodl-tmp/project5-run/projects/project5_vla_action_diffusion/runs/project5/vision_ddpm/eval_vision_ddpm.json",
+    "state_ddpm": "/root/autodl-tmp/project5-run/projects/project5_vla_action_diffusion/runs/project5/state_ddpm/eval_state_ddpm.json",
+    "vision_bc": "/root/autodl-tmp/project5-run/projects/project5_vla_action_diffusion/runs/project5/vision_bc/eval_vision_bc.json",
+    "vision_fm": "/root/autodl-tmp/project5-run/projects/project5_vla_action_diffusion/runs/project5/vision_fm/eval_vision_fm.json",
+    "vision_ddpm_h32": "/root/autodl-tmp/project5-run/projects/project5_vla_action_diffusion/runs/project5/vision_ddpm_h32/eval_vision_ddpm_h32.json"
+  },
+  "final_checkpoint": "/root/autodl-tmp/project5-run/projects/project5_vla_action_diffusion/ckpts/model_final.pt"
+}

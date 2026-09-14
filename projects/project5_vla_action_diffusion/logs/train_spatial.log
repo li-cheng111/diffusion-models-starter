@@ -1,0 +1,59 @@
+Demo dataset: 27163 samples
+条件模式: image + agent_pos  state_dim=2
+Params: 0.59M
+step 200/10000 | loss 0.2456 (avg100 0.2991) | 54.2/s
+step 400/10000 | loss 0.2113 (avg100 0.2241) | 57.5/s
+step 600/10000 | loss 0.2130 (avg100 0.2088) | 58.7/s
+step 800/10000 | loss 0.2075 (avg100 0.1971) | 59.8/s
+step 1000/10000 | loss 0.1710 (avg100 0.1769) | 60.2/s
+step 1200/10000 | loss 0.1343 (avg100 0.1654) | 60.6/s
+step 1400/10000 | loss 0.1528 (avg100 0.1531) | 60.8/s
+step 1600/10000 | loss 0.1322 (avg100 0.1482) | 61.1/s
+step 1800/10000 | loss 0.1540 (avg100 0.1431) | 61.5/s
+step 2000/10000 | loss 0.1794 (avg100 0.1426) | 61.4/s
+Saved runs/project5/vision_ddpm_spatial/ckpts/model_002000.pt
+step 2200/10000 | loss 0.1411 (avg100 0.1351) | 61.6/s
+step 2400/10000 | loss 0.1574 (avg100 0.1355) | 61.7/s
+step 2600/10000 | loss 0.1584 (avg100 0.1321) | 62.0/s
+step 2800/10000 | loss 0.1196 (avg100 0.1280) | 62.2/s
+step 3000/10000 | loss 0.1168 (avg100 0.1256) | 62.5/s
+step 3200/10000 | loss 0.1434 (avg100 0.1250) | 62.7/s
+step 3400/10000 | loss 0.1190 (avg100 0.1242) | 62.4/s
+step 3600/10000 | loss 0.1150 (avg100 0.1192) | 62.8/s
+step 3800/10000 | loss 0.1210 (avg100 0.1173) | 62.7/s
+step 4000/10000 | loss 0.1092 (avg100 0.1165) | 62.6/s
+Saved runs/project5/vision_ddpm_spatial/ckpts/model_004000.pt
+step 4200/10000 | loss 0.1224 (avg100 0.1189) | 62.8/s
+step 4400/10000 | loss 0.1443 (avg100 0.1152) | 62.9/s
+step 4600/10000 | loss 0.1188 (avg100 0.1140) | 63.0/s
+step 4800/10000 | loss 0.1128 (avg100 0.1145) | 63.2/s
+step 5000/10000 | loss 0.1022 (avg100 0.1113) | 63.2/s
+step 5200/10000 | loss 0.1237 (avg100 0.1118) | 63.3/s
+step 5400/10000 | loss 0.1091 (avg100 0.1100) | 63.6/s
+step 5600/10000 | loss 0.1190 (avg100 0.1087) | 63.8/s
+step 5800/10000 | loss 0.0953 (avg100 0.1045) | 63.9/s
+step 6000/10000 | loss 0.1149 (avg100 0.1080) | 63.9/s
+Saved runs/project5/vision_ddpm_spatial/ckpts/model_006000.pt
+step 6200/10000 | loss 0.1141 (avg100 0.1074) | 63.9/s
+step 6400/10000 | loss 0.0978 (avg100 0.1060) | 64.0/s
+step 6600/10000 | loss 0.1007 (avg100 0.1072) | 64.2/s
+step 6800/10000 | loss 0.0990 (avg100 0.1028) | 64.1/s
+step 7000/10000 | loss 0.1123 (avg100 0.1044) | 64.1/s
+step 7200/10000 | loss 0.0927 (avg100 0.1025) | 64.4/s
+step 7400/10000 | loss 0.1087 (avg100 0.1040) | 64.4/s
+step 7600/10000 | loss 0.0965 (avg100 0.1043) | 64.4/s
+step 7800/10000 | loss 0.1120 (avg100 0.1001) | 64.6/s
+step 8000/10000 | loss 0.1190 (avg100 0.1014) | 64.5/s
+Saved runs/project5/vision_ddpm_spatial/ckpts/model_008000.pt
+step 8200/10000 | loss 0.1401 (avg100 0.1003) | 64.6/s
+step 8400/10000 | loss 0.0992 (avg100 0.0975) | 64.7/s
+step 8600/10000 | loss 0.0878 (avg100 0.1022) | 64.9/s
+step 8800/10000 | loss 0.0973 (avg100 0.0995) | 65.0/s
+step 9000/10000 | loss 0.0855 (avg100 0.0990) | 65.3/s
+step 9200/10000 | loss 0.0982 (avg100 0.1000) | 65.4/s
+step 9400/10000 | loss 0.1073 (avg100 0.0987) | 65.6/s
+step 9600/10000 | loss 0.0808 (avg100 0.0978) | 65.8/s
+step 9800/10000 | loss 0.1071 (avg100 0.0980) | 65.9/s
+step 10000/10000 | loss 0.1034 (avg100 0.0968) | 65.9/s
+Saved runs/project5/vision_ddpm_spatial/ckpts/model_010000.pt
+Done. Final ckpt: runs/project5/vision_ddpm_spatial/ckpts/model_final.pt

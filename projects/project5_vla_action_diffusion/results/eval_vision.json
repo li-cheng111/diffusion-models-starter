@@ -1,0 +1,18 @@
+{
+  "method": "ddpm",
+  "success_rate": 0.71,
+  "collision_rate": 0.03,
+  "timeout_rate": 0.26,
+  "avg_steps": 48.7,
+  "mean_final_distance": 0.16427666873424104,
+  "episodes": 100,
+  "successes": 71,
+  "collisions": 3,
+  "timeouts": 26,
+  "seed_start": 10000,
+  "seed_end": 10099,
+  "exec_steps": 4,
+  "chunk_size": 16,
+  "n_sample_steps": 20,
+  "rollouts_saved": 3
+}

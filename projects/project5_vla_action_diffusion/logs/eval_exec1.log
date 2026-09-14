@@ -1,0 +1,19 @@
+Loaded EMA model from runs/project5/vision_ddpm/ckpts/model_final.pt (ddpm)
+episode 1/100 | success=0 collision=0
+episode 10/100 | success=6 collision=0
+episode 20/100 | success=12 collision=0
+episode 30/100 | success=19 collision=1
+episode 40/100 | success=22 collision=1
+episode 50/100 | success=28 collision=2
+episode 60/100 | success=34 collision=2
+episode 70/100 | success=39 collision=2
+episode 80/100 | success=44 collision=2
+episode 90/100 | success=49 collision=2
+episode 100/100 | success=54 collision=2
+
+=== Evaluation Results ===
+Success rate:   54.0%
+Collision rate: 2.0%
+Avg steps:      69.0
+Total episodes: 100
+Saved results: runs/project5/vision_ddpm/eval_exec1.json

@@ -36,7 +36,7 @@ class VisionEncoder(nn.Module):
 
     要求实现一个简单但有效的 CNN:
         - 3-4 个 Conv2d + ReLU 模块，每个 stride 2 做下采样
-        - 最后 AdaptiveAvgPool2d(1) + Flatten + Linear → out_dim
+        - 最后小型 AdaptiveAvgPool2d 空间网格 + Flatten + Linear → out_dim
         - 推荐参数量 < 1M (这是 toy task)
 
     Tips:
@@ -54,7 +54,7 @@ class VisionEncoder(nn.Module):
         # ====================================================================
         # TODO 20: 实现 CNN 视觉编码器 (≈ 10-15 行)
         # ====================================================================
-        del image_size  # The adaptive pool keeps the encoder resolution agnostic.
+        del image_size  # Pooling keeps the encoder resolution agnostic.
         channels = (32, 64, 128)
         layers = []
         current = in_ch
@@ -66,10 +66,14 @@ class VisionEncoder(nn.Module):
                 nn.SiLU(),
             ])
             current = width
+        # Keep a small spatial grid instead of collapsing directly to 1x1.
+        # The target and distractors are identified by their positions; a pure
+        # global average would make translated scenes nearly indistinguishable.
+        spatial_bins = 4
         layers.extend([
-            nn.AdaptiveAvgPool2d(1),
+            nn.AdaptiveAvgPool2d((spatial_bins, spatial_bins)),
             nn.Flatten(),
-            nn.Linear(current, out_dim),
+            nn.Linear(current * spatial_bins * spatial_bins, out_dim),
             nn.LayerNorm(out_dim),
         ])
         self.net = nn.Sequential(*layers)
