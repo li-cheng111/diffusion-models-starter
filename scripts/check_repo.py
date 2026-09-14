@@ -19,7 +19,11 @@ FORBIDDEN_SUFFIXES = {".pt", ".pth", ".ckpt", ".safetensors"}
 ALLOWED_LORA_ADAPTER = Path(
     "projects/project3_stable_diffusion/outputs/lora/full/pytorch_lora_weights.safetensors"
 )
+ALLOWED_PROJECT5_CHECKPOINT = Path(
+    "projects/project5_vla_action_diffusion/ckpts/model_final.pt"
+)
 MAX_LORA_ADAPTER_BYTES = 25 * 1024 * 1024
+MAX_PROJECT5_CHECKPOINT_BYTES = 25 * 1024 * 1024
 
 
 def tracked_files() -> list[Path]:
@@ -45,7 +49,12 @@ def main() -> int:
     for path in tracked_files():
         if path.suffix.lower() in FORBIDDEN_SUFFIXES:
             relative = path.relative_to(REPO_ROOT)
-            if relative != ALLOWED_LORA_ADAPTER:
+            if relative == ALLOWED_PROJECT5_CHECKPOINT:
+                if path.stat().st_size > MAX_PROJECT5_CHECKPOINT_BYTES:
+                    errors.append(
+                        f"Project 5 checkpoint exceeds 25 MiB: {relative} ({path.stat().st_size} bytes)"
+                    )
+            elif relative != ALLOWED_LORA_ADAPTER:
                 errors.append(f"tracked checkpoint-like file: {relative}")
             elif path.stat().st_size > MAX_LORA_ADAPTER_BYTES:
                 errors.append(

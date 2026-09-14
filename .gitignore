@@ -24,7 +24,7 @@ local_checkpoints/
 !projects/project3_stable_diffusion/outputs/lora/
 !projects/project3_stable_diffusion/outputs/lora/**
 !projects/project5_vla_action_diffusion/ckpts/
-!projects/project5_vla_action_diffusion/ckpts/**
+!projects/project5_vla_action_diffusion/ckpts/model_final.pt
 
 # Project-local scratch output
 **/tmp/

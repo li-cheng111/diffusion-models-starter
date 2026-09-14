@@ -20,6 +20,13 @@ import importlib
 import sys
 from pathlib import Path
 
+try:
+    # Keep the diagnostic script usable in Windows consoles whose legacy
+    # code page cannot encode the check-mark characters below.
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+except (AttributeError, ValueError):
+    pass
+
 PACKAGES = [('torch', 'torch'), ('numpy', 'numpy'), ('yaml', 'PyYAML'),
             ('tqdm', 'tqdm'), ('matplotlib', 'matplotlib')]
 

@@ -2,9 +2,12 @@
 Project 5 training script. Contains: TODO 19 (action chunk DDPM loss)
 """
 import argparse
+import json
 import os
+import random
 import time
 from copy import deepcopy
+from pathlib import Path
 
 import torch
 import torch.nn.functional as F
@@ -17,8 +20,23 @@ from obs_utils import state_dim_for, state_from_batch
 
 
 def load_config(path):
-    with open(path) as f:
+    with open(path, encoding="utf-8") as f:
         return yaml.safe_load(f)
+
+
+def set_seed(seed):
+    random.seed(seed)
+    torch.manual_seed(seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed_all(seed)
+
+
+def write_json(path, payload):
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_suffix(path.suffix + ".tmp")
+    temporary.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+    temporary.replace(path)
 
 
 # -----------------------------------------------------------------------------
@@ -76,12 +94,38 @@ def diffusion_loss(model, batch, scheduler, device, use_vision=True):
     # ============================================================
     # TODO 19: Implement DDPM loss for action chunk (≈ 5 lines)
     # ============================================================
-    raise NotImplementedError(
-        "TODO 19: Implement action chunk DDPM loss. See README §阶段 2."
-    )
+    t = torch.randint(0, scheduler.T, (B,), device=device, dtype=torch.long)
+    noise = torch.randn_like(action)
+    noisy_action = scheduler.add_noise(action, t, noise)
+    eps_pred = model(noisy_action, t, image=image, state=state)
+    return F.mse_loss(eps_pred, noise)
     # ============================================================
     # END TODO 19
     # ============================================================
+
+
+def flow_matching_loss(model, batch, device, use_vision=True):
+    """Conditional Flow Matching loss for the optional FM action head."""
+    image = batch["image"].to(device)
+    state = state_from_batch(batch, use_vision).to(device)
+    action = batch["action"].to(device)
+    noise = torch.randn_like(action)
+    t = torch.rand(action.shape[0], device=device)
+    view = t.view(-1, *([1] * (action.ndim - 1)))
+    noisy_action = (1.0 - view) * noise + view * action
+    velocity_pred = model(noisy_action, t, image=image, state=state)
+    return F.mse_loss(velocity_pred, action - noise)
+
+
+def behavior_cloning_loss(model, batch, device, use_vision=True):
+    """Deterministic action-chunk baseline with the same condition encoder."""
+    image = batch["image"].to(device)
+    state = state_from_batch(batch, use_vision).to(device)
+    action = batch["action"].to(device)
+    zeros = torch.zeros_like(action)
+    t = torch.zeros(action.shape[0], device=device, dtype=torch.long)
+    action_pred = model(zeros, t, image=image, state=state)
+    return F.mse_loss(action_pred, action)
 
 
 # -----------------------------------------------------------------------------
@@ -100,11 +144,26 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", required=True)
     parser.add_argument("--collect", action="store_true", help="Collect demo data first")
+    parser.add_argument("--run-dir", default=None, help="Directory for metrics/checkpoints")
+    parser.add_argument("--method", choices=("ddpm", "fm", "bc"), default=None)
+    parser.add_argument("--seed", type=int, default=None)
+    parser.add_argument("--resume", default=None, help="Checkpoint path, latest, or auto")
     args = parser.parse_args()
 
     cfg = load_config(args.config)
+    method = args.method or cfg.get("method", "ddpm")
+    seed = cfg.get("seed", 0) if args.seed is None else args.seed
+    set_seed(seed)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    run_dir = Path(args.run_dir or cfg.get("run_dir", "."))
+    if args.run_dir:
+        cfg["ckpt_dir"] = str(run_dir / "ckpts")
     os.makedirs(cfg["ckpt_dir"], exist_ok=True)
+    run_dir.mkdir(parents=True, exist_ok=True)
+    metrics_path = run_dir / "metrics.jsonl"
+    status_path = run_dir / "status.json"
+    write_json(status_path, {"state": "starting", "method": method, "seed": seed,
+                             "max_steps": cfg["max_steps"], "step": 0})
 
     # Collect demos if needed
     demo_path = cfg["demo_path"]
@@ -147,14 +206,34 @@ def main():
     scheduler = DDPMScheduler(T=cfg["diffusion_steps"], device=device)
     print(f"Params: {sum(p.numel() for p in model.parameters()) / 1e6:.2f}M")
 
+    checkpoint = None
+    resume_path = args.resume
+    if resume_path and resume_path.lower() in {"latest", "auto"}:
+        candidates = sorted(Path(cfg["ckpt_dir"]).glob("model_*.pt"))
+        resume_path = str(candidates[-1]) if candidates else None
+    if resume_path:
+        checkpoint = torch.load(resume_path, map_location=device)
+        model.load_state_dict(checkpoint.get("model", checkpoint))
+        ema_model.load_state_dict(checkpoint.get("ema", checkpoint.get("model", checkpoint)))
+        if "optimizer" in checkpoint:
+            optimizer.load_state_dict(checkpoint["optimizer"])
+        print(f"Resumed model from {resume_path}")
+
     # Training
     model.train()
-    step = 0
+    step = int(checkpoint.get("step", 0)) if checkpoint else 0
     losses = []
     t_start = time.time()
+    write_json(status_path, {"state": "running", "method": method, "seed": seed,
+                             "max_steps": cfg["max_steps"], "step": step})
     while step < cfg["max_steps"]:
         for batch in loader:
-            loss = diffusion_loss(model, batch, scheduler, device, use_vision)
+            if method == "fm":
+                loss = flow_matching_loss(model, batch, device, use_vision)
+            elif method == "bc":
+                loss = behavior_cloning_loss(model, batch, device, use_vision)
+            else:
+                loss = diffusion_loss(model, batch, scheduler, device, use_vision)
             optimizer.zero_grad()
             loss.backward()
             torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
@@ -167,11 +246,21 @@ def main():
                 avg = sum(losses[-100:]) / min(len(losses), 100)
                 print(f"step {step}/{cfg['max_steps']} | loss {loss.item():.4f} "
                       f"(avg100 {avg:.4f}) | {step / (time.time() - t_start):.1f}/s")
+                with metrics_path.open("a", encoding="utf-8") as handle:
+                    handle.write(json.dumps({"step": step, "loss": loss.item(),
+                                             "avg100": avg, "method": method,
+                                             "elapsed_s": time.time() - t_start},
+                                            ensure_ascii=False) + "\n")
+                write_json(status_path, {"state": "running", "method": method, "seed": seed,
+                                         "max_steps": cfg["max_steps"], "step": step,
+                                         "loss": loss.item(), "avg100": avg,
+                                         "elapsed_s": time.time() - t_start})
             if step % cfg["save_every"] == 0:
                 p = os.path.join(cfg["ckpt_dir"], f"model_{step:06d}.pt")
                 torch.save(
                     {"model": model.state_dict(), "ema": ema_model.state_dict(),
-                     "step": step, "config": cfg},
+                     "optimizer": optimizer.state_dict(), "step": step,
+                     "config": cfg, "method": method, "seed": seed},
                     p,
                 )
                 print(f"Saved {p}")
@@ -180,7 +269,12 @@ def main():
 
     final = os.path.join(cfg["ckpt_dir"], "model_final.pt")
     torch.save({"model": model.state_dict(), "ema": ema_model.state_dict(),
-                "step": step, "config": cfg}, final)
+                "optimizer": optimizer.state_dict(), "step": step,
+                "config": cfg, "method": method, "seed": seed}, final)
+    write_json(status_path, {"state": "completed", "method": method, "seed": seed,
+                             "max_steps": cfg["max_steps"], "step": step,
+                             "elapsed_s": time.time() - t_start,
+                             "checkpoint": str(Path(final).resolve())})
     print(f"Done. Final ckpt: {final}")
 
 

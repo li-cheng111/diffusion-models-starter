@@ -54,9 +54,25 @@ class VisionEncoder(nn.Module):
         # ====================================================================
         # TODO 20: 实现 CNN 视觉编码器 (≈ 10-15 行)
         # ====================================================================
-        raise NotImplementedError(
-            "TODO 20: Implement VisionEncoder. See README §阶段 3."
-        )
+        del image_size  # The adaptive pool keeps the encoder resolution agnostic.
+        channels = (32, 64, 128)
+        layers = []
+        current = in_ch
+        for width in channels:
+            groups = min(8, width)
+            layers.extend([
+                nn.Conv2d(current, width, kernel_size=3, stride=2, padding=1),
+                nn.GroupNorm(groups, width),
+                nn.SiLU(),
+            ])
+            current = width
+        layers.extend([
+            nn.AdaptiveAvgPool2d(1),
+            nn.Flatten(),
+            nn.Linear(current, out_dim),
+            nn.LayerNorm(out_dim),
+        ])
+        self.net = nn.Sequential(*layers)
         # ====================================================================
         # END TODO 20
         # ====================================================================
