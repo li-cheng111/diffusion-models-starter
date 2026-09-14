@@ -260,6 +260,7 @@ def main():
 
     status_path = Path(args.output).parent / "status.json" if args.output else None
     if status_path:
+        status_path.parent.mkdir(parents=True, exist_ok=True)
         status_path.write_text(json.dumps({"state": "evaluating", "method": method,
                                            "episodes": args.n_episodes}, indent=2), encoding="utf-8")
 
