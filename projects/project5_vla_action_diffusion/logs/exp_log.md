@@ -17,7 +17,7 @@
 | 分支 | `codex/project5-vla-action-diffusion` |
 | 训练 seed | 42 |
 | 评估 seed | 10000–10099（100 episodes） |
-| 代码提交 | 运行版本由本文件所在提交记录；初始实现 `ca6af2d`，最终 artifact commit 在提交后补记 |
+| 代码提交 | 空间 encoder + 结果 artifact：`0e71913e3334e7304c8906c3f660cdc178924743` |
 
 ## 2. 假设与预期
 
