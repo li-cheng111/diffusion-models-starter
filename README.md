@@ -8,14 +8,15 @@
 
 | 项目 | 本地目录 | 当前状态 | 主要依赖 |
 |---|---|---|---|
-| 项目 1：DDPM | `projects/project1_ddpm/` | 已完成基础档、进阶档和挑战实验，目录迁移已完成，待安装 pytest 做完整回归 | 无 |
+| 项目 1：DDPM | `projects/project1_ddpm/` | 基础档、进阶档和挑战档实验均已完成；结果已提交，完整 pytest 回归尚未在本仓库环境执行 | 无 |
 | 项目 2：采样器对比 | `projects/project2_samplers/` | 已完成 DDIM、Euler、DPM-Solver-2、反演和 FID 实验 | 项目 1 |
 | 项目 3：Stable Diffusion 解剖 | `projects/project3_stable_diffusion/` | A–E 代码、测试、AutoDL 产物和 LoRA Release 已完成 | `diffusers`、`transformers`、`peft` |
 | 项目 4：Flow Matching | `projects/project4_flow_matching/` | TODO 16–18、200K DiT-S 训练、FID 曲线和 checkpoint Release 已完成 | PyTorch、CIFAR-10、FID |
 | 项目 5：VLA Action Diffusion | `projects/project5_vla_action_diffusion/` | 已导入 starter，待实现 | PyTorch、玩具 2D 环境 |
 
 课程要求和上游固定版本见 [`PROJECTS.md`](PROJECTS.md) 与 [`UPSTREAMS.md`](UPSTREAMS.md)。
-Project2–4 的大型复现权重和下载命令见 [`REPRODUCIBILITY.md`](REPRODUCIBILITY.md)。
+Project1–4 的大型复现权重和下载命令见 [`REPRODUCIBILITY.md`](REPRODUCIBILITY.md)；Project 1 的六个 CIFAR-10 challenge checkpoint 位于
+[`challenge-v1 Release`](https://github.com/li-cheng111/my-diffusion-models-starter/releases/tag/challenge-v1)。
 
 ## 目录约定
 
@@ -67,7 +68,7 @@ python scripts/check_repo.py
 ```
 
 报告中必须记录数据划分、随机种子、软件环境和 checkpoint SHA256，但不提交大型
-数据集或模型权重。Project 3 的 LoRA 权重和 Project 5 的小型最终模型只有在符合
+数据集或模型权重；大型权重统一通过对应 GitHub Release 分发。Project 3 的 LoRA 权重和 Project 5 的小型最终模型只有在符合
 课程提交要求且经过大小检查后才允许单独加入 Git/LFS。
 
 ## 五项目推进顺序

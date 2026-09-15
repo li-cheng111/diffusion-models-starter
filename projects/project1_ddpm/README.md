@@ -1,10 +1,10 @@
 # 项目 1：从零实现 DDPM
 
-本仓库提交项目 1 基础档和进阶档的源码、配置、静态测试与实验文档模板。实现目标是用 PyTorch 手写一个不依赖 `diffusers` 或 `lucidrains` 的无条件 DDPM。
+本目录包含项目 1 基础档、进阶档和挑战档的源码、配置、静态测试、结果与实验说明。实现目标是用 PyTorch 手写一个不依赖 `diffusers` 或 `lucidrains` 的无条件 DDPM。
 
 ## 当前提交状态
 
-基础档源码已经提交；MNIST 实验已在 AutoDL RTX 5090 上完成训练、采样和 EMA FID 评估。进阶档 CIFAR-10 200 轮训练和 EMA/raw 对比也已完成，真实结果已整理到 `runs/exp_cifar10_advanced/`。本次 EMA FID 为 19.2879，尚未达到作业目标 15。
+基础档 MNIST 实验和进阶档 CIFAR-10 单次实验均已在 AutoDL NVIDIA GeForce RTX 5090 上完成训练、采样和 FID 评估。挑战档的 linear/cosine × seed 42/43/44 六组 CIFAR-10 实验也已完成；小型结果和最终样本网格在仓库中，大型 checkpoint 与中间样本在 [`challenge-v1 Release`](https://github.com/li-cheng111/my-diffusion-models-starter/releases/tag/challenge-v1)。
 
 ## 基础档完成清单
 
@@ -36,22 +36,36 @@
 - [x] `challenge.py` 支持 `--epoch_budgets 50 200`，可回答 50/200 轮自查问题
 - [x] `challenge.py summarize` 已提供均值 ± 标准差汇总
 - [x] `challenge_report.md` 已建立八页技术报告结构和失败案例记录规范
-- [ ] 尚未运行挑战档实验，因此暂无真实均值 ± 标准差、调度策略胜负结论或挑战档失败案例
+- [x] 挑战档六组 200 轮实验已经完成，结果见 `results/challenge/summary.md`
+- [x] 真实均值 ± 标准差和调度策略对比已记录；linear 在本实验协议下优于 cosine
+- [x] 大型 checkpoint、中间样本和 MNIST 临时产物已通过 [`challenge-v1 Release`](https://github.com/li-cheng111/my-diffusion-models-starter/releases/tag/challenge-v1) 保存
 
-挑战档只在明确执行下面命令后才会创建实验目录和运行产物：
+如需在新的输出目录复现实验矩阵，可明确执行：
 
 ```bash
 python challenge.py run \
   --schedules linear cosine \
   --seeds 42 43 44 \
-  --output_root runs/challenge
+  --output_root runs/challenge_repro
 ```
 
-如需先检查将要执行的命令而不运行任何程序，可使用 `--dry_run`。实验完成后使用
-`python challenge.py summarize --output_root runs/challenge` 生成统计结果。
+如需先检查将要执行的命令而不运行程序，可使用 `--dry_run`。已有提交的可复核汇总位于
+`results/challenge/summary.md`；若重新生成实验目录，再使用
+`python challenge.py summarize --output_root runs/challenge_repro` 汇总。
 
-默认挑战矩阵为 200 轮、2 个调度策略 × 3 个随机种子，共 6 组。若还要回答报告中的
-50 轮自查问题，可显式运行 `--epoch_budgets 50 200`，共 12 组。
+默认挑战矩阵为 200 轮、2 个调度策略 × 3 个随机种子，共 6 组。本次没有运行 50 轮控制组，
+因此不能从当前结果外推 50 轮下的调度策略结论。
+
+### 挑战档实际结果
+
+| 调度策略 | EMA FID | Raw FID |
+|---|---:|---:|
+| linear | 19.2926 ± 0.3357 | 35.4800 ± 7.0193 |
+| cosine | 137.5132 ± 8.0166 | 364.1998 ± 70.1675 |
+
+FID 使用每次 5,000 张生成图与 5,000 张无增强 CIFAR-10 训练图计算。当前最佳单次 EMA FID
+为 linear/seed44 的 18.9593，仍未达到作业目标 FID ≤ 15。逐 seed 数值见
+`results/challenge/summary.md`，六个 checkpoint 下载地址见上方 Release。
 
 ## 目录
 
@@ -64,13 +78,13 @@ sample.py         # checkpoint 采样
 evaluate.py       # FID 评估
 model/            # sinusoidal embedding、ResBlock、U-Net
 configs/          # MNIST 和 CIFAR-10 配置
-tests/            # 尚未执行的单元测试源码
+tests/            # 单元测试源码（本次未在仓库环境执行完整回归）
 challenge.py      # 挑战档多调度策略、多随机种子实验编排与汇总
 challenge_report.md # 挑战档八页技术报告结构稿
 challenge_monitor.py # 挑战矩阵只读实时监控页面
 monitor.py        # 本地只读实时训练进度监控
-report.md         # 理论和实现说明，实验结果待补充
-debug_log.md      # 实际运行后填写的调试记录模板
+report.md         # 理论、实现和实际实验结果
+debug_log.md      # 实际调试记录
 logs/             # 实验日志模板
 ```
 
@@ -113,4 +127,6 @@ python evaluate.py --ckpt runs/exp_cifar10_advanced/ckpt/final.pt \
     --num_samples 5000 --batch_size 64 --real_split train --compare_ema
 ```
 
-运行结果应在真实实验完成后再提交，并同步更新 `report.md`、`debug_log.md`、`challenge_report.md` 和 `logs/`。
+实验结果已经同步到 `report.md`、`debug_log.md`、`challenge_report.md`、`results/challenge/` 和 `logs/`。
+由于大型二进制文件不进入普通 Git，挑战档 checkpoint 和中间样本请从
+[`challenge-v1 Release`](https://github.com/li-cheng111/my-diffusion-models-starter/releases/tag/challenge-v1) 下载。

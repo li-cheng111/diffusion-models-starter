@@ -43,3 +43,12 @@
 - 验证：训练在 98.2 分钟内达到第 78,000 步；在 5,000 张训练图上，EMA FID 为 19.2879，raw FID 为 28.7464。
 - 修复：稳定性方面无需修复。FID 未达到 15 的目标，因此如实记录结果。
 - 经验：EMA 明显改善了本次运行的 FID，但运行稳定和达到目标指标是两个独立的验收条件。
+
+## 条目 6——CIFAR-10 挑战档矩阵
+
+- 状态：已完成
+- 现象：需要在相同模型、优化器、训练预算和评估协议下比较 linear/cosine 两种 schedule，并覆盖 seed 42、43、44。
+- 验证：六组结果均已写入 `results/challenge/results.csv` 和 `results/challenge/summary.md`；每组均有 EMA/raw FID 文件和最终 EMA 样本网格。
+- 结果：linear EMA FID 为 `19.2926 ± 0.3357`，cosine EMA FID 为 `137.5132 ± 8.0166`；在本实验协议下 linear 更好，但两者均未达到 FID ≤ 15。
+- 大文件处理：六个最终 checkpoint 和中间样本未进入普通 Git，已上传到 `challenge-v1 Release`；MNIST 临时产物也以 Release 压缩附件保存。
+- 经验：三组 seed 只能提供有限的方差观察，不能将本矩阵结果外推为 schedule 的普适结论；50 轮控制组本次未运行。

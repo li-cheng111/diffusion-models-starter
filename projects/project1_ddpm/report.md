@@ -2,7 +2,7 @@
 
 ## 当前状态
 
-本仓库已完成项目 1 基础档要求对应的源码、MNIST 配置、静态测试和实验文档。MNIST 基线与 CIFAR-10 进阶档均已在 AutoDL 的 NVIDIA GeForce RTX 5090 上完成真实训练、采样和 FID 评估。本报告只记录实际得到的结果；本次 CIFAR-10 EMA FID 为 19.2879，尚未达到作业目标 FID ≤ 15。
+本仓库已完成项目 1 基础档、进阶档和挑战档的源码、配置、静态测试、结果和实验文档。MNIST 基线与 CIFAR-10 实验均在 AutoDL 的 NVIDIA GeForce RTX 5090 上完成真实训练、采样和 FID 评估。本报告只记录实际得到的结果；进阶档单次 linear EMA FID 为 19.2879，挑战档六组实验的汇总见 `results/challenge/summary.md`。
 
 ## 方法概述
 
@@ -40,10 +40,11 @@ $$
 4. 随机采样 `t` 是对所有时间步期望的 Monte Carlo 估计；每个 batch 都能覆盖不同噪声强度。
 5. `t=0` 时 posterior variance 为零，继续添加噪声会破坏最终的干净样本。
 
-## 待完成实验
+## 实验完成情况
 
 - MNIST 50 轮：已完成训练和推理；结果见下方“MNIST 实验结果”。
 - CIFAR-10 200 轮：已完成训练、EMA/raw 采样和 FID 对比，结果见下方“进阶档实验结果”。
+- 挑战档：linear/cosine 两种 schedule、seed 42/43/44 共六组 200 轮实验已完成，结果见下方“挑战档实验结果”。
 
 ## MNIST 实验结果
 
@@ -60,8 +61,10 @@ $$
 - `runs/exp_mnist_baseline/loss_history.csv`
 - `runs/exp_mnist_baseline/loss_curve.png`
 - `runs/exp_mnist_baseline/samples_inference_ema/grid.png`
-- `runs/exp_mnist_baseline/ckpt/final.pt`
 - `runs/exp_mnist_baseline/ckpt/fid_5000_EMA.txt`
+
+大型 MNIST 临时权重不进入普通 Git；本次临时产物压缩包见
+[`challenge-v1 Release`](https://github.com/li-cheng111/my-diffusion-models-starter/releases/tag/challenge-v1)。
 
 ## 基础档验收状态
 
@@ -104,29 +107,50 @@ EMA 的 FID 比 raw 低 9.4586，说明本次训练中 EMA 权重的分布质量
 - `runs/exp_cifar10_advanced/loss_curve.png`
 - `runs/exp_cifar10_advanced/samples_inference_ema/grid.png`
 - `runs/exp_cifar10_advanced/samples_inference_raw/grid.png`
-- `runs/exp_cifar10_advanced/ckpt/final.pt`
 - `runs/exp_cifar10_advanced/ckpt/fid_comparison.md`
 
-本次未达到 FID ≤ 15；后续若继续冲击目标，应在保留当前 checkpoint 的基础上调整模型、schedule 或训练策略后重新实验。
+进阶档最终 checkpoint 不进入普通 Git；挑战档六组最终 checkpoint 见
+[`challenge-v1 Release`](https://github.com/li-cheng111/my-diffusion-models-starter/releases/tag/challenge-v1)。
+本次未达到 FID ≤ 15；后续若继续冲击目标，应在保留已有结果的基础上调整模型、schedule 或训练策略后重新实验。
 
-## 挑战档实现与待运行实验
+## 挑战档实验结果
 
-挑战档要求实现 cosine 调度策略，并在相同模型和训练协议下对比 linear/cosine，分别使用随机种子 `42、43、44` 报告均值 ± 标准差，同时提交包含失败案例分析的八页技术报告。本仓库已完成以下可执行准备工作：
+挑战档要求实现 cosine 调度策略，并在相同模型和训练协议下对比 linear/cosine，分别使用随机种子 `42、43、44` 报告均值 ± 标准差，同时提交包含失败案例分析的八页技术报告。本仓库已完成实现、六组真实实验和结果汇总：
 
 - `schedule.py` 中的 `cosine_beta_schedule` 已接入 `DDPMSchedule`；
 - `configs/cifar10_linear.yaml` 和 `configs/cifar10_cosine.yaml` 固定了对比实验的控制变量；
-- `challenge.py` 默认负责六组 200 轮训练、64 张 EMA 样本网格、5,000 对 5,000 FID 评估和结果汇总，并支持加入 50 轮控制组；
-- `challenge_report.md` 提供八页报告结构，`logs/challenge_experiment_log_template.md` 提供六组实验记录表。
+- `challenge.py` 负责六组 200 轮训练、64 张 EMA 样本网格、5,000 对 5,000 FID 评估和结果汇总，并支持加入 50 轮控制组；
+- `challenge_report.md` 已更新为真实八页技术报告，`results/challenge/` 保存逐 seed FID 和最终样本网格。
 
-本轮按要求没有运行挑战档训练或评估，因此下面内容必须保持待填，不能根据进阶档的单次 linear 结果推断：
+### 每个随机种子的结果
 
-| 项目 | 状态 |
-|---|---|
-| Linear 200 轮，随机种子 42/43/44 | 待运行 |
-| Cosine 200 轮，随机种子 42/43/44 | 待运行 |
-| Linear 均值 ± 标准差 | 待运行 |
-| Cosine 均值 ± 标准差 | 待运行 |
-| 50 轮调度策略对比 | 未纳入当前矩阵，不能外推 |
-| 挑战档真实失败案例 | 待运行后按证据填写 |
+| 调度策略 | Seed | EMA FID | Raw FID | Raw - EMA |
+|---|---:|---:|---:|---:|
+| linear | 42 | 19.2879 | 28.7464 | +9.4585 |
+| linear | 43 | 19.6306 | 42.7537 | +23.1231 |
+| linear | 44 | 18.9593 | 34.9399 | +15.9806 |
+| cosine | 42 | 137.9856 | 283.4196 | +145.4340 |
+| cosine | 43 | 129.2708 | 399.1676 | +269.8968 |
+| cosine | 44 | 145.2832 | 410.0121 | +264.7289 |
 
-预计在 AutoDL RTX 5090 上，六组 200 轮训练约需 9–12 小时，六组 FID 评估约需 1–2 小时；若加入 50 轮控制组，完整 12 组矩阵约需 12–16 小时（含 FID）。数据准备、磁盘校验和偶发重试建议额外预留 30–60 分钟。实际时间会随数据缓存、GPU 利用率和评估吞吐变化。
+### 均值 ± 标准差
+
+| 调度策略 | 训练轮数 | EMA FID | Raw FID |
+|---|---:|---:|---:|
+| linear | 200 | 19.2926 ± 0.3357 | 35.4800 ± 7.0193 |
+| cosine | 200 | 137.5132 ± 8.0166 | 364.1998 ± 70.1675 |
+
+FID 使用每次 5,000 张生成图像，对比 5,000 张不使用随机增强的 CIFAR-10 训练图像。在线性和 cosine
+均保持同一模型、优化器、训练轮数和 seed 集合的前提下，本实验中 linear 明显优于 cosine；但
+该结论只适用于当前实验协议，不能外推到其他模型或训练预算。线性 schedule 的 EMA 平均 FID
+比 raw 低 16.1874，cosine 的对应差值为 226.6866。
+
+### 样本、失败记录与限制
+
+六组最终 EMA 样本网格保存在 `results/challenge/*/samples_challenge_ema/grid.png`；大型 checkpoint
+和压缩后的中间样本保存在 [`challenge-v1 Release`](https://github.com/li-cheng111/my-diffusion-models-starter/releases/tag/challenge-v1)。
+挑战档提交结果中未记录需要单独归因的训练失败；AutoDL 的 GitHub HTTP 503 和数据下载慢属于环境访问问题，
+已在 `debug_log.md` 单独记录，不能当作 schedule 失败案例。
+
+本次没有运行 50 轮控制组，因此不能回答 50 轮下的调度策略差异。三组 seed 仍是有限样本，FID
+也会受到 Inception 实现、输入范围、真实数据划分和生成样本数影响；结论应视为本配置下的实验观察。
